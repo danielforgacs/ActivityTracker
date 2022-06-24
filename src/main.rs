@@ -79,6 +79,7 @@ fn main() {
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::thread::sleep;
 
     #[test]
     fn task_timing_test() {
@@ -113,5 +114,31 @@ mod test {
 
         std::thread::sleep(pause);
         assert!(max_diff > task.elapsed_time() - (pause + pause + pause + pause + pause));
+    }
+
+    #[test]
+    fn timing_multiple_tasks() {
+        let task0 = Task::new();
+        let task1 = Task::new();
+        let task2 = Task::new();
+
+        let max_diff = Duration::from_millis(3);
+        let pause = Duration::from_secs(1);
+
+        assert!(task0.elapsed_time() < max_diff);
+        assert!(task1.elapsed_time() < max_diff);
+        assert!(task2.elapsed_time() < max_diff);
+
+        sleep(pause);
+
+        assert!(task0.elapsed_time() - pause < max_diff);
+        assert!(task1.elapsed_time() - pause < max_diff);
+        assert!(task2.elapsed_time() - pause < max_diff);
+
+        sleep(pause);
+
+        assert!(task0.elapsed_time() - (pause * 2) < max_diff);
+        assert!(task1.elapsed_time() - (pause * 2) < max_diff);
+        assert!(task2.elapsed_time() - (pause * 2) < max_diff);
     }
 }
