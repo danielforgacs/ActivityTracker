@@ -82,27 +82,35 @@ mod test {
 
     #[test]
     fn task_timing_test() {
-        let max_diff = Duration::from_millis(10);
+        let max_diff = Duration::from_millis(3);
+
         let mut task = Task::new();
-        assert!(task.elapsed_time() < Duration::from_millis(10));
+        assert!(task.elapsed_time() < max_diff);
         let pause = Duration::from_secs(1);
+
         std::thread::sleep(pause);
         assert!(max_diff > task.elapsed_time() - pause);
         assert!(max_diff > task.elapsed_time() - pause);
         assert!(max_diff > task.elapsed_time() - pause);
         assert!(max_diff > task.elapsed_time() - pause);
+
         std::thread::sleep(pause);
         assert!(max_diff > task.elapsed_time() - (pause + pause));
+
         std::thread::sleep(pause);
         assert!(max_diff > task.elapsed_time() - (pause + pause + pause));
         task.stop();
+
         std::thread::sleep(pause);
         assert!(max_diff > task.elapsed_time() - (pause + pause + pause));
+
         std::thread::sleep(pause);
         assert!(max_diff > task.elapsed_time() - (pause + pause + pause));
         task.start();
+
         std::thread::sleep(pause);
         assert!(max_diff > task.elapsed_time() - (pause + pause + pause + pause));
+
         std::thread::sleep(pause);
         assert!(max_diff > task.elapsed_time() - (pause + pause + pause + pause + pause));
     }
