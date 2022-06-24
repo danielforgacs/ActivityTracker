@@ -51,14 +51,19 @@ fn main() {
 
     let mut task1 = Task::new();
     std::thread::sleep(Duration::new(1, 0));
-    println!("task1: {:?}", task1.elapsed_time());
+    println!("task1: {:?} - expected: 1", task1.elapsed_time());
     std::thread::sleep(Duration::new(1, 0));
-    println!("task1: {:?}", task1.elapsed_time());
+    println!("task1: {:?} - expected: 2", task1.elapsed_time());
     std::thread::sleep(Duration::new(1, 0));
-    println!("task1: {:?}", task1.elapsed_time());
+    println!("task1: {:?} - expected: 3", task1.elapsed_time());
     task1.stop();
     std::thread::sleep(Duration::new(1, 0));
-    println!("task1: {:?}", task1.elapsed_time());
+    println!("task1: {:?} - stopped", task1.elapsed_time());
+    std::thread::sleep(Duration::new(1, 0));
+    println!("task1: {:?} - stopped", task1.elapsed_time());
+    task1.start();
+    std::thread::sleep(Duration::new(1, 0));
+    println!("task1: {:?} - expected: 4", task1.elapsed_time());
 
 
 }
