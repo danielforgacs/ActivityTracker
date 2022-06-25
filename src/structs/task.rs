@@ -53,6 +53,10 @@ impl Task {
         }
     }
 
+    pub fn name(&self) -> String {
+        self.name.to_owned()
+    }
+
     pub fn start(&mut self) {
         self.logged_time += self.last_start_time.as_sec();
         self.last_start_time = TaskStatus::Running(Instant::now());

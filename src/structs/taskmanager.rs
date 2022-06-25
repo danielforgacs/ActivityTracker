@@ -11,7 +11,9 @@ impl TaskManager {
     }
 
     fn new_task(&mut self, name: &str) {
-
+        self.tasks.push(
+            Task::from(name)
+        )
     }
 
     fn stop_task(&mut self, name: &str) {
@@ -39,5 +41,7 @@ mod test {
         let mut tm = TaskManager::new();
         let task_name = "task";
         tm.new_task(task_name);
+        assert_eq!(tm.tasks.len(), 1);
+        assert_eq!(tm.tasks[0].name(), task_name);
     }
 }
