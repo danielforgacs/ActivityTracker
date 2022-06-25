@@ -1,8 +1,8 @@
 use std::time::{Instant, Duration};
 #[derive(Clone, Copy)]
 enum TaskStatus {
-    running(Instant),
-    idle,
+    Running(Instant),
+    Idle,
 }
 
 struct Task {
@@ -17,8 +17,8 @@ struct TaskManager {
 impl From<TaskStatus> for Duration {
     fn from(item: TaskStatus) -> Self {
         match item {
-            TaskStatus::running(time0) => time0.elapsed(),
-            TaskStatus::idle => Duration::new(0, 0),
+            TaskStatus::Running(time0) => time0.elapsed(),
+            TaskStatus::Idle => Duration::new(0, 0),
         }
     }
 }
@@ -26,19 +26,19 @@ impl From<TaskStatus> for Duration {
 impl Task {
     fn new() -> Self {
         Self {
-            last_start_time: TaskStatus::running(Instant::now()),
+            last_start_time: TaskStatus::Running(Instant::now()),
             logged_time: Duration::new(0, 0),
         }
     }
 
     fn start(&mut self) {
         self.logged_time += self.last_start_time.into();
-        self.last_start_time = TaskStatus::running(Instant::now());
+        self.last_start_time = TaskStatus::Running(Instant::now());
     }
 
     fn stop(&mut self) {
         self.logged_time += self.last_start_time.into();
-        self.last_start_time = TaskStatus::idle;
+        self.last_start_time = TaskStatus::Idle;
     }
 
     fn elapsed_time(&self) -> Duration {
