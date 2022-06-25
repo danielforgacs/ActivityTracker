@@ -103,29 +103,29 @@ mod test {
         assert_eq!(task.elapsed_time(), pause_secs * 5);
     }
 
-    // #[test]
-    // fn timing_multiple_tasks() {
-    //     let task0 = Task::new();
-    //     let task1 = Task::new();
-    //     let task2 = Task::new();
+    #[test]
+    fn timing_multiple_tasks() {
+        let task0 = Task::new();
+        let task1 = Task::new();
+        let task2 = Task::new();
 
-    //     let max_diff = Duration::from_millis(3);
-    //     let pause = Duration::from_secs(1);
+        let pause_secs = 1;
+        let pause = Duration::from_secs(pause_secs);
 
-    //     assert!(task0.elapsed_time() < max_diff);
-    //     assert!(task1.elapsed_time() < max_diff);
-    //     assert!(task2.elapsed_time() < max_diff);
+        assert_eq!(task0.elapsed_time(), pause_secs * 0);
+        assert_eq!(task1.elapsed_time(), pause_secs * 0);
+        assert_eq!(task2.elapsed_time(), pause_secs * 0);
 
-    //     sleep(pause);
+        sleep(pause);
 
-    //     assert!(task0.elapsed_time() - pause < max_diff);
-    //     assert!(task1.elapsed_time() - pause < max_diff);
-    //     assert!(task2.elapsed_time() - pause < max_diff);
+        assert_eq!(task0.elapsed_time(), pause_secs * 1);
+        assert_eq!(task1.elapsed_time(), pause_secs * 1);
+        assert_eq!(task2.elapsed_time(), pause_secs * 1);
 
-    //     sleep(pause);
+        sleep(pause);
 
-    //     assert!(task0.elapsed_time() - (pause * 2) < max_diff);
-    //     assert!(task1.elapsed_time() - (pause * 2) < max_diff);
-    //     assert!(task2.elapsed_time() - (pause * 2) < max_diff);
-    // }
+        assert_eq!(task0.elapsed_time(), pause_secs * 2);
+        assert_eq!(task1.elapsed_time(), pause_secs * 2);
+        assert_eq!(task2.elapsed_time(), pause_secs * 2);
+    }
 }
