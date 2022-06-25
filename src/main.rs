@@ -33,6 +33,4 @@ fn main() {
     println!("task1: {:?} - expected: 4", task1.elapsed_time());
     task1.start();
     println!("task1: {:?} - expected: 4", task1.elapsed_time());
-
-
 }
