@@ -1,26 +1,10 @@
-use std::time::{Instant, Duration};
-#[derive(Clone, Copy)]
-enum TaskStatus {
-    Running(Instant),
-    Idle,
-}
+mod structs;
 
-struct Task {
-    last_start_time: TaskStatus,
-    logged_time: Duration,
-}
+use std::time::{Instant, Duration};
+use structs::task::{Task, TaskStatus};
 
 struct TaskManager {
     tasks: Vec<Task>,
-}
-
-impl From<TaskStatus> for Duration {
-    fn from(item: TaskStatus) -> Self {
-        match item {
-            TaskStatus::Running(time0) => time0.elapsed(),
-            TaskStatus::Idle => Duration::new(0, 0),
-        }
-    }
 }
 
 impl Task {
