@@ -1,9 +1,9 @@
 use super::task::Task;
 
 /**
-The task manager is the only one exposed.
-it manages a vec of tasks. Only one task can
-be active at a time. Starting a task will wtop all other tasks
+The task manager is the only struct one exposed. It manages a vec of tasks.
+Only one task can be active at a time. Running tasks are exclusive, starting
+a task will stop all other tasks.
 **/
 #[derive(Debug, PartialEq)]
 struct TaskManager {
