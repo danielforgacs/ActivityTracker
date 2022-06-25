@@ -70,6 +70,17 @@ impl Task {
     pub fn elapsed_time(&self) -> SecType {
         self.logged_time + self.last_start_time.as_sec()
     }
+
+    pub fn time_text(&self) -> String {
+        let (hours, mins) = secs_to_time(self.elapsed_time());
+        format!("{:>20}: {}h:{:02}m", self.name, hours, mins)
+    }
+}
+
+fn secs_to_time(secs: SecType) -> (u8, u8) {
+    let hours = secs / (60 * 60);
+    let minutes = (secs % (60 * 60)) / 60;
+    (hours as u8, minutes as u8)
 }
 
 
@@ -146,5 +157,23 @@ mod test {
     fn task_from_str() {
         let task = Task::from("taskname");
         assert_eq!("taskname", task.name);
+    }
+
+    #[test]
+    fn human_readable_seconds() {
+        let secs: SecType = 1;
+        assert_eq!(secs_to_time(secs), (0, 0));
+        let secs: SecType = 60;
+        assert_eq!(secs_to_time(secs), (0, 1));
+        let secs: SecType = 61;
+        assert_eq!(secs_to_time(secs), (0, 1));
+        let secs: SecType = 60 * 10;
+        assert_eq!(secs_to_time(secs), (0, 10));
+        let secs: SecType = 60 * 60;
+        assert_eq!(secs_to_time(secs), (1, 0));
+        let secs: SecType = 60 * 60 * 3;
+        assert_eq!(secs_to_time(secs), (3, 0));
+        let secs: SecType = 60 * 60 * 3 + 60;
+        assert_eq!(secs_to_time(secs), (3, 1));
     }
 }
