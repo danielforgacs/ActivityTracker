@@ -4,11 +4,11 @@ use std::time::{Instant, Duration};
 use structs::task::Task;
 
 fn main() {
-    let t0 = Instant::now();
-    std::thread::sleep(Duration::new(1, 0));
-    println!("{:#?}", t0.elapsed());
-    let k = t0.elapsed() + Duration::from_secs(1);
-    println!("{:?}", k);
+    // let t0 = Instant::now();
+    // std::thread::sleep(Duration::new(1, 0));
+    // println!("{:#?}", t0.elapsed());
+    // let k = t0.elapsed() + Duration::from_secs(1);
+    // println!("{:?}", k);
 
     let mut task1 = Task::new();
     std::thread::sleep(Duration::new(1, 0));
