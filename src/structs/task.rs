@@ -12,8 +12,8 @@ pub enum TaskStatus {
 /// Crearing the task acts just like starting the timer
 /// on an existing task.
 pub struct Task {
-    pub last_start_time: TaskStatus,
-    pub logged_time: Duration,
+    last_start_time: TaskStatus,
+    logged_time: Duration,
 }
 
 impl From<TaskStatus> for Duration {
