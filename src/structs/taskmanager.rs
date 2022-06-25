@@ -20,10 +20,16 @@ impl TaskManager {
 
     }
 
+    fn start_task(&mut self, name: &str) {
+
+    }
+
     fn stop_all(&mut self) {
 
     }
 }
+
+
 
 
 #[cfg(test)]
@@ -46,5 +52,20 @@ mod test {
         assert_eq!(tm.tasks[0].elapsed_time(), 0);
         std::thread::sleep(std::time::Duration::from_secs(1));
         assert_eq!(tm.tasks[0].elapsed_time(), 1);
+        assert_eq!(tm.tasks[0].elapsed_time(), 1);
+        assert_eq!(tm.tasks[0].elapsed_time(), 1);
+        std::thread::sleep(std::time::Duration::from_secs(1));
+        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        tm.stop_task(task_name);
+        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        std::thread::sleep(std::time::Duration::from_secs(1));
+        std::thread::sleep(std::time::Duration::from_secs(1));
+        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        tm.start_task(task_name);
+        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        std::thread::sleep(std::time::Duration::from_secs(1));
+        assert_eq!(tm.tasks[0].elapsed_time(), 3);
     }
 }
