@@ -6,6 +6,11 @@ pub enum TaskStatus {
     Idle,
 }
 
+/// Tasks have names and elapsed time. The last start time
+/// is used to calculate the time spent on the task.
+/// The time spent on the task is stored as logged time.
+/// Crearing the task acts just like starting the timer
+/// on an existing task.
 pub struct Task {
     pub last_start_time: TaskStatus,
     pub logged_time: Duration,
@@ -42,6 +47,9 @@ impl Task {
         self.logged_time + self.last_start_time.into()
     }
 }
+
+
+
 
 #[cfg(test)]
 mod test {
