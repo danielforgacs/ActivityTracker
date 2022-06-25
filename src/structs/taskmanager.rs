@@ -16,9 +16,11 @@ impl TaskManager {
     }
 
     pub fn new_task(&mut self, name: &str) {
-        self.tasks.push(
-            Task::from(name)
-        );
+        if !self.task_exists(name) {
+            self.tasks.push(
+                Task::from(name)
+            );
+        }
         self.start_task(name);
     }
 
@@ -31,6 +33,10 @@ impl TaskManager {
     }
 
     fn start_task(&mut self, name: &str) {
+        if !self.task_names().contains(&name.to_string()) {
+            self.new_task(name);
+        };
+
         for task in self.tasks.iter_mut() {
             if task.name() == name {
                 task.start();
@@ -46,6 +52,10 @@ impl TaskManager {
 
     pub fn task_names(&self) -> Vec<String> {
         self.tasks.iter().map(|f| f.name()).collect::<Vec<String>>()
+    }
+
+    fn task_exists(&self, name: &str) -> bool {
+        self.task_names().contains(&name.to_string())
     }
 }
 
@@ -127,5 +137,15 @@ mod test {
     fn pause() {
         let pause_secs = 1;
         std::thread::sleep(std::time::Duration::from_secs(pause_secs));
+    }
+
+    #[test]
+    fn no_duplicate_task_names() {
+        let mut tm = TaskManager::new();
+        tm.start_task("a");
+        tm.start_task("a");
+        tm.start_task("a");
+        tm.start_task("a");
+        assert_eq!(tm.task_names(), vec!["a"]);
     }
 }
