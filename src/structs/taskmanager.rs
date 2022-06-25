@@ -45,6 +45,10 @@ impl TaskManager {
     fn task_exists(&self, name: &str) -> bool {
         self.task_names().contains(&name.to_string())
     }
+
+    pub fn times(&self) -> String {
+        "LJKHHHHHHHHHHHHHHH".to_string()
+    }
 }
 
 

@@ -18,5 +18,5 @@ pub async fn create_task(name: Path<String>, req: HttpRequest) -> String {
 pub async fn times(req: HttpRequest) -> String {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let tm = data.lock().unwrap();
-    "Oalksdfhjalksfhj".to_string()
+    tm.times()
 }
