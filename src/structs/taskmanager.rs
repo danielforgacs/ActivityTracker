@@ -6,16 +6,16 @@ Only one task can be active at a time. Running tasks are exclusive, starting
 a task will stop all other tasks.
 **/
 #[derive(Debug, PartialEq)]
-struct TaskManager {
+pub struct TaskManager {
     tasks: Vec<Task>,
 }
 
 impl TaskManager {
-    fn new() -> Self {
+    pub fn new() -> Self {
         Self { tasks: Vec::new() }
     }
 
-    fn new_task(&mut self, name: &str) {
+    pub fn new_task(&mut self, name: &str) {
         self.tasks.push(
             Task::from(name)
         );
@@ -42,6 +42,10 @@ impl TaskManager {
 
     fn stop_all(&mut self) {
 
+    }
+
+    pub fn task_names(&self) -> Vec<String> {
+        self.tasks.iter().map(|f| f.name()).collect::<Vec<String>>()
     }
 }
 
