@@ -70,6 +70,11 @@ impl Task {
     pub fn elapsed_time(&self) -> SecType {
         self.logged_time + self.last_start_time.as_sec()
     }
+
+    pub fn time_text(&self) -> String {
+        let (hours, mins) = secs_to_time(self.elapsed_time());
+        format!("{:>20}: {}h:{:02}m", self.name, hours, mins)
+    }
 }
 
 fn secs_to_time(secs: SecType) -> (u8, u8) {

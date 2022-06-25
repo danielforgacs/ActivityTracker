@@ -47,7 +47,11 @@ impl TaskManager {
     }
 
     pub fn times(&self) -> String {
-        "LJKHHHHHHHHHHHHHHH".to_string()
+        self.tasks
+            .iter()
+            .map(|t| t.time_text())
+            .collect::<Vec<String>>()
+            .join("\n")
     }
 }
 
