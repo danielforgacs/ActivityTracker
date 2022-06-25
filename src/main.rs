@@ -7,29 +7,6 @@ struct TaskManager {
     tasks: Vec<Task>,
 }
 
-impl Task {
-    fn new() -> Self {
-        Self {
-            last_start_time: TaskStatus::Running(Instant::now()),
-            logged_time: Duration::new(0, 0),
-        }
-    }
-
-    fn start(&mut self) {
-        self.logged_time += self.last_start_time.into();
-        self.last_start_time = TaskStatus::Running(Instant::now());
-    }
-
-    fn stop(&mut self) {
-        self.logged_time += self.last_start_time.into();
-        self.last_start_time = TaskStatus::Idle;
-    }
-
-    fn elapsed_time(&self) -> Duration {
-        self.logged_time + self.last_start_time.into()
-    }
-}
-
 fn main() {
     let t0 = Instant::now();
     std::thread::sleep(Duration::new(1, 0));
