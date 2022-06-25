@@ -1,20 +1,24 @@
 use std::time::{Instant, Duration};
 #[derive(Clone, Copy)]
-enum Status {
+enum TaskStatus {
     running(Instant),
     idle,
 }
 
 struct Task {
-    last_start_time: Status,
+    last_start_time: TaskStatus,
     logged_time: Duration,
 }
 
-impl From<Status> for Duration {
-    fn from(item: Status) -> Self {
+struct TaskManager {
+    tasks: Vec<Task>,
+}
+
+impl From<TaskStatus> for Duration {
+    fn from(item: TaskStatus) -> Self {
         match item {
-            Status::running(time0) => time0.elapsed(),
-            Status::idle => Duration::new(0, 0),
+            TaskStatus::running(time0) => time0.elapsed(),
+            TaskStatus::idle => Duration::new(0, 0),
         }
     }
 }
@@ -22,19 +26,19 @@ impl From<Status> for Duration {
 impl Task {
     fn new() -> Self {
         Self {
-            last_start_time: Status::running(Instant::now()),
+            last_start_time: TaskStatus::running(Instant::now()),
             logged_time: Duration::new(0, 0),
         }
     }
 
     fn start(&mut self) {
         self.logged_time += self.last_start_time.into();
-        self.last_start_time = Status::running(Instant::now());
+        self.last_start_time = TaskStatus::running(Instant::now());
     }
 
     fn stop(&mut self) {
         self.logged_time += self.last_start_time.into();
-        self.last_start_time = Status::idle;
+        self.last_start_time = TaskStatus::idle;
     }
 
     fn elapsed_time(&self) -> Duration {
