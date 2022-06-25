@@ -12,7 +12,7 @@ const PORT: u16 = 8000;
 async fn create_task(name: Path<String>, req: HttpRequest) -> String {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
-    tm.new_task(&name);
+    tm.activate(&name);
     println!("tm: {:#?}", &tm);
     "Ok".to_string()
 }
