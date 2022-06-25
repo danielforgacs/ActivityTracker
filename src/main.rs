@@ -1,6 +1,6 @@
 mod structs;
 
-use actix_web::{App, HttpServer, get};
+use actix_web::{App, HttpServer, HttpRequest, get};
 use actix_web::web::{Path, Data};
 use structs::taskmanager::TaskManager;
 use std::sync::Mutex;
@@ -9,7 +9,11 @@ const ADDRESS: &str = "127.0.0.1";
 const PORT: u16 = 8000;
 
 #[get("create_task/{name}")]
-async fn create_task(name: Path<String>) -> String {
+async fn create_task(name: Path<String>, req: HttpRequest) -> String {
+    let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
+    let mut tm = data.lock().unwrap();
+    tm.new_task(&name);
+    println!("tm: {:#?}", &tm);
     "Ok".to_string()
 }
 
