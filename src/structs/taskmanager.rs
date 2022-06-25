@@ -1,5 +1,10 @@
 use super::task::Task;
 
+/**
+The task manager is the only one exposed.
+it manages a vec of tasks. Only one task can
+be active at a time. Starting a task will wtop all other tasks
+**/
 #[derive(Debug, PartialEq)]
 struct TaskManager {
     tasks: Vec<Task>,
