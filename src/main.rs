@@ -10,7 +10,7 @@ fn main() {
     // let k = t0.elapsed() + Duration::from_secs(1);
     // println!("{:?}", k);
 
-    let mut task1 = Task::new();
+    let mut task1 = Task::new("adasdfasfd");
     std::thread::sleep(Duration::new(1, 0));
     println!("task1: {:?} - expected: 1", task1.elapsed_time());
     std::thread::sleep(Duration::new(1, 0));

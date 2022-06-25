@@ -16,6 +16,7 @@ pub enum TaskStatus {
 pub struct Task {
     last_start_time: TaskStatus,
     logged_time: SecType,
+    name: String,
 }
 
 impl From<TaskStatus> for Duration {
@@ -24,6 +25,12 @@ impl From<TaskStatus> for Duration {
             TaskStatus::Running(time0) => time0.elapsed(),
             TaskStatus::Idle => Duration::new(0, 0),
         }
+    }
+}
+
+impl From<&str> for Task {
+    fn from(name: &str) -> Self {
+        Task::new(name)
     }
 }
 
@@ -37,10 +44,11 @@ impl TaskStatus {
 }
 
 impl Task {
-    pub fn new() -> Self {
+    pub fn new(name: &str) -> Self {
         Self {
             last_start_time: TaskStatus::Running(Instant::now()),
             logged_time: 0,
+            name: name.to_string(),
         }
     }
 
@@ -72,7 +80,7 @@ mod test {
         let pause_secs = 1;
         let pause = Duration::from_secs(pause_secs);
 
-        let mut task = Task::new();
+        let mut task = Task::new("asdf");
         assert_eq!(task.elapsed_time(), 0);
 
         std::thread::sleep(pause);
@@ -105,9 +113,9 @@ mod test {
 
     #[test]
     fn timing_multiple_tasks() {
-        let task0 = Task::new();
-        let task1 = Task::new();
-        let task2 = Task::new();
+        let task0 = Task::new("sdasdf");
+        let task1 = Task::new("sdasdf");
+        let task2 = Task::new("sdasdf");
 
         let pause_secs = 1;
         let pause = Duration::from_secs(pause_secs);
@@ -127,5 +135,11 @@ mod test {
         assert_eq!(task0.elapsed_time(), pause_secs * 2);
         assert_eq!(task1.elapsed_time(), pause_secs * 2);
         assert_eq!(task2.elapsed_time(), pause_secs * 2);
+    }
+
+    #[test]
+    fn task_from_str() {
+        let task = Task::from("taskname");
+        assert_eq!("taskname", task.name);
     }
 }
