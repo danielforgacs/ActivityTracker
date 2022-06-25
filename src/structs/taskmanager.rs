@@ -43,5 +43,8 @@ mod test {
         tm.new_task(task_name);
         assert_eq!(tm.tasks.len(), 1);
         assert_eq!(tm.tasks[0].name(), task_name);
+        assert_eq!(tm.tasks[0].elapsed_time(), 0);
+        std::thread::sleep(std::time::Duration::from_secs(1));
+        assert_eq!(tm.tasks[0].elapsed_time(), 1);
     }
 }
