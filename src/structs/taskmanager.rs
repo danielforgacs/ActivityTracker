@@ -49,7 +49,13 @@ impl TaskManager {
     pub fn times(&self) -> String {
         self.tasks
             .iter()
-            .map(|t| t.time_text())
+            .map(|t| {
+                if t.is_active() {
+                    format!("> {}", t.time_text())
+                } else {
+                    format!("  {}", t.time_text())
+                }
+            })
             .collect::<Vec<String>>()
             .join("\n")
     }

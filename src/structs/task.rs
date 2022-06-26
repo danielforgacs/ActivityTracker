@@ -66,6 +66,14 @@ impl Task {
         let (hours, mins) = secs_to_time(self.elapsed_time());
         format!("{:>20}: {}h:{:02}m", self.name, hours, mins)
     }
+
+    pub fn is_active(&self) -> bool {
+        if self.last_start_time == TaskStatus::Idle {
+            false
+        } else {
+            true
+        }
+    }
 }
 
 fn secs_to_time(secs: SecType) -> (u8, u8) {
