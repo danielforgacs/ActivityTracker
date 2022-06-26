@@ -1,8 +1,9 @@
 use std::time::{Instant, Duration, SystemTime, UNIX_EPOCH};
+use serde::Serialize;
 
 type SecType = u64;
 
-#[derive(Clone, Copy, PartialEq, Debug)]
+#[derive(Clone, Copy, PartialEq, Debug, Serialize)]
 pub enum TaskStatus {
     StartedAt(SecType),
     Idle,
@@ -13,7 +14,7 @@ pub enum TaskStatus {
 /// The time spent on the task is stored as logged time.
 /// Crearing the task acts just like starting the timer
 /// on an existing task.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize)]
 pub struct Task {
     last_start_time: TaskStatus,
     logged_time: SecType,
