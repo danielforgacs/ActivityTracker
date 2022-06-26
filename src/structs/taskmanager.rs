@@ -32,12 +32,14 @@ impl TaskManager {
         }
     }
 
-    pub fn stop(&mut self, name: &str) {
+    pub fn stop(&mut self, name: &str) -> bool {
         for task in self.tasks.iter_mut() {
             if task.name() == name {
                 task.stop();
+                return true;
             }
         }
+        false
     }
 
     fn task_names(&self) -> Vec<String> {
