@@ -1,11 +1,13 @@
 use super::task::Task;
+use serde::{Deserialize, Serialize};
+// use serde_json::Result;
 
 /**
 The task manager is the only struct one exposed. It manages a vec of tasks.
 Only one task can be active at a time. Running tasks are exclusive, starting
 a task will stop all other tasks.
 **/
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize)]
 pub struct TaskManager {
     tasks: Vec<Task>,
 }
@@ -53,6 +55,11 @@ impl TaskManager {
             .collect::<Vec<String>>()
             .join("\n")
     }
+}
+
+fn serialize_taskmanager(taskmanager: &TaskManager) -> String {
+    // serde_json::to_string(&taskmanager)
+    "".to_string()
 }
 
 
@@ -143,5 +150,11 @@ mod test {
         tm.activate("a");
         tm.activate("a");
         assert_eq!(tm.task_names(), vec!["a"]);
+    }
+
+    #[test]
+    fn serialising_task_manager() {
+        let tm = TaskManager::new();
+        assert_eq!(serialize_taskmanager(&tm), "[]");
     }
 }
