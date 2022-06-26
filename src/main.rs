@@ -2,7 +2,7 @@ mod api_views;
 mod structs;
 
 use actix_web::{App, HttpServer, HttpRequest, get};
-use actix_web::web::{Path, Data};
+use actix_web::web::{self, Path, Data};
 use structs::taskmanager::TaskManager;
 use api_views::views::*;
 use std::sync::Mutex;
@@ -17,8 +17,11 @@ async fn main() -> std::io::Result<()>{
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
-            .service(create_task)
-            .service(times)
+            .service(
+                web::scope("/api")
+                    .service(create_task)
+                    .service(times)
+            )
     })
     .bind((ADDRESS, PORT))?
     .workers(4)
