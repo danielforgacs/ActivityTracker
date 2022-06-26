@@ -3,25 +3,26 @@ mod structs;
 
 use actix_web::{App, HttpServer, HttpRequest, get};
 use actix_web::web::{self, Path, Data};
-use structs::taskmanager::TaskManager;
+use structs::taskmanager::{TaskManager, taskmanager_as_string};
 use api_views::views::*;
 use std::sync::Mutex;
 use clap;
 
-const VERSION: &str = "0.1.0";
+const VERSION: &str = "2022.6.26";
 const ABOUT: &str = r#"
 Web app to track time spent on activities.
 
-endpoint:
+base endpoint:
     http://127.0.0.1:<PORT>/api/
 
 default port is 8000.
 
-views:
-    activate/{name}     starts tracking a task. If the task doesn't exist it
-                        will be created. All other tasks will be stopped,
-                        only one task can be active at a time.
-    times               returns times tracked for all tasks.
+api endpoints:
+    start/{name}        starts tracking an activity. If it doesn't exist it
+                        will be created. All other activities will be stopped,
+                        only one activity can be active at a time.
+    stop/{name}         stops the activity with the {name}.
+    times               returns times tracked for all activities.
 "#;
 const ADDRESS: &str = "127.0.0.1";
 const PORT: &str = "8000";
@@ -49,7 +50,8 @@ async fn main() -> std::io::Result<()>{
             .app_data(Data::clone(&data))
             .service(
                 web::scope("/api")
-                    .service(create_task)
+                    .service(start_activity)
+                    .service(stop_activity)
                     .service(times)
             )
     })
