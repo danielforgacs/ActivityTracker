@@ -4,7 +4,7 @@ type SecType = u64;
 
 #[derive(Clone, Copy, PartialEq, Debug)]
 pub enum TaskStatus {
-    StartedAt(Instant),
+    StartedAt(SecType),
     Idle,
 }
 
@@ -20,15 +20,6 @@ pub struct Task {
     name: String,
 }
 
-impl From<TaskStatus> for Duration {
-    fn from(item: TaskStatus) -> Self {
-        match item {
-            TaskStatus::StartedAt(time0) => time0.elapsed(),
-            TaskStatus::Idle => Duration::new(0, 0),
-        }
-    }
-}
-
 impl From<&str> for Task {
     fn from(name: &str) -> Self {
         Task::new(name)
@@ -38,7 +29,7 @@ impl From<&str> for Task {
 impl TaskStatus {
     fn as_sec(&self) -> SecType {
         match self {
-            TaskStatus::StartedAt(time0) => time0.elapsed().as_secs(),
+            TaskStatus::StartedAt(time0) => elapsed_since(*time0),
             TaskStatus::Idle => 0,
         }
     }
@@ -47,7 +38,7 @@ impl TaskStatus {
 impl Task {
     pub fn new(name: &str) -> Self {
         Self {
-            last_start_time: TaskStatus::StartedAt(Instant::now()),
+            last_start_time: TaskStatus::StartedAt(systime()),
             logged_time: 0,
             name: name.to_string(),
         }
@@ -59,7 +50,7 @@ impl Task {
 
     pub fn start(&mut self) {
         self.logged_time += self.last_start_time.as_sec();
-        self.last_start_time = TaskStatus::StartedAt(Instant::now());
+        self.last_start_time = TaskStatus::StartedAt(systime());
     }
 
     pub fn stop(&mut self) {
