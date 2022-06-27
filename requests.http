@@ -1,0 +1,12 @@
+# check all activities
+GET http://localhost:8000/api/times
+
+###
+
+# create an activity
+GET http://localhost:8000/api/start/something
+
+###
+
+# create an activity
+GET http://localhost:8000/api/start/meeting
