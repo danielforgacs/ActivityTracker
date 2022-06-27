@@ -7,7 +7,7 @@ use structs::taskmanager::{TaskManager, taskmanager_as_string};
 use api_views::views::*;
 use std::sync::Mutex;
 
-const VERSION: &str = "2022.6.26";
+const VERSION: &str = "2022.6.27";
 const ABOUT: &str = r#"
 Web app to track time spent on activities.
 
@@ -17,10 +17,10 @@ base endpoint:
 default port is 8000.
 
 api endpoints:
-    start/{name}        starts tracking an activity. If it doesn't exist it
+    /{name}/start       starts tracking an activity. If it doesn't exist it
                         will be created. All other activities will be stopped,
                         only one activity can be active at a time.
-    stop/{name}         stops the activity with the {name}.
+    /{name}/stop        stops the activity with the {name}.
     times               returns times tracked for all activities.
 "#;
 const ADDRESS: &str = "127.0.0.1";
