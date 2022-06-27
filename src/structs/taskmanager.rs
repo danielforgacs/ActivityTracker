@@ -103,6 +103,7 @@ impl Serialize for TaskManager {
         state.serialize_field("tasks", &self.tasks)?;
         state.serialize_field("start_time", &self.start_time)?;
         state.serialize_field("total_time:", &total_time)?;
+        state.serialize_field("display:", &self.times())?;
         state.end()
     }
 }
