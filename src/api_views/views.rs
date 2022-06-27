@@ -32,6 +32,6 @@ pub async fn stop_activity(name: Path<String>, req: HttpRequest) -> HttpResponse
 pub async fn times(req: HttpRequest) -> Result<impl Responder> {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let tm = data.lock().unwrap().clone();
-    println!("{}", taskmanager_as_string(&tm));
+    println!("{}", &tm.times());
     Ok(Json(tm))
 }
