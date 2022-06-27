@@ -3,7 +3,7 @@ mod structs;
 
 use actix_web::{App, HttpServer};
 use actix_web::web::{self, Data};
-use structs::taskmanager::{TaskManager, taskmanager_as_string};
+use structs::taskmanager::{TaskManager};
 use api_views::views::*;
 use std::sync::Mutex;
 

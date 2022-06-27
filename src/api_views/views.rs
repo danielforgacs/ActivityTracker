@@ -1,4 +1,4 @@
-use crate::{TaskManager, taskmanager_as_string};
+use crate::{TaskManager};
 use actix_web::{HttpRequest, get, HttpResponse, Result, Responder};
 use actix_web::web::{Path, Data, Json};
 use std::sync::Mutex;

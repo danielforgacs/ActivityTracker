@@ -1,6 +1,6 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use serde::Serialize;
-use chrono::{DateTime, Local};
+use chrono::{Local};
 
 pub type SecType = u64;
 

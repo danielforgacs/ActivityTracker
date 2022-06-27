@@ -1,6 +1,5 @@
 use super::task::*;
 use serde::Serialize;
-use serde_json;
 use chrono::{DateTime, Local};
 use serde::ser::{Serializer, SerializeStruct};
 
@@ -108,9 +107,6 @@ impl Serialize for TaskManager {
     }
 }
 
-pub fn taskmanager_as_string(tm: &TaskManager) -> String {
-    serde_json::to_string_pretty(tm).unwrap()
-}
 
 
 
