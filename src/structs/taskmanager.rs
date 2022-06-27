@@ -1,6 +1,7 @@
 use super::task::*;
 use serde::Serialize;
 use serde_json;
+use chrono::{DateTime, Local};
 
 /**
 The task manager is the only struct one exposed. It manages a vec of tasks.
@@ -15,9 +16,10 @@ pub struct TaskManager {
 
 impl TaskManager {
     pub fn new() -> Self {
+        let now: DateTime<Local> = Local::now();
         Self {
             tasks: Vec::new(),
-            start_time: format!("start time: {}", systime()),
+            start_time: format!("start time: {}", now),
         }
     }
 
