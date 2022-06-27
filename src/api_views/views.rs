@@ -4,7 +4,7 @@ use actix_web::web::{Path, Data};
 use crate::{TaskManager, taskmanager_as_string};
 use std::sync::Mutex;
 
-#[get("start/{name}")]
+#[get("{name}/start")]
 pub async fn start_activity(name: Path<String>, req: HttpRequest) -> String {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
@@ -12,7 +12,7 @@ pub async fn start_activity(name: Path<String>, req: HttpRequest) -> String {
     format!("activated task: {} Ok.", name)
 }
 
-#[get("stop/{name}")]
+#[get("{name}/stop")]
 pub async fn stop_activity(name: Path<String>, req: HttpRequest) -> String {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
