@@ -69,11 +69,7 @@ impl Task {
     }
 
     pub fn is_active(&self) -> bool {
-        if self.last_start_time == TaskStatus::Idle {
-            false
-        } else {
-            true
-        }
+        self.last_start_time != TaskStatus::Idle
     }
 }
 
