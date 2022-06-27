@@ -14,7 +14,7 @@ pub enum TaskStatus {
 /// The time spent on the task is stored as logged time.
 /// Crearing the task acts just like starting the timer
 /// on an existing task.
-#[derive(Debug, PartialEq, Serialize)]
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Task {
     last_start_time: TaskStatus,
     logged_time: SecType,

@@ -8,7 +8,7 @@ The task manager is the only struct one exposed. It manages a vec of tasks.
 Only one task can be active at a time. Running tasks are exclusive, starting
 a task will stop all other tasks.
 **/
-#[derive(Debug, PartialEq, Serialize)]
+#[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct TaskManager {
     tasks: Vec<Task>,
     start_time: String,
