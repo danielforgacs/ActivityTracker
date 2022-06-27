@@ -1,5 +1,6 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use serde::Serialize;
+use chrono::{DateTime, Local};
 
 pub type SecType = u64;
 
@@ -16,6 +17,7 @@ pub enum TaskStatus {
 /// on an existing task.
 #[derive(Debug, PartialEq, Serialize, Clone)]
 pub struct Task {
+    added_at: String,
     last_start_time: TaskStatus,
     logged_time: SecType,
     name: String,
@@ -39,6 +41,7 @@ impl TaskStatus {
 impl Task {
     pub fn new(name: &str) -> Self {
         Self {
+            added_at: format!("{}", Local::now()),
             last_start_time: TaskStatus::StartedAt(systime()),
             logged_time: 0,
             name: name.to_string(),
