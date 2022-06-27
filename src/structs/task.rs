@@ -1,4 +1,4 @@
-use std::time::{Instant, Duration, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use serde::Serialize;
 
 pub type SecType = u64;

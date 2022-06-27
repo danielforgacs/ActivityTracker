@@ -1,4 +1,4 @@
-use actix_web::{App, HttpServer, HttpRequest, get};
+use actix_web::{HttpRequest, get};
 use actix_web::web::{Path, Data};
 
 use crate::{TaskManager, taskmanager_as_string};
