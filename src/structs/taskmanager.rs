@@ -1,4 +1,4 @@
-use super::task::Task;
+use super::task::*;
 use serde::Serialize;
 use serde_json;
 
@@ -10,11 +10,15 @@ a task will stop all other tasks.
 #[derive(Debug, PartialEq, Serialize)]
 pub struct TaskManager {
     tasks: Vec<Task>,
+    start_time: String,
 }
 
 impl TaskManager {
     pub fn new() -> Self {
-        Self { tasks: Vec::new() }
+        Self {
+            tasks: Vec::new(),
+            start_time: format!("start time: {}", systime()),
+        }
     }
 
     pub fn activate(&mut self, name: &str) {
@@ -51,7 +55,17 @@ impl TaskManager {
     }
 
     pub fn times(&self) -> String {
-        self.tasks
+        let mut result = self.start_time.to_owned();
+        let total_activity_time: SecType = self.tasks
+            .iter()
+            .map(|t| t.elapsed_time())
+            .sum();
+        let (hours, minutes) = secs_to_time(total_activity_time);
+        result.push_str(
+            &format!("\ntotal acivity time: {:02}h:{:02}m\n\n", hours, minutes)
+        );
+        result.push_str(
+            &self.tasks
             .iter()
             .map(|t| {
                 if t.is_active() {
@@ -62,6 +76,9 @@ impl TaskManager {
             })
             .collect::<Vec<String>>()
             .join("\n")
+        );
+        result.push('\n');
+        result
     }
 }
 
