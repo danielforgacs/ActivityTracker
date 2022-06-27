@@ -3,7 +3,7 @@ use actix_web::{HttpRequest, get, HttpResponse, Result, Responder};
 use actix_web::web::{Path, Data, Json};
 use std::sync::Mutex;
 
-#[get("{name}/start")]
+#[get("start/{name}")]
 pub async fn start_activity(name: Path<String>, req: HttpRequest) -> HttpResponse {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
@@ -14,7 +14,7 @@ pub async fn start_activity(name: Path<String>, req: HttpRequest) -> HttpRespons
         )
 }
 
-#[get("{name}/stop")]
+#[get("stop/{name}")]
 pub async fn stop_activity(name: Path<String>, req: HttpRequest) -> HttpResponse {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
