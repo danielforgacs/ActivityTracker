@@ -2,13 +2,14 @@ use super::task::*;
 use serde::Serialize;
 use serde_json;
 use chrono::{DateTime, Local};
+use serde::ser::{Serializer, SerializeStruct};
 
 /**
 The task manager is the only struct one exposed. It manages a vec of tasks.
 Only one task can be active at a time. Running tasks are exclusive, starting
 a task will stop all other tasks.
 **/
-#[derive(Debug, PartialEq, Serialize, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct TaskManager {
     tasks: Vec<Task>,
     start_time: String,
@@ -81,6 +82,28 @@ impl TaskManager {
         );
         result.push('\n');
         result
+    }
+
+    fn total_time(&self) -> SecType {
+        self.tasks
+            .iter()
+            .map(|t| t.elapsed_time())
+            .sum()
+    }
+}
+
+impl Serialize for TaskManager {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let (hours, mins) = secs_to_time(self.total_time());
+        let total_time = format!("{}h:{:02}m", hours, mins);
+        let mut state = serializer.serialize_struct("Taskmanager", 3)?;
+        state.serialize_field("tasks", &self.tasks)?;
+        state.serialize_field("start_time", &self.start_time)?;
+        state.serialize_field("total_time:", &total_time)?;
+        state.end()
     }
 }
 
