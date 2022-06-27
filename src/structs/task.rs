@@ -1,7 +1,7 @@
-use std::time::{Instant, Duration, SystemTime, UNIX_EPOCH};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use serde::Serialize;
 
-type SecType = u64;
+pub type SecType = u64;
 
 #[derive(Clone, Copy, PartialEq, Debug, Serialize)]
 pub enum TaskStatus {
@@ -69,21 +69,17 @@ impl Task {
     }
 
     pub fn is_active(&self) -> bool {
-        if self.last_start_time == TaskStatus::Idle {
-            false
-        } else {
-            true
-        }
+        self.last_start_time != TaskStatus::Idle
     }
 }
 
-fn secs_to_time(secs: SecType) -> (u8, u8) {
+pub fn secs_to_time(secs: SecType) -> (u8, u8) {
     let hours = secs / (60 * 60);
     let minutes = (secs % (60 * 60)) / 60;
     (hours as u8, minutes as u8)
 }
 
-fn systime() -> SecType {
+pub fn systime() -> SecType {
     SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
 }
 

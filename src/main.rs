@@ -1,12 +1,11 @@
 mod api_views;
 mod structs;
 
-use actix_web::{App, HttpServer, HttpRequest, get};
-use actix_web::web::{self, Path, Data};
+use actix_web::{App, HttpServer};
+use actix_web::web::{self, Data};
 use structs::taskmanager::{TaskManager, taskmanager_as_string};
 use api_views::views::*;
 use std::sync::Mutex;
-use clap;
 
 const VERSION: &str = "2022.6.26";
 const ABOUT: &str = r#"
