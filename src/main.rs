@@ -7,7 +7,7 @@ use structs::taskmanager::{TaskManager};
 use api_views::views::*;
 use std::sync::Mutex;
 
-const VERSION: &str = "2022.6.27";
+const VERSION: &str = "2022.6.28";
 const ABOUT: &str = r#"
 Web app to track time spent on activities.
 
