@@ -103,12 +103,12 @@ pub fn systime() -> SecType {
     SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
 }
 
-fn elapsed_secs(t0: SecType, t1: SecType) -> SecType {
-    Duration::from_secs(t1 - t0).as_secs()
+fn elapsed_secs(t_start: SecType, t_end: SecType) -> SecType {
+    Duration::from_secs(t_end - t_start).as_secs()
 }
 
-fn elapsed_since(t0: SecType) -> SecType {
-    elapsed_secs(t0, systime())
+fn elapsed_since(t_start: SecType) -> SecType {
+    elapsed_secs(t_start, systime())
 }
 
 
@@ -184,7 +184,7 @@ mod test {
 
     #[test]
     fn task_from_str() {
-        let task = Activity::from("taskname");
+        let task = Activity::new("taskname");
         assert_eq!("taskname", task.name);
     }
 
