@@ -47,8 +47,6 @@ impl Serialize for Activity {
         where
             S: serde::Serializer
     {
-        let (hours, mins) = secs_to_hours_minutes(self.logged_secs);
-        let total_time = format!("{}h:{:02}m", hours, mins);
         // This value seems to be unused in serde.
         let number_of_fields = 255;
         let mut state = serializer.serialize_struct("Task", number_of_fields)?;
@@ -56,7 +54,9 @@ impl Serialize for Activity {
         state.serialize_field("status", &self.status)?;
         state.serialize_field("logged_secs", &self.logged_secs)?;
         state.serialize_field("name", &self.name)?;
-        state.serialize_field("logged_time_pretty", &total_time)?;
+        let (hours, mins) = secs_to_hours_minutes(self.secs_since_creation());
+        let all_time_pretty = format!("{}h:{:02}m", hours, mins);
+        state.serialize_field("all_time_pretty", &all_time_pretty)?;
         state.end()
     }
 }
@@ -224,8 +224,8 @@ mod test {
         let task = Activity::new("task");
         assert!(serde_json::to_string(&task).unwrap().contains("added_at"));
         assert!(serde_json::to_string(&task).unwrap().contains("status"));
-        assert!(serde_json::to_string(&task).unwrap().contains("logged_time"));
+        assert!(serde_json::to_string(&task).unwrap().contains("logged_secs"));
         assert!(serde_json::to_string(&task).unwrap().contains("name"));
-        assert!(serde_json::to_string(&task).unwrap().contains("logged_time_pretty"));
+        assert!(serde_json::to_string(&task).unwrap().contains("all_time_pretty"));
     }
 }
