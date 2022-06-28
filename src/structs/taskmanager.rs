@@ -1,32 +1,31 @@
 use super::task::*;
 use serde::Serialize;
-use chrono::{DateTime, Local};
+use chrono::{Local};
 use serde::ser::{Serializer, SerializeStruct};
 
-/**
-The task manager is the only struct one exposed. It manages a vec of tasks.
-Only one task can be active at a time. Running tasks are exclusive, starting
-a task will stop all other tasks.
-**/
+/// The task manager is the only struct one exposed.
+/// It manages a vec of tasks.
+/// Only one task can be active at a time.
+/// Running tasks are exclusive, starting a task will stop all other tasks.
 #[derive(Debug, PartialEq, Clone)]
 pub struct TaskManager {
-    tasks: Vec<Task>,
+    tasks: Vec<Activity>,
+    /// pretty system time timestamp for when the taskmanager started
     start_time: String,
 }
 
 impl TaskManager {
     pub fn new() -> Self {
-        let now: DateTime<Local> = Local::now();
         Self {
             tasks: Vec::new(),
-            start_time: format!("start time: {}", now),
+            start_time: format!("{}", Local::now()),
         }
     }
 
     pub fn activate(&mut self, name: &str) {
         if !self.task_exists(name) {
             self.tasks.push(
-                Task::from(name)
+                Activity::new(name)
             );
         }
         for task in self.tasks.iter_mut() {
@@ -35,6 +34,12 @@ impl TaskManager {
             } else {
                 task.stop();
             }
+        }
+    }
+
+    pub fn stop_all(&mut self) {
+        for task in self.tasks.iter_mut() {
+            task.stop();
         }
     }
 
@@ -57,12 +62,12 @@ impl TaskManager {
     }
 
     pub fn times(&self) -> String {
-        let mut result = self.start_time.to_owned();
+        let mut result = format!("start time: {}", self.start_time.to_owned());
         let total_activity_time: SecType = self.tasks
             .iter()
-            .map(|t| t.elapsed_time())
+            .map(|t| t.secs_since_creation())
             .sum();
-        let (hours, minutes) = secs_to_time(total_activity_time);
+        let (hours, minutes) = secs_to_hours_minutes(total_activity_time);
         result.push_str(
             &format!("\ntotal acivity time: {:02}h:{:02}m\n\n", hours, minutes)
         );
@@ -86,7 +91,7 @@ impl TaskManager {
     fn total_time(&self) -> SecType {
         self.tasks
             .iter()
-            .map(|t| t.elapsed_time())
+            .map(|t| t.secs_since_creation())
             .sum()
     }
 }
@@ -96,7 +101,7 @@ impl Serialize for TaskManager {
     where
         S: Serializer,
     {
-        let (hours, mins) = secs_to_time(self.total_time());
+        let (hours, mins) = secs_to_hours_minutes(self.total_time());
         let total_time = format!("{}h:{:02}m", hours, mins);
         let mut state = serializer.serialize_struct("Taskmanager", 3)?;
         state.serialize_field("tasks", &self.tasks)?;
@@ -127,24 +132,24 @@ mod test {
         tm.activate(task_name);
         assert_eq!(tm.tasks.len(), 1);
         assert_eq!(tm.tasks[0].name(), task_name);
-        assert_eq!(tm.tasks[0].elapsed_time(), 0);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 0);
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         tm.stop(task_name);
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         tm.activate(task_name);
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.tasks[0].elapsed_time(), 3);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 3);
     }
 
     #[test]
@@ -154,32 +159,32 @@ mod test {
         let mut tm = TaskManager::new();
         tm.activate(task_1);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
         tm.activate(task_2);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 1);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 1);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 2);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 3);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 3);
         tm.activate(task_2);
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 3);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 3);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 4);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 4);
         tm.activate(task_1);
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 4);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 4);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
-        assert_eq!(tm.tasks[1].elapsed_time(), 4);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 4);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 3);
-        assert_eq!(tm.tasks[1].elapsed_time(), 4);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 3);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 4);
     }
 
     fn pause() {
