@@ -91,12 +91,13 @@ impl Activity {
         self.status = Status::Idle;
     }
 
-    pub fn elapsed_time(&self) -> SecType {
+    /// all logged secs plus tha latest active time secs if any.
+    pub fn secs_since_creation(&self) -> SecType {
         self.logged_secs + self.status.to_elapsed_secs()
     }
 
     pub fn time_text(&self) -> String {
-        let (hours, mins) = secs_to_time(self.elapsed_time());
+        let (hours, mins) = secs_to_time(self.secs_since_creation());
         format!("{:>45}: {}h:{:02}m", self.name, hours, mins)
     }
 
@@ -138,34 +139,34 @@ mod test {
         let pause = Duration::from_secs(pause_secs);
 
         let mut task = Activity::new("asdf");
-        assert_eq!(task.elapsed_time(), 0);
+        assert_eq!(task.secs_since_creation(), 0);
 
         std::thread::sleep(pause);
-        assert_eq!(task.elapsed_time(), pause_secs * 1);
-        assert_eq!(task.elapsed_time(), pause_secs * 1);
-        assert_eq!(task.elapsed_time(), pause_secs * 1);
-        assert_eq!(task.elapsed_time(), pause_secs * 1);
+        assert_eq!(task.secs_since_creation(), pause_secs * 1);
+        assert_eq!(task.secs_since_creation(), pause_secs * 1);
+        assert_eq!(task.secs_since_creation(), pause_secs * 1);
+        assert_eq!(task.secs_since_creation(), pause_secs * 1);
 
         std::thread::sleep(pause);
-        assert_eq!(task.elapsed_time(), pause_secs * 2);
+        assert_eq!(task.secs_since_creation(), pause_secs * 2);
 
         std::thread::sleep(pause);
-        assert_eq!(task.elapsed_time(), pause_secs * 3);
+        assert_eq!(task.secs_since_creation(), pause_secs * 3);
 
         task.stop();
 
         std::thread::sleep(pause);
-        assert_eq!(task.elapsed_time(), pause_secs * 3);
+        assert_eq!(task.secs_since_creation(), pause_secs * 3);
 
         std::thread::sleep(pause);
-        assert_eq!(task.elapsed_time(), pause_secs * 3);
+        assert_eq!(task.secs_since_creation(), pause_secs * 3);
         task.start();
 
         std::thread::sleep(pause);
-        assert_eq!(task.elapsed_time(), pause_secs * 4);
+        assert_eq!(task.secs_since_creation(), pause_secs * 4);
 
         std::thread::sleep(pause);
-        assert_eq!(task.elapsed_time(), pause_secs * 5);
+        assert_eq!(task.secs_since_creation(), pause_secs * 5);
     }
 
     #[test]
@@ -177,21 +178,21 @@ mod test {
         let pause_secs = 1;
         let pause = Duration::from_secs(pause_secs);
 
-        assert_eq!(task0.elapsed_time(), pause_secs * 0);
-        assert_eq!(task1.elapsed_time(), pause_secs * 0);
-        assert_eq!(task2.elapsed_time(), pause_secs * 0);
+        assert_eq!(task0.secs_since_creation(), pause_secs * 0);
+        assert_eq!(task1.secs_since_creation(), pause_secs * 0);
+        assert_eq!(task2.secs_since_creation(), pause_secs * 0);
 
         sleep(pause);
 
-        assert_eq!(task0.elapsed_time(), pause_secs * 1);
-        assert_eq!(task1.elapsed_time(), pause_secs * 1);
-        assert_eq!(task2.elapsed_time(), pause_secs * 1);
+        assert_eq!(task0.secs_since_creation(), pause_secs * 1);
+        assert_eq!(task1.secs_since_creation(), pause_secs * 1);
+        assert_eq!(task2.secs_since_creation(), pause_secs * 1);
 
         sleep(pause);
 
-        assert_eq!(task0.elapsed_time(), pause_secs * 2);
-        assert_eq!(task1.elapsed_time(), pause_secs * 2);
-        assert_eq!(task2.elapsed_time(), pause_secs * 2);
+        assert_eq!(task0.secs_since_creation(), pause_secs * 2);
+        assert_eq!(task1.secs_since_creation(), pause_secs * 2);
+        assert_eq!(task2.secs_since_creation(), pause_secs * 2);
     }
 
     #[test]

@@ -59,7 +59,7 @@ impl TaskManager {
         let mut result = format!("start time: {}", self.start_time.to_owned());
         let total_activity_time: SecType = self.tasks
             .iter()
-            .map(|t| t.elapsed_time())
+            .map(|t| t.secs_since_creation())
             .sum();
         let (hours, minutes) = secs_to_time(total_activity_time);
         result.push_str(
@@ -85,7 +85,7 @@ impl TaskManager {
     fn total_time(&self) -> SecType {
         self.tasks
             .iter()
-            .map(|t| t.elapsed_time())
+            .map(|t| t.secs_since_creation())
             .sum()
     }
 }
@@ -126,24 +126,24 @@ mod test {
         tm.activate(task_name);
         assert_eq!(tm.tasks.len(), 1);
         assert_eq!(tm.tasks[0].name(), task_name);
-        assert_eq!(tm.tasks[0].elapsed_time(), 0);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 0);
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         tm.stop(task_name);
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         tm.activate(task_name);
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.tasks[0].elapsed_time(), 3);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 3);
     }
 
     #[test]
@@ -153,32 +153,32 @@ mod test {
         let mut tm = TaskManager::new();
         tm.activate(task_1);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
         tm.activate(task_2);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 1);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 1);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 2);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 2);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 3);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 3);
         tm.activate(task_2);
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 3);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 3);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 4);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 4);
         tm.activate(task_1);
-        assert_eq!(tm.tasks[0].elapsed_time(), 1);
-        assert_eq!(tm.tasks[1].elapsed_time(), 4);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 1);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 4);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 2);
-        assert_eq!(tm.tasks[1].elapsed_time(), 4);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 2);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 4);
         pause();
-        assert_eq!(tm.tasks[0].elapsed_time(), 3);
-        assert_eq!(tm.tasks[1].elapsed_time(), 4);
+        assert_eq!(tm.tasks[0].secs_since_creation(), 3);
+        assert_eq!(tm.tasks[1].secs_since_creation(), 4);
     }
 
     fn pause() {
