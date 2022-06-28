@@ -22,7 +22,7 @@ pub struct Activity {
     /// when the activity is stopped all the the duration
     /// between the last start and the stopping time
     /// is added here.
-    logged_time: SecType,
+    logged_secs: SecType,
     name: String,
 }
 
@@ -46,14 +46,14 @@ impl Serialize for Activity {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
         where
             S: serde::Serializer {
-                let (hours, mins) = secs_to_time(self.logged_time);
+                let (hours, mins) = secs_to_time(self.logged_secs);
                 let total_time = format!("{}h:{:02}m", hours, mins);
                 // This value seems to be unused in serde.
                 let number_of_fields = 255;
                 let mut state = serializer.serialize_struct("Task", number_of_fields)?;
                 state.serialize_field("added_at", &self.added_at)?;
                 state.serialize_field("last_start_time", &self.last_start_time)?;
-                state.serialize_field("logged_time", &self.logged_time)?;
+                state.serialize_field("logged_time", &self.logged_secs)?;
                 state.serialize_field("name", &self.name)?;
                 state.serialize_field("logged_time_pretty", &total_time)?;
                 state.end()
@@ -65,7 +65,7 @@ impl Activity {
         Self {
             added_at: format!("{}", Local::now()),
             last_start_time: Status::ActiveSince(systime()),
-            logged_time: 0,
+            logged_secs: 0,
             name: name.to_string(),
         }
     }
@@ -75,17 +75,17 @@ impl Activity {
     }
 
     pub fn start(&mut self) {
-        self.logged_time += self.last_start_time.as_sec();
+        self.logged_secs += self.last_start_time.as_sec();
         self.last_start_time = Status::ActiveSince(systime());
     }
 
     pub fn stop(&mut self) {
-        self.logged_time += self.last_start_time.as_sec();
+        self.logged_secs += self.last_start_time.as_sec();
         self.last_start_time = Status::Idle;
     }
 
     pub fn elapsed_time(&self) -> SecType {
-        self.logged_time + self.last_start_time.as_sec()
+        self.logged_secs + self.last_start_time.as_sec()
     }
 
     pub fn time_text(&self) -> String {
