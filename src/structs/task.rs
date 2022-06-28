@@ -18,8 +18,15 @@ pub enum TaskStatus {
 /// on an existing task.
 #[derive(Debug, PartialEq, Clone)]
 pub struct Task {
+    /// timestamp for when the activity is created
     added_at: String,
+    /// timespamp for when the activitiy was last activated.
+    /// This can be either TaskStatus::Idle when the task is stopped
+    /// or TaskStatus::StartedAt when it's running.
     last_start_time: TaskStatus,
+    /// when the activity is stopped all the the duration
+    /// between the last start and the stopping time
+    /// is added here.
     logged_time: SecType,
     name: String,
 }
