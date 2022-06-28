@@ -1,5 +1,6 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use serde::Serialize;
+use serde::{Serialize};
+use serde::ser::{SerializeStruct, Serializer};
 use chrono::{Local};
 
 pub type SecType = u64;
@@ -15,7 +16,7 @@ pub enum TaskStatus {
 /// The time spent on the task is stored as logged time.
 /// Crearing the task acts just like starting the timer
 /// on an existing task.
-#[derive(Debug, PartialEq, Serialize, Clone)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Task {
     added_at: String,
     last_start_time: TaskStatus,
@@ -35,6 +36,22 @@ impl TaskStatus {
             TaskStatus::StartedAt(time0) => elapsed_since(*time0),
             TaskStatus::Idle => 0,
         }
+    }
+}
+
+impl Serialize for Task {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where
+            S: serde::Serializer {
+                let (hours, mins) = secs_to_time(self.logged_time);
+                let total_time = format!("{}h:{:02}m", hours, mins);
+                let mut state = serializer.serialize_struct("Task", 1)?;
+                state.serialize_field("added_at", &self.added_at)?;
+                state.serialize_field("last_start_time", &self.last_start_time)?;
+                state.serialize_field("logged_time", &self.logged_time)?;
+                state.serialize_field("name", &self.name)?;
+                state.serialize_field("logged_time_pretty", &total_time)?;
+                state.end()
     }
 }
 
@@ -101,6 +118,7 @@ fn elapsed_since(t0: SecType) -> SecType {
 mod test {
     use super::*;
     use std::thread::sleep;
+    use serde_json;
 
     #[test]
     fn task_timing_test() {
@@ -186,5 +204,15 @@ mod test {
         assert_eq!(secs_to_time(secs), (3, 0));
         let secs: SecType = 60 * 60 * 3 + 60;
         assert_eq!(secs_to_time(secs), (3, 1));
+    }
+
+    #[test]
+    fn custom_task_serializer() {
+        let task = Task::new("task");
+        assert!(serde_json::to_string(&task).unwrap().contains("added_at"));
+        assert!(serde_json::to_string(&task).unwrap().contains("last_start_time"));
+        assert!(serde_json::to_string(&task).unwrap().contains("logged_time"));
+        assert!(serde_json::to_string(&task).unwrap().contains("name"));
+        assert!(serde_json::to_string(&task).unwrap().contains("logged_time_pretty"));
     }
 }
