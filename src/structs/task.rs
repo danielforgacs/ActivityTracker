@@ -47,7 +47,7 @@ impl Serialize for Activity {
         where
             S: serde::Serializer
     {
-        let (hours, mins) = secs_to_time(self.logged_secs);
+        let (hours, mins) = secs_to_hours_minutes(self.logged_secs);
         let total_time = format!("{}h:{:02}m", hours, mins);
         // This value seems to be unused in serde.
         let number_of_fields = 255;
@@ -97,7 +97,7 @@ impl Activity {
     }
 
     pub fn time_text(&self) -> String {
-        let (hours, mins) = secs_to_time(self.secs_since_creation());
+        let (hours, mins) = secs_to_hours_minutes(self.secs_since_creation());
         format!("{:>45}: {}h:{:02}m", self.name, hours, mins)
     }
 
@@ -106,7 +106,7 @@ impl Activity {
     }
 }
 
-pub fn secs_to_time(secs: SecType) -> (u8, u8) {
+pub fn secs_to_hours_minutes(secs: SecType) -> (u8, u8) {
     let hours = secs / (60 * 60);
     let minutes = (secs % (60 * 60)) / 60;
     (hours as u8, minutes as u8)
@@ -204,19 +204,19 @@ mod test {
     #[test]
     fn human_readable_seconds() {
         let secs: SecType = 1;
-        assert_eq!(secs_to_time(secs), (0, 0));
+        assert_eq!(secs_to_hours_minutes(secs), (0, 0));
         let secs: SecType = 60;
-        assert_eq!(secs_to_time(secs), (0, 1));
+        assert_eq!(secs_to_hours_minutes(secs), (0, 1));
         let secs: SecType = 61;
-        assert_eq!(secs_to_time(secs), (0, 1));
+        assert_eq!(secs_to_hours_minutes(secs), (0, 1));
         let secs: SecType = 60 * 10;
-        assert_eq!(secs_to_time(secs), (0, 10));
+        assert_eq!(secs_to_hours_minutes(secs), (0, 10));
         let secs: SecType = 60 * 60;
-        assert_eq!(secs_to_time(secs), (1, 0));
+        assert_eq!(secs_to_hours_minutes(secs), (1, 0));
         let secs: SecType = 60 * 60 * 3;
-        assert_eq!(secs_to_time(secs), (3, 0));
+        assert_eq!(secs_to_hours_minutes(secs), (3, 0));
         let secs: SecType = 60 * 60 * 3 + 60;
-        assert_eq!(secs_to_time(secs), (3, 1));
+        assert_eq!(secs_to_hours_minutes(secs), (3, 1));
     }
 
     #[test]

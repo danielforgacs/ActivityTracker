@@ -61,7 +61,7 @@ impl TaskManager {
             .iter()
             .map(|t| t.secs_since_creation())
             .sum();
-        let (hours, minutes) = secs_to_time(total_activity_time);
+        let (hours, minutes) = secs_to_hours_minutes(total_activity_time);
         result.push_str(
             &format!("\ntotal acivity time: {:02}h:{:02}m\n\n", hours, minutes)
         );
@@ -95,7 +95,7 @@ impl Serialize for TaskManager {
     where
         S: Serializer,
     {
-        let (hours, mins) = secs_to_time(self.total_time());
+        let (hours, mins) = secs_to_hours_minutes(self.total_time());
         let total_time = format!("{}h:{:02}m", hours, mins);
         let mut state = serializer.serialize_struct("Taskmanager", 3)?;
         state.serialize_field("tasks", &self.tasks)?;
