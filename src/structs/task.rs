@@ -27,6 +27,10 @@ pub struct Activity {
 }
 
 impl Status {
+    /// calculates elapsed time for queries.
+    /// If the task has been idle, the elapsed time is 0.
+    /// Active tasks elapsed time is the diff from
+    /// since the task is active to the queries system time.
     fn as_sec(&self) -> SecType {
         match self {
             Status::ActiveSince(time0) => elapsed_since(*time0),

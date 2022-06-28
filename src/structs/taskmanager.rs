@@ -1,6 +1,6 @@
 use super::task::*;
 use serde::Serialize;
-use chrono::{DateTime, Local};
+use chrono::{Local};
 use serde::ser::{Serializer, SerializeStruct};
 
 /// The task manager is the only struct one exposed.
@@ -16,10 +16,9 @@ pub struct TaskManager {
 
 impl TaskManager {
     pub fn new() -> Self {
-        let now: DateTime<Local> = Local::now();
         Self {
             tasks: Vec::new(),
-            start_time: format!("start time: {}", now),
+            start_time: format!("{}", Local::now()),
         }
     }
 
@@ -57,7 +56,7 @@ impl TaskManager {
     }
 
     pub fn times(&self) -> String {
-        let mut result = self.start_time.to_owned();
+        let mut result = format!("start time: {}", self.start_time.to_owned());
         let total_activity_time: SecType = self.tasks
             .iter()
             .map(|t| t.elapsed_time())
