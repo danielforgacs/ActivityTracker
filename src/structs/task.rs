@@ -45,18 +45,19 @@ impl Serialize for Activity {
     /// values, like pretty prints.
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
         where
-            S: serde::Serializer {
-                let (hours, mins) = secs_to_time(self.logged_secs);
-                let total_time = format!("{}h:{:02}m", hours, mins);
-                // This value seems to be unused in serde.
-                let number_of_fields = 255;
-                let mut state = serializer.serialize_struct("Task", number_of_fields)?;
-                state.serialize_field("added_at", &self.added_at)?;
-                state.serialize_field("last_start_time", &self.last_start_time)?;
-                state.serialize_field("logged_secs", &self.logged_secs)?;
-                state.serialize_field("name", &self.name)?;
-                state.serialize_field("logged_time_pretty", &total_time)?;
-                state.end()
+            S: serde::Serializer
+    {
+        let (hours, mins) = secs_to_time(self.logged_secs);
+        let total_time = format!("{}h:{:02}m", hours, mins);
+        // This value seems to be unused in serde.
+        let number_of_fields = 255;
+        let mut state = serializer.serialize_struct("Task", number_of_fields)?;
+        state.serialize_field("added_at", &self.added_at)?;
+        state.serialize_field("last_start_time", &self.last_start_time)?;
+        state.serialize_field("logged_secs", &self.logged_secs)?;
+        state.serialize_field("name", &self.name)?;
+        state.serialize_field("logged_time_pretty", &total_time)?;
+        state.end()
     }
 }
 
