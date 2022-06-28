@@ -26,12 +26,6 @@ pub struct Activity {
     name: String,
 }
 
-impl From<&str> for Activity {
-    fn from(name: &str) -> Self {
-        Activity::new(name)
-    }
-}
-
 impl Status {
     fn as_sec(&self) -> SecType {
         match self {

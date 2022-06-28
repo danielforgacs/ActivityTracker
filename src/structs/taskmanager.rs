@@ -3,14 +3,14 @@ use serde::Serialize;
 use chrono::{DateTime, Local};
 use serde::ser::{Serializer, SerializeStruct};
 
-/**
-The task manager is the only struct one exposed. It manages a vec of tasks.
-Only one task can be active at a time. Running tasks are exclusive, starting
-a task will stop all other tasks.
-**/
+/// The task manager is the only struct one exposed.
+/// It manages a vec of tasks.
+/// Only one task can be active at a time.
+/// Running tasks are exclusive, starting a task will stop all other tasks.
 #[derive(Debug, PartialEq, Clone)]
 pub struct TaskManager {
     tasks: Vec<Activity>,
+    /// pretty system time timestamp for when the taskmanager started
     start_time: String,
 }
 
@@ -26,7 +26,7 @@ impl TaskManager {
     pub fn activate(&mut self, name: &str) {
         if !self.task_exists(name) {
             self.tasks.push(
-                Activity::from(name)
+                Activity::new(name)
             );
         }
         for task in self.tasks.iter_mut() {
