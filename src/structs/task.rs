@@ -1,21 +1,16 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use serde::{Serialize};
-use serde::ser::{SerializeStruct, Serializer};
+use serde::ser::{SerializeStruct};
 use chrono::{Local};
 
 pub type SecType = u64;
 
 #[derive(Clone, Copy, PartialEq, Debug, Serialize)]
 pub enum Status {
-    StartedAt(SecType),
+    ActiveSince(SecType),
     Idle,
 }
 
-/// Tasks have names and elapsed time. The last start time
-/// is used to calculate the time spent on the task.
-/// The time spent on the task is stored as logged time.
-/// Crearing the task acts just like starting the timer
-/// on an existing task.
 #[derive(Debug, PartialEq, Clone)]
 pub struct Activity {
     /// timestamp for when the activity is created
@@ -40,7 +35,7 @@ impl From<&str> for Activity {
 impl Status {
     fn as_sec(&self) -> SecType {
         match self {
-            Status::StartedAt(time0) => elapsed_since(*time0),
+            Status::ActiveSince(time0) => elapsed_since(*time0),
             Status::Idle => 0,
         }
     }
@@ -66,7 +61,7 @@ impl Activity {
     pub fn new(name: &str) -> Self {
         Self {
             added_at: format!("{}", Local::now()),
-            last_start_time: Status::StartedAt(systime()),
+            last_start_time: Status::ActiveSince(systime()),
             logged_time: 0,
             name: name.to_string(),
         }
@@ -78,7 +73,7 @@ impl Activity {
 
     pub fn start(&mut self) {
         self.logged_time += self.last_start_time.as_sec();
-        self.last_start_time = Status::StartedAt(systime());
+        self.last_start_time = Status::ActiveSince(systime());
     }
 
     pub fn stop(&mut self) {
