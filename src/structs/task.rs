@@ -45,7 +45,9 @@ impl Serialize for Activity {
             S: serde::Serializer {
                 let (hours, mins) = secs_to_time(self.logged_time);
                 let total_time = format!("{}h:{:02}m", hours, mins);
-                let mut state = serializer.serialize_struct("Task", 1)?;
+                // This value seems to be unused in serde.
+                let number_of_fields = 5;
+                let mut state = serializer.serialize_struct("Task", number_of_fields)?;
                 state.serialize_field("added_at", &self.added_at)?;
                 state.serialize_field("last_start_time", &self.last_start_time)?;
                 state.serialize_field("logged_time", &self.logged_time)?;
