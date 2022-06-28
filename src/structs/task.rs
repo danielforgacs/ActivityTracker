@@ -6,7 +6,7 @@ use chrono::{Local};
 pub type SecType = u64;
 
 #[derive(Clone, Copy, PartialEq, Debug, Serialize)]
-pub enum TaskStatus {
+pub enum Status {
     StartedAt(SecType),
     Idle,
 }
@@ -23,7 +23,7 @@ pub struct Activity {
     /// timespamp for when the activitiy was last activated.
     /// This can be either TaskStatus::Idle when the task is stopped
     /// or TaskStatus::StartedAt when it's running.
-    last_start_time: TaskStatus,
+    last_start_time: Status,
     /// when the activity is stopped all the the duration
     /// between the last start and the stopping time
     /// is added here.
@@ -37,11 +37,11 @@ impl From<&str> for Activity {
     }
 }
 
-impl TaskStatus {
+impl Status {
     fn as_sec(&self) -> SecType {
         match self {
-            TaskStatus::StartedAt(time0) => elapsed_since(*time0),
-            TaskStatus::Idle => 0,
+            Status::StartedAt(time0) => elapsed_since(*time0),
+            Status::Idle => 0,
         }
     }
 }
@@ -66,7 +66,7 @@ impl Activity {
     pub fn new(name: &str) -> Self {
         Self {
             added_at: format!("{}", Local::now()),
-            last_start_time: TaskStatus::StartedAt(systime()),
+            last_start_time: Status::StartedAt(systime()),
             logged_time: 0,
             name: name.to_string(),
         }
@@ -78,12 +78,12 @@ impl Activity {
 
     pub fn start(&mut self) {
         self.logged_time += self.last_start_time.as_sec();
-        self.last_start_time = TaskStatus::StartedAt(systime());
+        self.last_start_time = Status::StartedAt(systime());
     }
 
     pub fn stop(&mut self) {
         self.logged_time += self.last_start_time.as_sec();
-        self.last_start_time = TaskStatus::Idle;
+        self.last_start_time = Status::Idle;
     }
 
     pub fn elapsed_time(&self) -> SecType {
@@ -96,7 +96,7 @@ impl Activity {
     }
 
     pub fn is_active(&self) -> bool {
-        self.last_start_time != TaskStatus::Idle
+        self.last_start_time != Status::Idle
     }
 }
 
