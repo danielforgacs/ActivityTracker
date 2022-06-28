@@ -28,6 +28,14 @@ pub async fn stop_activity(name: Path<String>, req: HttpRequest) -> HttpResponse
         )
 }
 
+#[get("stopall")]
+pub async fn stop_all(req: HttpRequest) -> impl Responder {
+    let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
+    let mut tm = data.lock().unwrap();
+    tm.stop_all();
+    "ok"
+}
+
 #[get("times")]
 pub async fn times(req: HttpRequest) -> Result<impl Responder> {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();

@@ -37,6 +37,12 @@ impl TaskManager {
         }
     }
 
+    pub fn stop_all(&mut self) {
+        for task in self.tasks.iter_mut() {
+            task.stop();
+        }
+    }
+
     pub fn stop(&mut self, name: &str) -> bool {
         for task in self.tasks.iter_mut() {
             if task.name() == name {

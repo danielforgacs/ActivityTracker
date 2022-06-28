@@ -1,15 +1,20 @@
-# check all activities
+# create / start an activity
+GET http://localhost:8888/api/start/1st_activity
+
+###
+
+# stop
+GET http://localhost:8888/api/stop/1st_activity
+
+###
+
+# stop all
+GET http://localhost:8888/api/stopall
+
+###
+
+# check all activities json
 GET http://localhost:8888/api/times
-
-###
-
-# create an activity
-GET http://localhost:8888/api/start/something
-
-###
-
-# create an activity
-GET http://localhost:8888/api/start/meeting
 
 ###
 
