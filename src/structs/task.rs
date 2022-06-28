@@ -18,7 +18,7 @@ pub struct Activity {
     /// timespamp for when the activitiy was last activated.
     /// This can be either TaskStatus::Idle when the task is stopped
     /// or TaskStatus::StartedAt when it's running.
-    last_start_time: Status,
+    status: Status,
     /// when the activity is stopped all the the duration
     /// between the last start and the stopping time
     /// is added here.
@@ -53,7 +53,7 @@ impl Serialize for Activity {
         let number_of_fields = 255;
         let mut state = serializer.serialize_struct("Task", number_of_fields)?;
         state.serialize_field("added_at", &self.added_at)?;
-        state.serialize_field("last_start_time", &self.last_start_time)?;
+        state.serialize_field("status", &self.status)?;
         state.serialize_field("logged_secs", &self.logged_secs)?;
         state.serialize_field("name", &self.name)?;
         state.serialize_field("logged_time_pretty", &total_time)?;
@@ -65,7 +65,7 @@ impl Activity {
     pub fn new(name: &str) -> Self {
         Self {
             added_at: format!("{}", Local::now()),
-            last_start_time: Status::ActiveSince(systime()),
+            status: Status::ActiveSince(systime()),
             logged_secs: 0,
             name: name.to_string(),
         }
@@ -76,17 +76,17 @@ impl Activity {
     }
 
     pub fn start(&mut self) {
-        self.logged_secs += self.last_start_time.to_elapsed_secs();
-        self.last_start_time = Status::ActiveSince(systime());
+        self.logged_secs += self.status.to_elapsed_secs();
+        self.status = Status::ActiveSince(systime());
     }
 
     pub fn stop(&mut self) {
-        self.logged_secs += self.last_start_time.to_elapsed_secs();
-        self.last_start_time = Status::Idle;
+        self.logged_secs += self.status.to_elapsed_secs();
+        self.status = Status::Idle;
     }
 
     pub fn elapsed_time(&self) -> SecType {
-        self.logged_secs + self.last_start_time.to_elapsed_secs()
+        self.logged_secs + self.status.to_elapsed_secs()
     }
 
     pub fn time_text(&self) -> String {
@@ -95,7 +95,7 @@ impl Activity {
     }
 
     pub fn is_active(&self) -> bool {
-        self.last_start_time != Status::Idle
+        self.status != Status::Idle
     }
 }
 
@@ -216,7 +216,7 @@ mod test {
     fn custom_task_serializer() {
         let task = Activity::new("task");
         assert!(serde_json::to_string(&task).unwrap().contains("added_at"));
-        assert!(serde_json::to_string(&task).unwrap().contains("last_start_time"));
+        assert!(serde_json::to_string(&task).unwrap().contains("status"));
         assert!(serde_json::to_string(&task).unwrap().contains("logged_time"));
         assert!(serde_json::to_string(&task).unwrap().contains("name"));
         assert!(serde_json::to_string(&task).unwrap().contains("logged_time_pretty"));
