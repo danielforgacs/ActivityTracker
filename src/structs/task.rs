@@ -53,7 +53,7 @@ impl Serialize for Activity {
                 let mut state = serializer.serialize_struct("Task", number_of_fields)?;
                 state.serialize_field("added_at", &self.added_at)?;
                 state.serialize_field("last_start_time", &self.last_start_time)?;
-                state.serialize_field("logged_time", &self.logged_secs)?;
+                state.serialize_field("logged_secs", &self.logged_secs)?;
                 state.serialize_field("name", &self.name)?;
                 state.serialize_field("logged_time_pretty", &total_time)?;
                 state.end()
