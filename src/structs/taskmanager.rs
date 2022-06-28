@@ -10,7 +10,7 @@ a task will stop all other tasks.
 **/
 #[derive(Debug, PartialEq, Clone)]
 pub struct TaskManager {
-    tasks: Vec<Task>,
+    tasks: Vec<Activity>,
     start_time: String,
 }
 
@@ -26,7 +26,7 @@ impl TaskManager {
     pub fn activate(&mut self, name: &str) {
         if !self.task_exists(name) {
             self.tasks.push(
-                Task::from(name)
+                Activity::from(name)
             );
         }
         for task in self.tasks.iter_mut() {

@@ -17,7 +17,7 @@ pub enum TaskStatus {
 /// Crearing the task acts just like starting the timer
 /// on an existing task.
 #[derive(Debug, PartialEq, Clone)]
-pub struct Task {
+pub struct Activity {
     /// timestamp for when the activity is created
     added_at: String,
     /// timespamp for when the activitiy was last activated.
@@ -31,9 +31,9 @@ pub struct Task {
     name: String,
 }
 
-impl From<&str> for Task {
+impl From<&str> for Activity {
     fn from(name: &str) -> Self {
-        Task::new(name)
+        Activity::new(name)
     }
 }
 
@@ -46,7 +46,7 @@ impl TaskStatus {
     }
 }
 
-impl Serialize for Task {
+impl Serialize for Activity {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
         where
             S: serde::Serializer {
@@ -62,7 +62,7 @@ impl Serialize for Task {
     }
 }
 
-impl Task {
+impl Activity {
     pub fn new(name: &str) -> Self {
         Self {
             added_at: format!("{}", Local::now()),
@@ -132,7 +132,7 @@ mod test {
         let pause_secs = 1;
         let pause = Duration::from_secs(pause_secs);
 
-        let mut task = Task::new("asdf");
+        let mut task = Activity::new("asdf");
         assert_eq!(task.elapsed_time(), 0);
 
         std::thread::sleep(pause);
@@ -165,9 +165,9 @@ mod test {
 
     #[test]
     fn timing_multiple_tasks() {
-        let task0 = Task::new("sdasdf");
-        let task1 = Task::new("sdasdf");
-        let task2 = Task::new("sdasdf");
+        let task0 = Activity::new("sdasdf");
+        let task1 = Activity::new("sdasdf");
+        let task2 = Activity::new("sdasdf");
 
         let pause_secs = 1;
         let pause = Duration::from_secs(pause_secs);
@@ -191,7 +191,7 @@ mod test {
 
     #[test]
     fn task_from_str() {
-        let task = Task::from("taskname");
+        let task = Activity::from("taskname");
         assert_eq!("taskname", task.name);
     }
 
@@ -215,7 +215,7 @@ mod test {
 
     #[test]
     fn custom_task_serializer() {
-        let task = Task::new("task");
+        let task = Activity::new("task");
         assert!(serde_json::to_string(&task).unwrap().contains("added_at"));
         assert!(serde_json::to_string(&task).unwrap().contains("last_start_time"));
         assert!(serde_json::to_string(&task).unwrap().contains("logged_time"));
