@@ -68,7 +68,7 @@ impl Task {
 
     pub fn time_text(&self) -> String {
         let (hours, mins) = secs_to_time(self.elapsed_time());
-        format!("{:>20}: {}h:{:02}m", self.name, hours, mins)
+        format!("{:>45}: {}h:{:02}m", self.name, hours, mins)
     }
 
     pub fn is_active(&self) -> bool {
