@@ -65,7 +65,7 @@ impl Activity {
     pub fn new(name: &str) -> Self {
         Self {
             added_at: format!("{}", Local::now()),
-            status: Status::ActiveSince(systime()),
+            status: Status::ActiveSince(sys_now_secs()),
             logged_secs: 0,
             name: name.to_string(),
         }
@@ -83,7 +83,7 @@ impl Activity {
         // activated again the start time stamp will change,
         // but the logged time remains the same!
         self.logged_secs += self.status.to_elapsed_secs();
-        self.status = Status::ActiveSince(systime());
+        self.status = Status::ActiveSince(sys_now_secs());
     }
 
     pub fn stop(&mut self) {
@@ -112,7 +112,7 @@ pub fn secs_to_hours_minutes(secs: SecType) -> (u8, u8) {
     (hours as u8, minutes as u8)
 }
 
-pub fn systime() -> SecType {
+pub fn sys_now_secs() -> SecType {
     SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
 }
 
@@ -121,7 +121,7 @@ fn elapsed_secs(t_start: SecType, t_end: SecType) -> SecType {
 }
 
 fn elapsed_since(t_start: SecType) -> SecType {
-    elapsed_secs(t_start, systime())
+    elapsed_secs(t_start, sys_now_secs())
 }
 
 
