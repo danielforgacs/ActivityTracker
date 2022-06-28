@@ -76,6 +76,12 @@ impl Activity {
     }
 
     pub fn start(&mut self) {
+        // on starting an activity the latest elapsed secs
+        // are added to the logged time. This needs to be
+        // done becouse the new stored status active since value.
+        // If this is not added and an active task is
+        // activated again the start time stamp will change,
+        // but the logged time remains the same!
         self.logged_secs += self.status.to_elapsed_secs();
         self.status = Status::ActiveSince(systime());
     }
