@@ -52,6 +52,7 @@ async fn main() -> std::io::Result<()>{
                     .service(start_activity)
                     .service(stop_activity)
                     .service(times)
+                    .service(pretty_print)
             )
     })
     .bind((ADDRESS, port))?

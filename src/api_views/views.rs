@@ -34,3 +34,11 @@ pub async fn times(req: HttpRequest) -> Result<impl Responder> {
     let tm = data.lock().unwrap().clone();
     Ok(Json(tm))
 }
+
+#[get("pretty")]
+pub async fn pretty_print(req: HttpRequest) -> String {
+    let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
+    let tm = data.lock().unwrap();
+    println!("{}", &tm.times());
+    tm.times()
+}
