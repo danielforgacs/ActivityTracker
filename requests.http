@@ -1,22 +1,19 @@
-# create / start an activity
-GET http://localhost:8888/api/start/1st_activity
-
-###
-
-# stop
-GET http://localhost:8888/api/stop/1st_activity
-
-###
-
-# stop all
-GET http://localhost:8888/api/stopall
-
-###
-
-# check all activities json
-GET http://localhost:8888/api/times
-
-###
-
-# Pretty print
 GET http://localhost:8888/api/pretty
+###
+GET http://localhost:8888/api/times
+###
+GET http://localhost:8888/api/stopall
+###
+GET http://localhost:8888/api/start/1st_activity
+###
+GET http://localhost:8888/api/stop/1st_activity
+###
+GET http://localhost:8888/api/start/aaaaaa
+###
+GET http://localhost:8888/api/start/bbbbbb
+###
+GET http://localhost:8888/api/start/ccc___ccc___ccc
+###
+GET http://localhost:8888/api/start/dddd
+###
+GET http://localhost:8888/api/start/ffffffffff

@@ -11,14 +11,16 @@ use serde::ser::{Serializer, SerializeStruct};
 pub struct TaskManager {
     tasks: Vec<Activity>,
     /// pretty system time timestamp for when the taskmanager started
-    start_time: String,
+    start_time_pretty: String,
+    start_time: SecType,
 }
 
 impl TaskManager {
     pub fn new() -> Self {
         Self {
             tasks: Vec::new(),
-            start_time: format!("{}", Local::now()),
+            start_time_pretty: format!("{}", Local::now()),
+            start_time: sys_now_secs(),
         }
     }
 
@@ -62,15 +64,18 @@ impl TaskManager {
     }
 
     pub fn times(&self) -> String {
-        let mut result = format!("start time: {}", self.start_time.to_owned());
+        let mut result = format!("start time:         {}", self.start_time_pretty.to_owned());
+        let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
+        result.push_str(&format!("\nelapsed day:        {:02}h:{:02}m", hh, mm));
         let total_activity_time: SecType = self.tasks
             .iter()
             .map(|t| t.secs_since_creation())
             .sum();
         let (hours, minutes) = secs_to_hours_minutes(total_activity_time);
         result.push_str(
-            &format!("\ntotal acivity time: {:02}h:{:02}m\n\n", hours, minutes)
+            &format!("\ntotal acivity time: {:02}h:{:02}m", hours, minutes)
         );
+        result.push('\n');
         result.push_str(
             &self.tasks
             .iter()
@@ -105,8 +110,9 @@ impl Serialize for TaskManager {
         let total_time = format!("{}h:{:02}m", hours, mins);
         let mut state = serializer.serialize_struct("Taskmanager", 3)?;
         state.serialize_field("tasks", &self.tasks)?;
-        state.serialize_field("start_time", &self.start_time)?;
+        state.serialize_field("start_time_pretty", &self.start_time_pretty)?;
         state.serialize_field("total_time:", &total_time)?;
+        state.serialize_field("start_time:", &self.start_time)?;
         state.serialize_field("display:", &self.times())?;
         state.end()
     }
