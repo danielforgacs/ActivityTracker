@@ -116,11 +116,11 @@ pub fn sys_now_secs() -> SecType {
     SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
 }
 
-fn elapsed_secs(t_start: SecType, t_end: SecType) -> SecType {
+pub fn elapsed_secs(t_start: SecType, t_end: SecType) -> SecType {
     Duration::from_secs(t_end - t_start).as_secs()
 }
 
-fn elapsed_since(t_start: SecType) -> SecType {
+pub fn elapsed_since(t_start: SecType) -> SecType {
     elapsed_secs(t_start, sys_now_secs())
 }
 

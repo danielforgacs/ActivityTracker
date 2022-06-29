@@ -64,15 +64,18 @@ impl TaskManager {
     }
 
     pub fn times(&self) -> String {
-        let mut result = format!("start time: {}", self.start_time.to_owned());
+        let mut result = format!("start time:         {}", self.start_time_pretty.to_owned());
+        let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
+        result.push_str(&format!("\nelapsed day:        {:02}h:{:02}m", hh, mm));
         let total_activity_time: SecType = self.tasks
             .iter()
             .map(|t| t.secs_since_creation())
             .sum();
         let (hours, minutes) = secs_to_hours_minutes(total_activity_time);
         result.push_str(
-            &format!("\ntotal acivity time: {:02}h:{:02}m\n\n", hours, minutes)
+            &format!("\ntotal acivity time: {:02}h:{:02}m", hours, minutes)
         );
+        result.push('\n');
         result.push_str(
             &self.tasks
             .iter()
