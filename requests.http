@@ -2,11 +2,11 @@ GET http://localhost:8888/api/pretty
 ###
 GET http://localhost:8888/api/times
 ###
+GET http://localhost:8888/api/stopall
+###
 GET http://localhost:8888/api/start/1st_activity
 ###
 GET http://localhost:8888/api/stop/1st_activity
-###
-GET http://localhost:8888/api/stopall
 ###
 GET http://localhost:8888/api/start/aaaaaa
 ###
