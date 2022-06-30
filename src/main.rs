@@ -50,7 +50,6 @@ async fn main() -> std::io::Result<()>{
             .service(
                 web::scope("/api")
                     .service(start_activity)
-                    .service(stop_activity)
                     .service(stop_all)
                     .service(times)
                     .service(pretty_print)

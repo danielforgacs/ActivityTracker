@@ -45,16 +45,6 @@ impl TaskManager {
         }
     }
 
-    pub fn stop(&mut self, name: &str) -> bool {
-        for task in self.tasks.iter_mut() {
-            if task.name() == name {
-                task.stop();
-                return true;
-            }
-        }
-        false
-    }
-
     fn task_names(&self) -> Vec<String> {
         self.tasks.iter().map(|f| f.name()).collect::<Vec<String>>()
     }
@@ -146,7 +136,7 @@ mod test {
         std::thread::sleep(std::time::Duration::from_secs(1));
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
-        tm.stop(task_name);
+        tm.stop_all();
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));

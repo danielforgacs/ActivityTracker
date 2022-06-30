@@ -14,21 +14,7 @@ pub async fn start_activity(name: Path<String>, req: HttpRequest) -> HttpRespons
         )
 }
 
-#[get("stop/{name}")]
-pub async fn stop_activity(name: Path<String>, req: HttpRequest) -> HttpResponse {
-    let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
-    let mut tm = data.lock().unwrap();
-    HttpResponse::Ok()
-        .body(
-            if tm.stop(&name) {
-                format!("stopped task: {} Ok.", name)
-            } else {
-                format!("error. can't stop task: {}.", name)
-            }
-        )
-}
-
-#[get("stopall")]
+#[get("stop")]
 pub async fn stop_all(req: HttpRequest) -> impl Responder {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
