@@ -20,8 +20,9 @@ api endpoints:
     start/{name}        starts tracking an activity. If it doesn't exist it
                         will be created. All other activities will be stopped,
                         only one activity can be active at a time.
-    stop/{name}         stops the activity with the {name}.
-    times               returns times tracked for all activities.
+    stop                stops any activity.
+    times               returns the taskmanager as json.
+    pretty              return the taskmanager as formatted string.
 "#;
 const ADDRESS: &str = "127.0.0.1";
 const PORT: &str = "8000";
