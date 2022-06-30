@@ -24,7 +24,7 @@ impl TaskManager {
         }
     }
 
-    pub fn activate(&mut self, name: &str) {
+    pub fn start(&mut self, name: &str) {
         if !self.task_exists(name) {
             self.tasks.push(
                 Activity::new(name)
@@ -39,20 +39,10 @@ impl TaskManager {
         }
     }
 
-    pub fn stop_all(&mut self) {
-        for task in self.tasks.iter_mut() {
-            task.stop();
-        }
-    }
-
-    pub fn stop(&mut self, name: &str) -> bool {
-        for task in self.tasks.iter_mut() {
-            if task.name() == name {
-                task.stop();
-                return true;
-            }
-        }
-        false
+    pub fn stop(&mut self) {
+        self.tasks
+            .iter_mut()
+            .for_each(|t| t.stop());
     }
 
     fn task_names(&self) -> Vec<String> {
@@ -135,7 +125,7 @@ mod test {
     fn add_task() {
         let mut tm = TaskManager::new();
         let task_name = "task";
-        tm.activate(task_name);
+        tm.start(task_name);
         assert_eq!(tm.tasks.len(), 1);
         assert_eq!(tm.tasks[0].name(), task_name);
         assert_eq!(tm.tasks[0].secs_since_creation(), 0);
@@ -146,13 +136,13 @@ mod test {
         std::thread::sleep(std::time::Duration::from_secs(1));
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
-        tm.stop(task_name);
+        tm.stop();
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));
         std::thread::sleep(std::time::Duration::from_secs(1));
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
-        tm.activate(task_name);
+        tm.start(task_name);
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));
         assert_eq!(tm.tasks[0].secs_since_creation(), 3);
@@ -163,10 +153,10 @@ mod test {
         let task_1 = "alpha";
         let task_2 = "beta";
         let mut tm = TaskManager::new();
-        tm.activate(task_1);
+        tm.start(task_1);
         pause();
         assert_eq!(tm.tasks[0].secs_since_creation(), 1);
-        tm.activate(task_2);
+        tm.start(task_2);
         pause();
         assert_eq!(tm.tasks[0].secs_since_creation(), 1);
         assert_eq!(tm.tasks[1].secs_since_creation(), 1);
@@ -176,13 +166,13 @@ mod test {
         pause();
         assert_eq!(tm.tasks[0].secs_since_creation(), 1);
         assert_eq!(tm.tasks[1].secs_since_creation(), 3);
-        tm.activate(task_2);
+        tm.start(task_2);
         assert_eq!(tm.tasks[0].secs_since_creation(), 1);
         assert_eq!(tm.tasks[1].secs_since_creation(), 3);
         pause();
         assert_eq!(tm.tasks[0].secs_since_creation(), 1);
         assert_eq!(tm.tasks[1].secs_since_creation(), 4);
-        tm.activate(task_1);
+        tm.start(task_1);
         assert_eq!(tm.tasks[0].secs_since_creation(), 1);
         assert_eq!(tm.tasks[1].secs_since_creation(), 4);
         pause();
@@ -201,10 +191,10 @@ mod test {
     #[test]
     fn no_duplicate_task_names() {
         let mut tm = TaskManager::new();
-        tm.activate("a");
-        tm.activate("a");
-        tm.activate("a");
-        tm.activate("a");
+        tm.start("a");
+        tm.start("a");
+        tm.start("a");
+        tm.start("a");
         assert_eq!(tm.task_names(), vec!["a"]);
     }
 }

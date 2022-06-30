@@ -4,35 +4,21 @@ use actix_web::web::{Path, Data, Json};
 use std::sync::Mutex;
 
 #[get("start/{name}")]
-pub async fn start_activity(name: Path<String>, req: HttpRequest) -> HttpResponse {
+pub async fn start(name: Path<String>, req: HttpRequest) -> HttpResponse {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
-    tm.activate(&name);
+    tm.start(&name);
     HttpResponse::Ok()
         .body(
             format!("activated task: {} Ok.", name)
         )
 }
 
-#[get("stop/{name}")]
-pub async fn stop_activity(name: Path<String>, req: HttpRequest) -> HttpResponse {
+#[get("stop")]
+pub async fn stop(req: HttpRequest) -> impl Responder {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
-    HttpResponse::Ok()
-        .body(
-            if tm.stop(&name) {
-                format!("stopped task: {} Ok.", name)
-            } else {
-                format!("error. can't stop task: {}.", name)
-            }
-        )
-}
-
-#[get("stopall")]
-pub async fn stop_all(req: HttpRequest) -> impl Responder {
-    let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
-    let mut tm = data.lock().unwrap();
-    tm.stop_all();
+    tm.stop();
     "ok"
 }
 
@@ -44,7 +30,7 @@ pub async fn times(req: HttpRequest) -> Result<impl Responder> {
 }
 
 #[get("pretty")]
-pub async fn pretty_print(req: HttpRequest) -> String {
+pub async fn pretty(req: HttpRequest) -> String {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let tm = data.lock().unwrap();
     println!("{}", &tm.times());
