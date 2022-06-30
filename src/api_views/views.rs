@@ -4,10 +4,10 @@ use actix_web::web::{Path, Data, Json};
 use std::sync::Mutex;
 
 #[get("start/{name}")]
-pub async fn start_activity(name: Path<String>, req: HttpRequest) -> HttpResponse {
+pub async fn start(name: Path<String>, req: HttpRequest) -> HttpResponse {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
-    tm.activate(&name);
+    tm.start(&name);
     HttpResponse::Ok()
         .body(
             format!("activated task: {} Ok.", name)
@@ -15,7 +15,7 @@ pub async fn start_activity(name: Path<String>, req: HttpRequest) -> HttpRespons
 }
 
 #[get("stop")]
-pub async fn stop_all(req: HttpRequest) -> impl Responder {
+pub async fn stop(req: HttpRequest) -> impl Responder {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
     tm.stop();
@@ -30,7 +30,7 @@ pub async fn times(req: HttpRequest) -> Result<impl Responder> {
 }
 
 #[get("pretty")]
-pub async fn pretty_print(req: HttpRequest) -> String {
+pub async fn pretty(req: HttpRequest) -> String {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let tm = data.lock().unwrap();
     println!("{}", &tm.times());

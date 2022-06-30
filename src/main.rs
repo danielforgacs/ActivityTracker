@@ -49,10 +49,10 @@ async fn main() -> std::io::Result<()>{
             .app_data(Data::clone(&data))
             .service(
                 web::scope("/api")
-                    .service(start_activity)
-                    .service(stop_all)
+                    .service(start)
+                    .service(stop)
                     .service(times)
-                    .service(pretty_print)
+                    .service(pretty)
             )
     })
     .bind((ADDRESS, port))?
