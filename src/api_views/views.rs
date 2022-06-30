@@ -18,7 +18,7 @@ pub async fn start_activity(name: Path<String>, req: HttpRequest) -> HttpRespons
 pub async fn stop_all(req: HttpRequest) -> impl Responder {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
-    tm.stop_all();
+    tm.stop();
     "ok"
 }
 

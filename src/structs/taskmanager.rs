@@ -39,10 +39,10 @@ impl TaskManager {
         }
     }
 
-    pub fn stop_all(&mut self) {
-        for task in self.tasks.iter_mut() {
-            task.stop();
-        }
+    pub fn stop(&mut self) {
+        self.tasks
+            .iter_mut()
+            .for_each(|t| t.stop());
     }
 
     fn task_names(&self) -> Vec<String> {
@@ -136,7 +136,7 @@ mod test {
         std::thread::sleep(std::time::Duration::from_secs(1));
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
-        tm.stop_all();
+        tm.stop();
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         assert_eq!(tm.tasks[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));
