@@ -1,4 +1,4 @@
-use actix_web::{HttpRequest, get};
+use actix_web::{HttpRequest, get, HttpResponseBuilder, http, HttpResponse};
 
 const HTML_TMPL: &str = "
 <!DOCTYPE html>
@@ -18,7 +18,7 @@ const HTML_TMPL: &str = "
 ";
 
 #[get("/")]
-async fn index_view(req: HttpRequest) -> String {
-    // "ok".to_string()
-    HTML_TMPL.to_string()
+async fn index_view(req: HttpRequest) -> HttpResponse {
+    HttpResponse::Ok()
+        .body(HTML_TMPL)
 }

@@ -46,7 +46,8 @@ async fn main() -> std::io::Result<()>{
         .get_matches();
     let port: u16 = *matches.get_one("port").unwrap();
     let data = Data::new(Mutex::new(TaskManager::new()));
-    println!("serving at: http://{}:{}/api/times", ADDRESS, port);
+    println!("web: http://{}:{}/", ADDRESS, port);
+    println!("api: http://{}:{}/api/times", ADDRESS, port);
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
