@@ -12,6 +12,9 @@ const INDEX_TEMPLATE: &str = r#"
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
     <script>
         console.log("hey, how cool is this!")
+        fetch('api/times')
+            .then(response => response.json())
+            .then(data => console.log(data));
     </script>
 </head>
 <body>
