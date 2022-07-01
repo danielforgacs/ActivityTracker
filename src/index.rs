@@ -11,11 +11,25 @@ const INDEX_TEMPLATE: &str = r#"
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
     <script>
+        function builder(data) {
+            console.log("BUILDING")
+            console.log(data)
+            let body = document.body
+            body.innerHTML = ""
+            let main_div = document.createElement("div")
+            body.appendChild(main_div)
+            for (item in data) {
+                let div = document.createElement("div")
+                let text = document.createTextNode(item)
+                div.appendChild(text)
+                main_div.appendChild(div)
+            }
+        }
         setInterval(() => {
             fetch('api/times')
                 .then(response => response.json())
-                .then(data => console.log(data));
-        }, 1000);
+                .then(data => builder(data));
+        }, 2000);
     </script>
 </head>
 <body>
