@@ -1,6 +1,7 @@
 use actix_web::{HttpRequest, get, HttpResponseBuilder, http, HttpResponse};
+use tera::{Tera, Context};
 
-const HTML_TMPL: &str = "
+const INDEX_TEMPLATE: &str = "
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,13 +13,19 @@ const HTML_TMPL: &str = "
     <script src='main.js'></script>
 </head>
 <body>
-
+{{ message }}
 </body>
 </html>
 ";
 
 #[get("/")]
 async fn index_view(req: HttpRequest) -> HttpResponse {
+    let mut tera = Tera::default();
+    let template_name = "something-cool.html";
+    tera.add_raw_template(template_name, INDEX_TEMPLATE).unwrap();
+    let mut ctx = Context::new();
+    ctx.insert("message", "fokkin works");
+    let render = tera.render(template_name, &ctx).unwrap();
     HttpResponse::Ok()
-        .body(HTML_TMPL)
+        .body(render)
 }
