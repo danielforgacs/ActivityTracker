@@ -11,10 +11,11 @@ const INDEX_TEMPLATE: &str = r#"
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
     <script>
-        console.log("hey, how cool is this!")
-        fetch('api/times')
-            .then(response => response.json())
-            .then(data => console.log(data));
+        setInterval(() => {
+            fetch('api/times')
+                .then(response => response.json())
+                .then(data => console.log(data));
+        }, 1000);
     </script>
 </head>
 <body>
