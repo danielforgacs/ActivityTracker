@@ -1,11 +1,13 @@
 mod api_views;
 mod structs;
+mod index;
 
 use actix_web::{App, HttpServer};
 use actix_web::web::{self, Data};
 use structs::taskmanager::{TaskManager};
 use api_views::views::*;
 use std::sync::Mutex;
+use index::*;
 
 const VERSION: &str = "2022.6.30";
 const ABOUT: &str = r#"
@@ -48,6 +50,7 @@ async fn main() -> std::io::Result<()>{
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
+            .service(index_view)
             .service(
                 web::scope("/api")
                     .service(start)
