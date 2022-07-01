@@ -1,5 +1,7 @@
-use actix_web::{HttpRequest, get, HttpResponseBuilder, http, HttpResponse};
+use actix_web::{HttpRequest, get, HttpResponseBuilder, http, HttpResponse, web::Data};
+use std::sync::Mutex;
 use tera::{Tera, Context};
+use crate::TaskManager;
 
 const INDEX_TEMPLATE: &str = r#"
 <!DOCTYPE html>
@@ -12,16 +14,15 @@ const INDEX_TEMPLATE: &str = r#"
     <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
     <script>
         function builder(data) {
-            console.log("BUILDING")
-            console.log(data)
+            console.log(data.tasks)
             let body = document.body
             body.innerHTML = ""
             let main_div = document.createElement("div")
             body.appendChild(main_div)
-            for (item in data) {
+            for (item of data.tasks) {
                 let div = document.createElement("div")
-                let text = document.createTextNode(item)
-                div.appendChild(text)
+                div.appendChild(document.createTextNode(item.name))
+                div.appendChild(document.createTextNode(item.all_time_pretty))
                 main_div.appendChild(div)
             }
         }
@@ -33,19 +34,22 @@ const INDEX_TEMPLATE: &str = r#"
     </script>
 </head>
 <body>
-{{ message }}
 </body>
 </html>
 "#;
 
 #[get("/")]
 async fn index_view(req: HttpRequest) -> HttpResponse {
-    let mut tera = Tera::default();
-    let template_name = "something-cool.html";
-    tera.add_raw_template(template_name, INDEX_TEMPLATE).unwrap();
-    let mut ctx = Context::new();
-    ctx.insert("message", "Coming from Rust! Check the console!");
-    let render = tera.render(template_name, &ctx).unwrap();
+    // let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
+    // let mut tm = data.lock().unwrap();
+    // let mut tera = Tera::default();
+    // let template_name = "something-cool.html";
+    // tera.add_raw_template(template_name, INDEX_TEMPLATE).unwrap();
+    // let mut ctx = Context::new();
+    // ctx.insert("message", "Coming from Rust! Check the console!");
+    // ctx.insert("start_time", &tm.times());
+    // let render = tera.render(template_name, &ctx).unwrap();
     HttpResponse::Ok()
-        .body(render)
+        // .body(render)
+        .body(INDEX_TEMPLATE)
 }
