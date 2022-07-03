@@ -5,36 +5,70 @@ use crate::TaskManager;
 
 const INDEX_TEMPLATE: &str = r#"
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Page Title</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-    <script>
-        function builder(data) {
-            console.log(data.tasks)
-            let body = document.body
-            body.innerHTML = ""
-            let main_div = document.createElement("div")
-            body.appendChild(main_div)
-            for (item of data.tasks) {
-                let div = document.createElement("div")
-                div.appendChild(document.createTextNode(item.name))
-                div.appendChild(document.createTextNode(item.all_time_pretty))
-                main_div.appendChild(div)
-            }
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeTrack</title>
+    <style>
+        [active] {
+            background-color: green;
         }
-        setInterval(() => {
-            fetch('api/times')
-                .then(response => response.json())
-                .then(data => builder(data));
-        }, 2000);
-    </script>
+        [stopped] {
+            background-color: grey;
+        }
+    </style>
 </head>
 <body>
+    <div>
+        <div>
+            <table>
+                <tr>
+                    <td>time</td>
+                    <td>2022-07-02 00:14:45.053681369 +01:00</td>
+                </tr>
+                <tr>
+                    <td>elapsed day</td>
+                    <td>21h:37m</td>
+                </tr>
+                <tr>
+                    <td>total acivity time</td>
+                    <td>21h:36m</td>
+                </tr>
+            </table>
+        </div>
+        <div id="activities">
+        </div>
+    </div>
 </body>
+<script>
+    function builder(data) {
+        console.log(data.tasks)
+        let activities_div = document.getElementById('activities')
+        activities_div.innerHTML = ""
+        for (activity of data.tasks) {
+            let form = document.createElement("form")
+            form.action = "/api/start/some-activity"
+            form.method = "get"
+            let button = document.createElement("button")
+            button.textContent = activity.name + " - " + activity.all_time_pretty
+            if (activity.status == "Idle") {
+                button.setAttribute("stopped", "")
+            } else {
+                button.setAttribute("active", "")
+            }
+            form.appendChild(button)
+            activities_div.appendChild(form)
+        }
+    }
+    setInterval(() => {
+        fetch('api/times')
+        .then(response => response.json())
+        .then(data => builder(data));
+    }, 2000);
+
+</script>
 </html>
 "#;
 
