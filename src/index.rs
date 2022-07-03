@@ -38,36 +38,67 @@ const INDEX_TEMPLATE: &str = r#"
                 </tr>
             </table>
         </div>
+        <div>
+            <form id="create_form" onSubmit="return create_activity(event)">
+                <input type="text" name="new_name" id="new_name">
+                <input type="submit" value="create / activate">
+            </form>
+            <form onSubmit="event.preventDefault(); fetch('api/stop')">
+                <input type="submit" value="stop">
+            </form>
+        </div>
         <div id="activities">
         </div>
     </div>
 </body>
 <script>
+    function create_activity(event) {
+        event.preventDefault()
+        let name = event.target[0].value
+        fetch('api/start/'+name)
+        event.target[0].value = ''
+    }
+
+    function toggle_activity(event) {
+        // console.log(event)
+        console.log("SUBMITTER", event.submitter)
+        // console.log(event.target)
+        // console.log(event.target.childNodes[0])
+        // console.log(event.target.childNodes[0].activity_name)
+        // console.log("pressed: ", event.target[0].activity_name)
+        let name = event.submitter.getAttribute("activity_name")
+        console.log("event.submitter.activity_name:", name)
+        if (event.submitter.getAttribute("active") == "active") {
+            fetch('api/stop')
+        } else {
+            fetch('api/start/'+name)
+        }
+    }
+
     function builder(data) {
-        console.log(data.tasks)
         let activities_div = document.getElementById('activities')
         activities_div.innerHTML = ""
         for (activity of data.tasks) {
             let form = document.createElement("form")
-            form.action = "/api/start/some-activity"
-            form.method = "get"
+            form.setAttribute('onSubmit', 'event.preventDefault(); toggle_activity(event)')
             let button = document.createElement("button")
             button.textContent = activity.name + " - " + activity.all_time_pretty
+            button.setAttribute('activity_name', activity.name)
             if (activity.status == "Idle") {
-                button.setAttribute("stopped", "")
+                button.setAttribute("stopped", "stopped")
             } else {
-                button.setAttribute("active", "")
+                button.setAttribute("active", "active")
             }
             form.appendChild(button)
             activities_div.appendChild(form)
         }
     }
+
     setInterval(() => {
         fetch('api/times')
         .then(response => response.json())
         .then(data => builder(data));
     }, 2000);
-
 </script>
 </html>
 "#;
