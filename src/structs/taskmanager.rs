@@ -97,15 +97,15 @@ impl Serialize for TaskManager {
         S: Serializer,
     {
         let (hours, mins) = secs_to_hours_minutes(self.total_activity_time());
-        let total_time = format!("{}h:{:02}m", hours, mins);
+        let total_time = format!("{:02}h:{:02}m", hours, mins);
         let mut state = serializer.serialize_struct("Taskmanager", 3)?;
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
         let elapsed_day = &format!("{:02}h:{:02}m", hh, mm);
 
         state.serialize_field("tasks", &self.tasks)?;
         state.serialize_field("start_time_pretty", &self.start_time_pretty)?;
-        state.serialize_field("elapsed_day:", &elapsed_day)?;
-        state.serialize_field("total_activity_time:", &total_time)?;
+        state.serialize_field("elapsed_day", &elapsed_day)?;
+        state.serialize_field("total_activity_time", &total_time)?;
         state.serialize_field("start_time:", &self.start_time)?;
         state.serialize_field("display:", &self.times())?;
         state.end()
