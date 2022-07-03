@@ -1,7 +1,4 @@
-use actix_web::{HttpRequest, get, HttpResponseBuilder, http, HttpResponse, web::Data};
-use std::sync::Mutex;
-use tera::{Tera, Context};
-use crate::TaskManager;
+use actix_web::{get, HttpResponse};
 
 const INDEX_TEMPLATE: &str = r#"
 <!DOCTYPE html>
@@ -60,14 +57,7 @@ const INDEX_TEMPLATE: &str = r#"
     }
 
     function toggle_activity(event) {
-        // console.log(event)
-        console.log("SUBMITTER", event.submitter)
-        // console.log(event.target)
-        // console.log(event.target.childNodes[0])
-        // console.log(event.target.childNodes[0].activity_name)
-        // console.log("pressed: ", event.target[0].activity_name)
         let name = event.submitter.getAttribute("activity_name")
-        console.log("event.submitter.activity_name:", name)
         if (event.submitter.getAttribute("active") == "active") {
             fetch('api/stop')
         } else {
@@ -98,23 +88,13 @@ const INDEX_TEMPLATE: &str = r#"
         fetch('api/times')
         .then(response => response.json())
         .then(data => builder(data));
-    }, 2000);
+    }, 500);
 </script>
 </html>
 "#;
 
 #[get("/")]
-async fn index_view(req: HttpRequest) -> HttpResponse {
-    // let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
-    // let mut tm = data.lock().unwrap();
-    // let mut tera = Tera::default();
-    // let template_name = "something-cool.html";
-    // tera.add_raw_template(template_name, INDEX_TEMPLATE).unwrap();
-    // let mut ctx = Context::new();
-    // ctx.insert("message", "Coming from Rust! Check the console!");
-    // ctx.insert("start_time", &tm.times());
-    // let render = tera.render(template_name, &ctx).unwrap();
+async fn index_view() -> HttpResponse {
     HttpResponse::Ok()
-        // .body(render)
         .body(INDEX_TEMPLATE)
 }

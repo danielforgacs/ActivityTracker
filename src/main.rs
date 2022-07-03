@@ -1,13 +1,13 @@
 mod api_views;
 mod structs;
-mod index;
+mod client_views;
 
 use actix_web::{App, HttpServer};
 use actix_web::web::{self, Data};
 use structs::taskmanager::{TaskManager};
 use api_views::views::*;
 use std::sync::Mutex;
-use index::*;
+use client_views::index::*;
 
 const VERSION: &str = "2022.6.30";
 const ABOUT: &str = r#"
