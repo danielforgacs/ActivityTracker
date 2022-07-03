@@ -22,16 +22,16 @@ const INDEX_TEMPLATE: &str = r#"
         <div>
             <table>
                 <tr>
-                    <td>time</td>
-                    <td>2022-07-02 00:14:45.053681369 +01:00</td>
+                    <td>start time</td>
+                    <td id="start_time"></td>
                 </tr>
                 <tr>
                     <td>elapsed day</td>
-                    <td>21h:37m</td>
+                    <td id="elapsed_day"></td>
                 </tr>
                 <tr>
                     <td>total acivity time</td>
-                    <td>21h:36m</td>
+                    <td id="total_activity_time"></td>
                 </tr>
             </table>
         </div>
@@ -66,6 +66,10 @@ const INDEX_TEMPLATE: &str = r#"
     }
 
     function builder(data) {
+        console.log(data)
+        document.getElementById('start_time').innerHTML = data.start_time_pretty
+        document.getElementById('elapsed_day').innerHTML = data.elapsed_day
+        document.getElementById('total_activity_time').innerHTML = data.total_activity_time
         let activities_div = document.getElementById('activities')
         activities_div.innerHTML = ""
         for (activity of data.tasks) {
