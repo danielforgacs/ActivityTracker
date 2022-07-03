@@ -1,11 +1,13 @@
 mod api_views;
 mod structs;
+mod client_views;
 
 use actix_web::{App, HttpServer};
 use actix_web::web::{self, Data};
 use structs::taskmanager::{TaskManager};
 use api_views::views::*;
 use std::sync::Mutex;
+use client_views::index::*;
 
 const VERSION: &str = "2022.6.30";
 const ABOUT: &str = r#"
@@ -44,10 +46,12 @@ async fn main() -> std::io::Result<()>{
         .get_matches();
     let port: u16 = *matches.get_one("port").unwrap();
     let data = Data::new(Mutex::new(TaskManager::new()));
-    println!("serving at: http://{}:{}/api/times", ADDRESS, port);
+    println!("web: http://{}:{}/", ADDRESS, port);
+    println!("api: http://{}:{}/api/times", ADDRESS, port);
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
+            .service(index_view)
             .service(
                 web::scope("/api")
                     .service(start)
