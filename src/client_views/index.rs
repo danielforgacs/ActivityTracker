@@ -33,6 +33,10 @@ const INDEX_TEMPLATE: &str = r#"
                     <td>total acivity time</td>
                     <td id="total_activity_time"></td>
                 </tr>
+                <tr>
+                    <td>time diff</td>
+                    <td id="time_diff"></td>
+                </tr>
             </table>
         </div>
         <div>
@@ -70,6 +74,7 @@ const INDEX_TEMPLATE: &str = r#"
         document.getElementById('start_time').innerHTML = data.start_time_pretty
         document.getElementById('elapsed_day').innerHTML = data.elapsed_day
         document.getElementById('total_activity_time').innerHTML = data.total_activity_time
+        document.getElementById('time_diff').innerHTML = data.time_difference
         let activities_div = document.getElementById('activities')
         activities_div.innerHTML = ""
         for (activity of data.tasks) {
