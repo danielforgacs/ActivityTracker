@@ -40,7 +40,7 @@ const INDEX_TEMPLATE: &str = r#"
                 <input type="text" name="new_name" id="new_name">
                 <input type="submit" value="create / activate">
             </form>
-            <form onSubmit="event.preventDefault(); fetch('api/stop')">
+            <form onSubmit="event.preventDefault(); fetch('api/stop', {method: 'POST'})">
                 <input type="submit" value="stop">
             </form>
         </div>
@@ -52,16 +52,16 @@ const INDEX_TEMPLATE: &str = r#"
     function create_activity(event) {
         event.preventDefault()
         let name = event.target[0].value
-        fetch('api/start/'+name)
+        fetch('api/start/'+name, {method: "POST"})
         event.target[0].value = ''
     }
 
     function toggle_activity(event) {
         let name = event.submitter.getAttribute("activity_name")
         if (event.submitter.getAttribute("active") == "active") {
-            fetch('api/stop')
+            fetch('api/stop', {method: "POST"})
         } else {
-            fetch('api/start/'+name)
+            fetch('api/start/'+name, {method: "POST"})
         }
     }
 
