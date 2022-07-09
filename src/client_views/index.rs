@@ -33,6 +33,10 @@ const INDEX_TEMPLATE: &str = r#"
                     <td>total acivity time</td>
                     <td id="total_activity_time"></td>
                 </tr>
+                <tr>
+                    <td>time diff</td>
+                    <td id="time_diff"></td>
+                </tr>
             </table>
         </div>
         <div>
@@ -40,7 +44,7 @@ const INDEX_TEMPLATE: &str = r#"
                 <input type="text" name="new_name" id="new_name">
                 <input type="submit" value="create / activate">
             </form>
-            <form onSubmit="event.preventDefault(); fetch('api/stop')">
+            <form onSubmit="event.preventDefault(); fetch('api/stop', {method: 'POST'})">
                 <input type="submit" value="stop">
             </form>
         </div>
@@ -52,16 +56,16 @@ const INDEX_TEMPLATE: &str = r#"
     function create_activity(event) {
         event.preventDefault()
         let name = event.target[0].value
-        fetch('api/start/'+name)
+        fetch('api/start/'+name, {method: "POST"})
         event.target[0].value = ''
     }
 
     function toggle_activity(event) {
         let name = event.submitter.getAttribute("activity_name")
         if (event.submitter.getAttribute("active") == "active") {
-            fetch('api/stop')
+            fetch('api/stop', {method: "POST"})
         } else {
-            fetch('api/start/'+name)
+            fetch('api/start/'+name, {method: "POST"})
         }
     }
 
@@ -70,6 +74,7 @@ const INDEX_TEMPLATE: &str = r#"
         document.getElementById('start_time').innerHTML = data.start_time_pretty
         document.getElementById('elapsed_day').innerHTML = data.elapsed_day
         document.getElementById('total_activity_time').innerHTML = data.total_activity_time
+        document.getElementById('time_diff').innerHTML = data.time_difference
         let activities_div = document.getElementById('activities')
         activities_div.innerHTML = ""
         for (activity of data.tasks) {

@@ -1,9 +1,9 @@
 use crate::{TaskManager};
-use actix_web::{HttpRequest, get, HttpResponse, Result, Responder};
+use actix_web::{HttpRequest, get, post, HttpResponse, Result, Responder};
 use actix_web::web::{Path, Data, Json};
 use std::sync::Mutex;
 
-#[get("start/{name}")]
+#[post("start/{name}")]
 pub async fn start(name: Path<String>, req: HttpRequest) -> HttpResponse {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
@@ -14,7 +14,7 @@ pub async fn start(name: Path<String>, req: HttpRequest) -> HttpResponse {
         )
 }
 
-#[get("stop")]
+#[post("stop")]
 pub async fn stop(req: HttpRequest) -> impl Responder {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
