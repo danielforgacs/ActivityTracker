@@ -9,7 +9,7 @@ use api_views::views::*;
 use std::sync::Mutex;
 use client_views::index::*;
 
-const VERSION: &str = "2022.7.9";
+const VERSION: &str = "2022.7.10";
 const ABOUT: &str = r#"
 Web app to track time spent on activities.
 
