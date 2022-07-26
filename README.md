@@ -1,16 +1,16 @@
 ## Manual Task Time Tracker
 
-### persistent task storage format json
+Web app to track time spent on activities.
 
-[
-    {
-        "name": "alpha",
-        "logged_time": 180.0008453728,
-        "last_start_time": 12.09767876
-    },
-    {
-        "name": "alpha",
-        "logged_time": 180.0008453728,
-        "last_start_time": 12.09767876
-    }
-]
+base endpoint:
+    http://127.0.0.1:<PORT>/api/
+
+default port is 8000.
+
+api endpoints:
+    start/{name}        starts tracking an activity. If it doesn't exist it
+                        will be created. All other activities will be stopped,
+                        only one activity can be active at a time.
+    stop                stops any activity.
+    times               returns the taskmanager as json.
+    pretty              return the taskmanager as formatted string.
