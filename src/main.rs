@@ -9,31 +9,14 @@ use api_views::views::*;
 use std::sync::Mutex;
 use client_views::index::*;
 
-const VERSION: &str = "2022.7.10";
-const ABOUT: &str = r#"
-Web app to track time spent on activities.
-
-base endpoint:
-    http://127.0.0.1:<PORT>/api/
-
-default port is 8000.
-
-api endpoints:
-    start/{name}        starts tracking an activity. If it doesn't exist it
-                        will be created. All other activities will be stopped,
-                        only one activity can be active at a time.
-    stop                stops any activity.
-    times               returns the taskmanager as json.
-    pretty              return the taskmanager as formatted string.
-"#;
 const ADDRESS: &str = "127.0.0.1";
 const PORT: &str = "8000";
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()>{
     let matches = clap::Command::new("timetracker")
-        .version(VERSION)
-        .about(ABOUT)
+        .version(env!("CARGO_PKG_VERSION"))
+        .about(include_str!(concat!(env!("CARGO_MANIFEST_DIR"), "/README.md")))
         .arg(
             clap::Arg::new("port")
                 .short('p')
