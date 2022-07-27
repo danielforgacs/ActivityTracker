@@ -35,7 +35,7 @@
             </table>
         </div>
         <div>
-            <form id="create_form" onSubmit="return create_activity(event)">
+            <form id="create_form" onSubmit="event.preventDefault(); create_activity(event)">
                 <input type="text" name="new_name" id="new_name">
                 <input type="submit" value="create / activate">
             </form>
@@ -48,12 +48,11 @@
     </div>
 </body>
 <script>
-    // function create_activity(event) {
-    //     event.preventDefault()
-    //     let name = event.target[0].value
-    //     fetch('api/start/'+name, {method: "POST"})
-    //     event.target[0].value = ''
-    // }
+    function create_activity(event) {
+        let name = event.target[0].value
+        fetch('api/start/'+name, {method: "POST"})
+        event.target[0].value = ''
+    }
 
     // function toggle_activity(event) {
     //     let name = event.submitter.getAttribute("activity_name")
@@ -96,6 +95,17 @@
     let total_activity_time_tag = document.getElementById('total_activity_time')
     let time_diff_tag = document.getElementById('time_diff')
     let activities_div = document.getElementById('activities')
+
+
+    function toggle_activity(event) {
+        let name = event.submitter.getAttribute("activity_name")
+        if (event.submitter.getAttribute("active") == "active") {
+            fetch('api/stop', {method: "POST"})
+        } else {
+            fetch('api/start/'+name, {method: "POST"})
+        }
+    }
+
 
 
     function set_header_values(data) {
