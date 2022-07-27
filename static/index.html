@@ -89,6 +89,9 @@
     //         activities_div.appendChild(form)
     //     }
     // }
+    const activityBtnIDprefix = 'activity-btn-'
+    const activeStatus = 'active'
+    const stoppedStatus = 'Idle'
 
     let start_time_tag = document.getElementById('start_time')
     let elapsed_day_tag = document.getElementById('elapsed_day')
@@ -110,15 +113,18 @@
         if (button.innerHTML != new_text) {
             button.innerHTML = new_text
         }
-        let active_button = button.getAttribute('status') === 'active'
-        let active_task = task.status != 'Idle'
-        if (active_task) {
-            if (!active_button) {
-                button.setAttribute('status', 'active')
-            }
-        } else {
-            if (active_button) {
-                button.setAttribute('status', 'stopped')
+    }
+
+
+    function set_button_status(button, task) {
+        let active_task = task.status != stoppedStatus
+        let active_button = button.getAttribute('status') === activeStatus
+        console.log(active_task, active_button, active_button != active_task)
+        if (active_button != active_task) {
+            if (active_task) {
+                button.setAttribute('status', activeStatus)
+            } else {
+                button.setAttribute('status', stoppedStatus)
             }
         }
     }
@@ -127,26 +133,26 @@
     function mk_activity_button(task) {
         let acivity_btn_template = `
         <form onsubmit="event.preventDefault(); __toggle_activity(event)">
-            <button id="activity-btn-${task.name}" activity_name="${task.name}" status="active">
+            <button id="${activityBtnIDprefix}${task.name}" activity_name="${task.name}">
             </button>
         </form>
         `
         let activity_form = document.createElement('div')
         activity_form.innerHTML = acivity_btn_template
         activities_div.appendChild(activity_form)
-        let task_button = document.getElementById('activity-btn-'+task.name)
+        let task_button = document.getElementById(activityBtnIDprefix+task.name)
         return task_button
     }
 
 
     function manage_activity_buttons(data) {
         for (task of data.tasks) {
-            console.log('task:', task)
-            let task_button = document.getElementById('activity-btn-'+task.name)
+            let task_button = document.getElementById(activityBtnIDprefix+task.name)
             if (task_button === null) {
                 task_button = mk_activity_button(task)
             }
             update_activity_btn(task_button, task)
+            set_button_status(task_button, task)
         }
     }
 
