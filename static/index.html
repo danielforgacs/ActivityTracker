@@ -96,40 +96,52 @@
     let time_diff_tag = document.getElementById('time_diff')
     let activities_div = document.getElementById('activities')
 
-    function header_values(data) {
+
+    function set_header_values(data) {
         start_time_tag.innerHTML = data.start_time_pretty
         elapsed_day_tag.innerHTML = data.elapsed_day
         total_activity_time_tag.innerHTML = data.total_activity_time
         time_diff_tag.innerHTML = data.time_difference
     }
 
+
+    function update_activity_btn(button, task) {
+        button.innerHTML = `${task.name} - ${task.all_time_pretty}`
+    }
+
+
     function mk_activity_button(task) {
         let acivity_btn_template = `
         <form onsubmit="event.preventDefault(); __toggle_activity(event)">
             <button id="activity-btn-${task.name}" activity_name="${task.name}" stopped="stopped">
-                ${task.name} - ${task.all_time_pretty}
             </button>
         </form>
         `
         let activity_form = document.createElement('div')
         activity_form.innerHTML = acivity_btn_template
         activities_div.appendChild(activity_form)
+        let task_button = document.getElementById('activity-btn-'+task.name)
+        return task_button
     }
 
-    function update_activity_button(button, task) {
-    }
 
-    function body_builder(data) {
-        header_values(data)
-
+    function manage_activity_buttons(data) {
         for (task of data.tasks) {
+            console.log('task:', task)
             let task_button = document.getElementById('activity-btn-'+task.name)
             if (task_button === null) {
-                mk_activity_button(task)
+                task_button = mk_activity_button(task)
             }
-            update_activity_button(task_button, task)
+            update_activity_btn(task_button, task)
         }
     }
+
+
+    function body_builder(data) {
+        set_header_values(data)
+        manage_activity_buttons(data)
+    }
+
 
     setInterval(() => {
         fetch('api/times')
