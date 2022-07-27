@@ -110,13 +110,16 @@
         if (button.innerHTML != new_text) {
             button.innerHTML = new_text
         }
+        let active_button = button.getAttribute('status') === 'active'
+        let active_task = task.status != 'Idle'
+        // console.log('active button: ', active_button, 'active task: ', active_task)
     }
 
 
     function mk_activity_button(task) {
         let acivity_btn_template = `
         <form onsubmit="event.preventDefault(); __toggle_activity(event)">
-            <button id="activity-btn-${task.name}" activity_name="${task.name}" stopped="stopped">
+            <button id="activity-btn-${task.name}" activity_name="${task.name}" status="">
             </button>
         </form>
         `
@@ -150,6 +153,6 @@
         fetch('api/times')
         .then(response => response.json())
         .then(data => body_builder(data));
-    }, 3000);
+    }, 1000);
 </script>
 </html>
