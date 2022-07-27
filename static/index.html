@@ -94,6 +94,7 @@
     let elapsed_day_tag = document.getElementById('elapsed_day')
     let total_activity_time_tag = document.getElementById('total_activity_time')
     let time_diff_tag = document.getElementById('time_diff')
+    let activities_div = document.getElementById('activities')
 
     function header_values(data) {
         start_time_tag.innerHTML = data.start_time_pretty
@@ -102,8 +103,30 @@
         time_diff_tag.innerHTML = data.time_difference
     }
 
+    function mk_activity_button(name, status) {
+        let acivity_btn_template = `
+        <form onsubmit="event.preventDefault(); __toggle_activity(event)">
+            <button id="activity-btn-${name}" activity_name="${name}" stopped="stopped">
+                asdfasdfasdf - 2h:39m
+            </button>
+        </form>
+        `
+        let activity_form = document.createElement('form')
+        activity_form.innerHTML = acivity_btn_template
+        activities_div.appendChild(activity_form)
+    }
+
     function body_builder(data) {
         header_values(data)
+
+        for (task of data.tasks) {
+            // console.log("task: ", task)
+            let task_button = document.getElementById('activity-btn-'+task.name)
+            console.log("task button: ", task_button)
+            if (task_button === null) {
+                mk_activity_button(task.name, "__status")
+            }
+        }
     }
 
     setInterval(() => {
@@ -116,7 +139,14 @@
             "added_at": "asd",
             "status": "Idle",
             "logged_secs": 9577,
-            "name": "PIPE_1476_SPIKE_Are_houdini_depenencies_tracked",
+            "name": "aaaaaaaaaaaaaaaaa",
+            "all_time_pretty": "2h:39m"
+        },
+        {
+            "added_at": "bbbbbbbbbbbbbb",
+            "status": "Idle",
+            "logged_secs": 9577,
+            "name": "bbbbbbbbbbb",
             "all_time_pretty": "2h:39m"
         }
     ],
@@ -127,6 +157,6 @@
     "start_time:": 1658910340,
     "display:": "start time:         2022-07-27 09:25:40.685335729 +01:00\nelapsed day:        03h:01m\ntotal acivity time: 02h:39m\n  PIPE_1476_SPIKE_Are_houdini_depenencies_tracked: 2h:39m\n"
         }));
-    }, 1000);
+    }, 5000);
 </script>
 </html>
