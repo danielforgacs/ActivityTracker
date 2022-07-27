@@ -12,6 +12,10 @@
         [stopped] {
             background-color: grey;
         }
+        .active {
+            background-color: red;
+        }
+
     </style>
 </head>
 <body>
@@ -118,13 +122,13 @@
 
     function set_button_status(button, task) {
         let active_task = task.status != stoppedStatus
-        let active_button = button.getAttribute('status') === activeStatus
+        let active_button = button.classList.contains('active')
         console.log(active_task, active_button, active_button != active_task)
         if (active_button != active_task) {
             if (active_task) {
-                button.setAttribute('status', activeStatus)
+                button.classList.add('active')
             } else {
-                button.setAttribute('status', stoppedStatus)
+                button.classList.remove('active')
             }
         }
     }
@@ -133,7 +137,7 @@
     function mk_activity_button(task) {
         let acivity_btn_template = `
         <form onsubmit="event.preventDefault(); __toggle_activity(event)">
-            <button id="${activityBtnIDprefix}${task.name}" activity_name="${task.name}">
+            <button class="" id="${activityBtnIDprefix}${task.name}" activity_name="${task.name}">
             </button>
         </form>
         `
