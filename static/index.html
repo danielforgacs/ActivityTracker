@@ -48,46 +48,9 @@
     </div>
 </body>
 <script>
-    function create_activity(event) {
-        let name = event.target[0].value
-        fetch('api/start/'+name, {method: "POST"})
-        event.target[0].value = ''
-    }
+    const url_taskman = 'api/times'
 
-    // function toggle_activity(event) {
-    //     let name = event.submitter.getAttribute("activity_name")
-    //     if (event.submitter.getAttribute("active") == "active") {
-    //         fetch('api/stop', {method: "POST"})
-    //     } else {
-    //         fetch('api/start/'+name, {method: "POST"})
-    //     }
-    // }
-
-    // function builder(data) {
-    //     console.log(data)
-    //     document.getElementById('start_time').innerHTML = data.start_time_pretty
-    //     document.getElementById('elapsed_day').innerHTML = data.elapsed_day
-    //     document.getElementById('total_activity_time').innerHTML = data.total_activity_time
-    //     document.getElementById('time_diff').innerHTML = data.time_difference
-    //     let activities_div = document.getElementById('activities')
-    //     activities_div.innerHTML = ""
-    //     for (activity of data.tasks) {
-    //         let form = document.createElement("form")
-    //         form.setAttribute('onSubmit', 'event.preventDefault(); toggle_activity(event)')
-    //         let button = document.createElement("button")
-    //         button.textContent = activity.name + " - " + activity.all_time_pretty
-    //         button.setAttribute('activity_name', activity.name)
-    //         if (activity.status == "Idle") {
-    //             button.setAttribute("stopped", "stopped")
-    //         } else {
-    //             button.setAttribute("active", "active")
-    //         }
-    //         form.appendChild(button)
-    //         activities_div.appendChild(form)
-    //     }
-    // }
     const activityBtnIDprefix = 'activity-btn-'
-    const activeStatus = 'active'
     const stoppedStatus = 'Idle'
 
     let start_time_tag = document.getElementById('start_time')
@@ -95,6 +58,13 @@
     let total_activity_time_tag = document.getElementById('total_activity_time')
     let time_diff_tag = document.getElementById('time_diff')
     let activities_div = document.getElementById('activities')
+
+
+    function create_activity(event) {
+        let name = event.target[0].value
+        fetch('api/start/'+name, {method: "POST"})
+        event.target[0].value = ''
+    }
 
 
     function toggle_activity(event) {
@@ -106,7 +76,6 @@
             fetch('api/start/'+name, {method: "POST"})
         }
     }
-
 
 
     function set_header_values(data) {
