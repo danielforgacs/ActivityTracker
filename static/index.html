@@ -98,8 +98,9 @@
 
 
     function toggle_activity(event) {
-        let name = event.submitter.getAttribute("activity_name")
-        if (event.submitter.getAttribute("active") == "active") {
+        let is_active = event.submitter.classList.contains('active')
+        let name = event.submitter.getAttribute('activity_name')
+        if (is_active) {
             fetch('api/stop', {method: "POST"})
         } else {
             fetch('api/start/'+name, {method: "POST"})
@@ -127,7 +128,6 @@
     function set_button_status(button, task) {
         let active_task = task.status != stoppedStatus
         let active_button = button.classList.contains('active')
-        console.log(active_task, active_button, active_button != active_task)
         if (active_button != active_task) {
             if (active_task) {
                 button.classList.add('active')
@@ -140,7 +140,7 @@
 
     function mk_activity_button(task) {
         let acivity_btn_template = `
-        <form onsubmit="event.preventDefault(); __toggle_activity(event)">
+        <form onsubmit="event.preventDefault(); toggle_activity(event)">
             <button class="" id="${activityBtnIDprefix}${task.name}" activity_name="${task.name}">
             </button>
         </form>
