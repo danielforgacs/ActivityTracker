@@ -49,6 +49,8 @@
 </body>
 <script>
     const url_taskman = 'api/times'
+    const url_startActivity = 'api/start'
+    const url_stopActivity = 'api/stop'
 
     const activityBtnIDprefix = 'activity-btn-'
     const stoppedStatus = 'Idle'
@@ -62,7 +64,7 @@
 
     function create_activity(event) {
         let name = event.target[0].value
-        fetch('api/start/'+name, {method: "POST"})
+        fetch(`${url_startActivity}/${name}`, {method: "POST"})
         event.target[0].value = ''
     }
 
@@ -71,9 +73,9 @@
         let is_active = event.submitter.classList.contains('active')
         let name = event.submitter.getAttribute('activity_name')
         if (is_active) {
-            fetch('api/stop', {method: "POST"})
+            fetch(url_stopActivity, {method: "POST"})
         } else {
-            fetch('api/start/'+name, {method: "POST"})
+            fetch(`${url_startActivity}/${name}`, {method: "POST"})
         }
     }
 
@@ -141,7 +143,7 @@
 
 
     setInterval(() => {
-        fetch('api/times')
+        fetch(url_taskman)
         .then(response => response.json())
         .then(data => body_builder(data));
     }, 1000);
