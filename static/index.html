@@ -50,50 +50,83 @@
     </div>
 </body>
 <script>
-    function create_activity(event) {
-        event.preventDefault()
-        let name = event.target[0].value
-        fetch('api/start/'+name, {method: "POST"})
-        event.target[0].value = ''
+    // function create_activity(event) {
+    //     event.preventDefault()
+    //     let name = event.target[0].value
+    //     fetch('api/start/'+name, {method: "POST"})
+    //     event.target[0].value = ''
+    // }
+
+    // function toggle_activity(event) {
+    //     let name = event.submitter.getAttribute("activity_name")
+    //     if (event.submitter.getAttribute("active") == "active") {
+    //         fetch('api/stop', {method: "POST"})
+    //     } else {
+    //         fetch('api/start/'+name, {method: "POST"})
+    //     }
+    // }
+
+    // function builder(data) {
+    //     console.log(data)
+    //     document.getElementById('start_time').innerHTML = data.start_time_pretty
+    //     document.getElementById('elapsed_day').innerHTML = data.elapsed_day
+    //     document.getElementById('total_activity_time').innerHTML = data.total_activity_time
+    //     document.getElementById('time_diff').innerHTML = data.time_difference
+    //     let activities_div = document.getElementById('activities')
+    //     activities_div.innerHTML = ""
+    //     for (activity of data.tasks) {
+    //         let form = document.createElement("form")
+    //         form.setAttribute('onSubmit', 'event.preventDefault(); toggle_activity(event)')
+    //         let button = document.createElement("button")
+    //         button.textContent = activity.name + " - " + activity.all_time_pretty
+    //         button.setAttribute('activity_name', activity.name)
+    //         if (activity.status == "Idle") {
+    //             button.setAttribute("stopped", "stopped")
+    //         } else {
+    //             button.setAttribute("active", "active")
+    //         }
+    //         form.appendChild(button)
+    //         activities_div.appendChild(form)
+    //     }
+    // }
+
+    let start_time_tag = document.getElementById('start_time')
+    let elapsed_day_tag = document.getElementById('elapsed_day')
+    let total_activity_time_tag = document.getElementById('total_activity_time')
+    let time_diff_tag = document.getElementById('time_diff')
+
+    function header_values(data) {
+        start_time_tag.innerHTML = data.start_time_pretty
+        elapsed_day_tag.innerHTML = data.elapsed_day
+        total_activity_time_tag.innerHTML = data.total_activity_time
+        time_diff_tag.innerHTML = data.time_difference
     }
 
-    function toggle_activity(event) {
-        let name = event.submitter.getAttribute("activity_name")
-        if (event.submitter.getAttribute("active") == "active") {
-            fetch('api/stop', {method: "POST"})
-        } else {
-            fetch('api/start/'+name, {method: "POST"})
-        }
-    }
-
-    function builder(data) {
-        console.log(data)
-        document.getElementById('start_time').innerHTML = data.start_time_pretty
-        document.getElementById('elapsed_day').innerHTML = data.elapsed_day
-        document.getElementById('total_activity_time').innerHTML = data.total_activity_time
-        document.getElementById('time_diff').innerHTML = data.time_difference
-        let activities_div = document.getElementById('activities')
-        activities_div.innerHTML = ""
-        for (activity of data.tasks) {
-            let form = document.createElement("form")
-            form.setAttribute('onSubmit', 'event.preventDefault(); toggle_activity(event)')
-            let button = document.createElement("button")
-            button.textContent = activity.name + " - " + activity.all_time_pretty
-            button.setAttribute('activity_name', activity.name)
-            if (activity.status == "Idle") {
-                button.setAttribute("stopped", "stopped")
-            } else {
-                button.setAttribute("active", "active")
-            }
-            form.appendChild(button)
-            activities_div.appendChild(form)
-        }
+    function body_builder(data) {
+        header_values(data)
     }
 
     setInterval(() => {
         fetch('api/times')
         .then(response => response.json())
-        .then(data => builder(data));
+        // .then(data => body_builder(data));
+        .then(data => body_builder({
+    "tasks": [
+        {
+            "added_at": "asd",
+            "status": "Idle",
+            "logged_secs": 9577,
+            "name": "PIPE_1476_SPIKE_Are_houdini_depenencies_tracked",
+            "all_time_pretty": "2h:39m"
+        }
+    ],
+    "start_time_pretty": "asdfasdf",
+    "elapsed_day": "03h:01m",
+    "total_activity_time": "02h:39m",
+    "time_difference": "00h:21m",
+    "start_time:": 1658910340,
+    "display:": "start time:         2022-07-27 09:25:40.685335729 +01:00\nelapsed day:        03h:01m\ntotal acivity time: 02h:39m\n  PIPE_1476_SPIKE_Are_houdini_depenencies_tracked: 2h:39m\n"
+        }));
     }, 1000);
 </script>
 </html>
