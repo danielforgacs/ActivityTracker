@@ -112,14 +112,22 @@
         }
         let active_button = button.getAttribute('status') === 'active'
         let active_task = task.status != 'Idle'
-        // console.log('active button: ', active_button, 'active task: ', active_task)
+        if (active_task) {
+            if (!active_button) {
+                button.setAttribute('status', 'active')
+            }
+        } else {
+            if (active_button) {
+                button.setAttribute('status', 'stopped')
+            }
+        }
     }
 
 
     function mk_activity_button(task) {
         let acivity_btn_template = `
         <form onsubmit="event.preventDefault(); __toggle_activity(event)">
-            <button id="activity-btn-${task.name}" activity_name="${task.name}" status="">
+            <button id="activity-btn-${task.name}" activity_name="${task.name}" status="active">
             </button>
         </form>
         `
