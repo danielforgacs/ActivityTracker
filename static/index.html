@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeTrack</title>
+    <style>
+        .active {
+            background-color: greenyellow;
+        }
+
+    </style>
+</head>
+<body>
+    <div>
+        <div>
+            <table>
+                <tr>
+                    <td>start time</td>
+                    <td id="start_time"></td>
+                </tr>
+                <tr>
+                    <td>elapsed day</td>
+                    <td id="elapsed_day"></td>
+                </tr>
+                <tr>
+                    <td>total acivity time</td>
+                    <td id="total_activity_time"></td>
+                </tr>
+                <tr>
+                    <td>time diff</td>
+                    <td id="time_diff"></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <form id="create_form" onSubmit="event.preventDefault(); create_activity(event)">
+                <input type="text" name="new_name" id="new_name">
+                <input type="submit" value="create / activate">
+            </form>
+            <form onSubmit="event.preventDefault(); fetch('api/stop', {method: 'POST'})">
+                <input type="submit" value="stop">
+            </form>
+        </div>
+        <div id="activities">
+        </div>
+    </div>
+</body>
+<script>
+    const url_taskman = 'api/times'
+    const url_startActivity = 'api/start'
+    const url_stopActivity = 'api/stop'
+
+    const activityBtnIDprefix = 'activity-btn-'
+    const stoppedStatus = 'Idle'
+
+    let start_time_tag = document.getElementById('start_time')
+    let elapsed_day_tag = document.getElementById('elapsed_day')
+    let total_activity_time_tag = document.getElementById('total_activity_time')
+    let time_diff_tag = document.getElementById('time_diff')
+    let activities_div = document.getElementById('activities')
+
+
+    function create_activity(event) {
+        let name = event.target[0].value
+        fetch(`${url_startActivity}/${name}`, {method: "POST"})
+        event.target[0].value = ''
+    }
+
+
+    function toggle_activity(event) {
+        let is_active = event.submitter.classList.contains('active')
+        let name = event.submitter.getAttribute('activity_name')
+        if (is_active) {
+            fetch(url_stopActivity, {method: "POST"})
+        } else {
+            fetch(`${url_startActivity}/${name}`, {method: "POST"})
+        }
+    }
+
+
+    function set_header_values(data) {
+        start_time_tag.innerHTML = data.start_time_pretty
+        elapsed_day_tag.innerHTML = data.elapsed_day
+        total_activity_time_tag.innerHTML = data.total_activity_time
+        time_diff_tag.innerHTML = data.time_difference
+    }
+
+
+    function update_activity_btn(button, task) {
+        let new_text = `${task.name} - ${task.all_time_pretty}`
+        if (button.innerHTML != new_text) {
+            button.innerHTML = new_text
+        }
+    }
+
+
+    function set_button_status(button, task) {
+        let active_task = task.status != stoppedStatus
+        let active_button = button.classList.contains('active')
+        if (active_button != active_task) {
+            if (active_task) {
+                button.classList.add('active')
+            } else {
+                button.classList.remove('active')
+            }
+        }
+    }
+
+
+    function mk_activity_button(task) {
+        let acivity_btn_template = `
+        <form onsubmit="event.preventDefault(); toggle_activity(event)">
+            <button class="" id="${activityBtnIDprefix}${task.name}" activity_name="${task.name}">
+            </button>
+        </form>
+        `
+        let activity_form = document.createElement('div')
+        activity_form.innerHTML = acivity_btn_template
+        activities_div.appendChild(activity_form)
+        let task_button = document.getElementById(activityBtnIDprefix+task.name)
+        return task_button
+    }
+
+
+    function manage_activity_buttons(data) {
+        for (task of data.tasks) {
+            let task_button = document.getElementById(activityBtnIDprefix+task.name)
+            if (task_button === null) {
+                task_button = mk_activity_button(task)
+            }
+            update_activity_btn(task_button, task)
+            set_button_status(task_button, task)
+        }
+    }
+
+
+    function body_builder(data) {
+        set_header_values(data)
+        manage_activity_buttons(data)
+    }
+
+
+    setInterval(() => {
+        fetch(url_taskman)
+        .then(response => response.json())
+        .then(data => body_builder(data));
+    }, 1000);
+</script>
+</html>
