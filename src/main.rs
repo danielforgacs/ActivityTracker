@@ -13,9 +13,15 @@ use client_views::index::*;
 #[actix_web::main]
 async fn main() -> std::io::Result<()>{
     let config = config::get_congig();
-    let data = Data::new(Mutex::new(TaskManager::new()));
-    println!("web: http://{}:{}/", config::ADDRESS, config.port);
-    println!("api: http://{}:{}/api/times", config::ADDRESS, config.port);
+    println!("web: http://{}:{}/", config.url, config.port);
+    println!("api: http://{}:{}/api/times", config.url, config.port);
+
+    let data = Data::new(
+        Mutex::new(
+            TaskManager::new()
+        )
+    );
+
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
@@ -28,7 +34,7 @@ async fn main() -> std::io::Result<()>{
                     .service(pretty)
             )
     })
-        .bind((config::ADDRESS, config.port))?
+        .bind((config.url, config.port))?
         .workers(4)
         .run()
         .await
