@@ -1,6 +1,7 @@
 pub const ADDRESS: &str = "127.0.0.1";
 pub const PORT: &str = "8000";
 
+#[derive(Debug)]
 pub struct Config {
     pub url: String,
     pub port: u16,
@@ -30,11 +31,11 @@ impl Config {
             )
             .get_matches();
         let url = matches
-            .value_of("url")
+            .get_one::<String>("url")
             .unwrap()
-            .to_string();
-        let port: u16 = *matches
-            .get_one("port")
+            .to_owned();
+        let port = *matches
+            .get_one::<u16>("port")
             .unwrap();
         Config {
             url,
