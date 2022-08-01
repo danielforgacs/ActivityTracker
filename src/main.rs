@@ -2,6 +2,12 @@ mod api_views;
 mod structs;
 mod client_views;
 mod config;
+mod db;
+mod models;
+mod schema;
+
+#[macro_use]
+extern crate diesel;
 
 use actix_web::{App, HttpServer};
 use actix_web::web::{self, Data};
@@ -9,6 +15,8 @@ use structs::taskmanager::{TaskManager};
 use api_views::views::*;
 use std::sync::Mutex;
 use client_views::index::*;
+use schema::activities::dsl::*;
+use diesel::prelude::*;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()>{
@@ -21,6 +29,11 @@ async fn main() -> std::io::Result<()>{
             TaskManager::new()
         )
     );
+
+    let db_conn = db::establish_connection();
+    let result = activities
+        .load::<models::Activity>(&db_conn);
+    dbg!(&result);
 
     HttpServer::new(move || {
         App::new()

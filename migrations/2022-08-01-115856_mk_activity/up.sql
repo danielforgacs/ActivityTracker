@@ -1,4 +1,4 @@
 CREATE TABLE activities (
     id SERIAL PRIMARY KEY,
-    name VARCHAR
+    name VARCHAR NOT NULL
 )
