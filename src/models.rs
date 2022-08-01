@@ -1,6 +1,7 @@
 use super::schema::*;
 
-#[derive(Queryable, Debug)]
+#[derive(Queryable)]
+#[allow(dead_code)]
 pub struct Activity {
     id: i32,
     name: String,

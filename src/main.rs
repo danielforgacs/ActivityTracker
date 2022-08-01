@@ -16,7 +16,6 @@ use api_views::views::*;
 use std::sync::Mutex;
 use client_views::index::*;
 use schema::activities::dsl::*;
-use diesel::prelude::*;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()>{
@@ -29,11 +28,6 @@ async fn main() -> std::io::Result<()>{
             TaskManager::new()
         )
     );
-
-    let db_conn = db::establish_connection();
-    let result = activities
-        .load::<models::Activity>(&db_conn);
-    dbg!(&result);
 
     HttpServer::new(move || {
         App::new()
