@@ -2,6 +2,7 @@ use std::time::{Duration, SystemTime, UNIX_EPOCH};
 use serde::{Serialize};
 use serde::ser::{SerializeStruct};
 use chrono::{Local};
+use super::super::db;
 
 pub type SecType = u64;
 
@@ -63,6 +64,8 @@ impl Serialize for Activity {
 
 impl Activity {
     pub fn new(name: &str) -> Self {
+        let db_conn = db::establish_connection();
+        db::create_activity(&db_conn, &name);
         Self {
             added_at: format!("{}", Local::now()),
             status: Status::ActiveSince(sys_now_secs()),
