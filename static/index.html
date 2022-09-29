@@ -25,6 +25,10 @@
                     <td id="elapsed_day"></td>
                 </tr>
                 <tr>
+                    <td>day length</td>
+                    <td id="day_length"></td>
+                </tr>
+                <tr>
                     <td>total acivity time</td>
                     <td id="total_activity_time"></td>
                 </tr>
@@ -57,6 +61,7 @@
 
     let start_time_tag = document.getElementById('start_time')
     let elapsed_day_tag = document.getElementById('elapsed_day')
+    let day_length_tag = document.getElementById('day_length')
     let total_activity_time_tag = document.getElementById('total_activity_time')
     let time_diff_tag = document.getElementById('time_diff')
     let activities_div = document.getElementById('activities')
@@ -85,6 +90,7 @@
         elapsed_day_tag.innerHTML = data.elapsed_day
         total_activity_time_tag.innerHTML = data.total_activity_time
         time_diff_tag.innerHTML = data.time_difference
+        day_length_tag.innerHTML = data.day_length
     }
 
 

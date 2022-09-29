@@ -3,6 +3,8 @@ use serde::Serialize;
 use chrono::{Local};
 use serde::ser::{Serializer, SerializeStruct};
 
+const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
+
 /// The task manager is the only struct one exposed.
 /// It manages a vec of tasks.
 /// Only one task can be active at a time.
@@ -112,6 +114,10 @@ impl Serialize for TaskManager {
         state.serialize_field("time_difference", &time_diff_pretty)?;
         state.serialize_field("start_time:", &self.start_time)?;
         state.serialize_field("display:", &self.times())?;
+
+        let (day_len_hh, day_len_mm) = secs_to_hours_minutes(DAY_LENGTH_SECS);
+        let day_length = &format!("{:02}h:{:02}m", day_len_hh, day_len_mm);
+        state.serialize_field("day_length", day_length)?;
         state.end()
     }
 }
