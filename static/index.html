@@ -25,6 +25,10 @@
                     <td id="elapsed_day"></td>
                 </tr>
                 <tr>
+                    <td>time diff</td>
+                    <td id="time_diff"></td>
+                </tr>
+                <tr>
                     <td>day length</td>
                     <td id="day_length"></td>
                 </tr>
@@ -33,8 +37,8 @@
                     <td id="total_activity_time"></td>
                 </tr>
                 <tr>
-                    <td>time diff</td>
-                    <td id="time_diff"></td>
+                    <td>day time left</td>
+                    <td id="time_left"></td>
                 </tr>
             </table>
         </div>
@@ -64,6 +68,7 @@
     let day_length_tag = document.getElementById('day_length')
     let total_activity_time_tag = document.getElementById('total_activity_time')
     let time_diff_tag = document.getElementById('time_diff')
+    let time_left_tag = document.getElementById('time_left')
     let activities_div = document.getElementById('activities')
 
 
@@ -91,6 +96,7 @@
         total_activity_time_tag.innerHTML = data.total_activity_time
         time_diff_tag.innerHTML = data.time_difference
         day_length_tag.innerHTML = data.day_length
+        time_left_tag.innerHTML = data.time_left
     }
 
 
@@ -152,6 +158,6 @@
         fetch(url_taskman)
         .then(response => response.json())
         .then(data => body_builder(data));
-    }, 1000);
+    }, 500);
 </script>
 </html>

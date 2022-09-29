@@ -118,6 +118,10 @@ impl Serialize for TaskManager {
         let (day_len_hh, day_len_mm) = secs_to_hours_minutes(DAY_LENGTH_SECS);
         let day_length = &format!("{:02}h:{:02}m", day_len_hh, day_len_mm);
         state.serialize_field("day_length", day_length)?;
+
+        let (time_left_hh, time_left_mm) = secs_to_hours_minutes(DAY_LENGTH_SECS - self.total_activity_time());
+        let time_left = &format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
+        state.serialize_field("time_left", time_left)?;
         state.end()
     }
 }
