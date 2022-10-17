@@ -1,6 +1,6 @@
 [package]
 name = "timetracker"
-version = "2022.9.29"
+version = "2022.10.18"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
