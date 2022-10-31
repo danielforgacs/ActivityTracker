@@ -31,7 +31,7 @@ impl Status {
     /// If the task has been idle, the elapsed time is 0.
     /// Active tasks elapsed time is the diff from
     /// since the task is active to the queries system time.
-    fn to_elapsed_secs(&self) -> SecType {
+    fn as_elapsed_secs(&self) -> SecType {
         match self {
             Status::ActiveSince(time0) => elapsed_since(*time0),
             Status::Idle => 0,
@@ -82,18 +82,18 @@ impl Activity {
         // If this is not added and an active task is
         // activated again the start time stamp will change,
         // but the logged time remains the same!
-        self.logged_secs += self.status.to_elapsed_secs();
+        self.logged_secs += self.status.as_elapsed_secs();
         self.status = Status::ActiveSince(sys_now_secs());
     }
 
     pub fn stop(&mut self) {
-        self.logged_secs += self.status.to_elapsed_secs();
+        self.logged_secs += self.status.as_elapsed_secs();
         self.status = Status::Idle;
     }
 
     /// all logged secs plus tha latest active time secs if any.
     pub fn secs_since_creation(&self) -> SecType {
-        self.logged_secs + self.status.to_elapsed_secs()
+        self.logged_secs + self.status.as_elapsed_secs()
     }
 
     pub fn time_text(&self) -> String {

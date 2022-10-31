@@ -33,7 +33,7 @@ impl TaskManager {
         let mut file_handle = std::fs::File::open(&self.path).unwrap();
         let mut buf = String::new();
         file_handle.read_to_string(&mut buf).unwrap();
-        let data: Vec<Activity> = serde_json::from_str(&buf.as_str()).unwrap();
+        let data: Vec<Activity> = serde_json::from_str(buf.as_str()).unwrap();
         data
     }
 
@@ -48,12 +48,7 @@ impl TaskManager {
 
     pub fn start(&mut self, name: &str) {
         let mut data = self.read();
-        if !data
-            .iter()
-            .map(|f| f.name())
-            .collect::<Vec<String>>()
-            .contains(&name.to_string())
-        {
+        if !data.iter().any(|x| x.name() == *name) {
             data.push(Activity::new(name));
         }
         for task in data.iter_mut() {

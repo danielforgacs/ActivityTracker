@@ -11,7 +11,7 @@ async fn index_view(req: HttpRequest) -> HttpResponse {
         Ok(named_file) => named_file.into_response(&req),
         Err(error) => HttpResponse::Ok().body(format!(
             "Error with index.html: {}. Expected path: {}.",
-            error.to_string(),
+            error,
             index_path_ref
         )),
     }
