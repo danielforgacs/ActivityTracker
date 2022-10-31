@@ -18,7 +18,7 @@ async fn main() -> std::io::Result<()>{
 
     let data = Data::new(
         Mutex::new(
-            TaskManager::new()
+            TaskManager::new(config.dbpath),
         )
     );
 

@@ -1,17 +1,17 @@
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use serde::{Serialize};
+use serde::{Serialize, Deserialize};
 use serde::ser::{SerializeStruct};
 use chrono::{Local};
 
 pub type SecType = u64;
 
-#[derive(Clone, Copy, PartialEq, Debug, Serialize)]
+#[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
 pub enum Status {
     ActiveSince(SecType),
     Idle,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Deserialize)]
 pub struct Activity {
     /// timestamp for when the activity is created
     added_at: String,

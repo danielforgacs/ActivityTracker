@@ -1,3 +1,5 @@
+use std::io::prelude::*;
+
 pub const ADDRESS: &str = "127.0.0.1";
 pub const PORT: &str = "8000";
 
@@ -5,6 +7,7 @@ pub const PORT: &str = "8000";
 pub struct Config {
     pub url: String,
     pub port: u16,
+    pub dbpath: std::path::PathBuf,
 }
 
 impl Config {
@@ -29,6 +32,13 @@ impl Config {
                     .default_value(PORT)
                     .help("Set the localhost port to serve.")
             )
+            .arg(
+                clap::Arg::new("dbfile")
+                    .short('d')
+                    .long("dbfile")
+                    .help("File based database path.")
+                    // .required(true)
+            )
             .get_matches();
         let url = matches
             .get_one::<String>("url")
@@ -37,9 +47,16 @@ impl Config {
         let port = *matches
             .get_one::<u16>("port")
             .unwrap();
+        // let dbfile = matches.get_one::<String>("dbfile").unwrap().to_string();
+        let dbfile = "storage.json";
+        let mut dbpath = std::path::PathBuf::new();
+        dbpath.push(dbfile);
+        let file_handle = std::fs::File::create(&dbpath).unwrap().write_all(b"[]");
+        // file_handle.
         Config {
             url,
             port,
+            dbpath,
         }
     }
 }
