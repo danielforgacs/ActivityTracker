@@ -1,7 +1,7 @@
+use chrono::Local;
+use serde::ser::SerializeStruct;
+use serde::{Deserialize, Serialize};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use serde::{Serialize, Deserialize};
-use serde::ser::{SerializeStruct};
-use chrono::{Local};
 
 pub type SecType = u64;
 
@@ -44,8 +44,8 @@ impl Serialize for Activity {
     /// Those fields are calculated on demand from stored
     /// values, like pretty prints.
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::Serializer
+    where
+        S: serde::Serializer,
     {
         // This value seems to be unused in serde.
         let number_of_fields = 255;
@@ -113,7 +113,10 @@ pub fn secs_to_hours_minutes(secs: SecType) -> (u8, u8) {
 }
 
 pub fn sys_now_secs() -> SecType {
-    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
 }
 
 pub fn elapsed_secs(t_start: SecType, t_end: SecType) -> SecType {
@@ -124,14 +127,11 @@ pub fn elapsed_since(t_start: SecType) -> SecType {
     elapsed_secs(t_start, sys_now_secs())
 }
 
-
-
-
 #[cfg(test)]
 mod test {
     use super::*;
-    use std::thread::sleep;
     use serde_json;
+    use std::thread::sleep;
 
     #[test]
     fn task_timing_test() {
@@ -224,8 +224,12 @@ mod test {
         let task = Activity::new("task");
         assert!(serde_json::to_string(&task).unwrap().contains("added_at"));
         assert!(serde_json::to_string(&task).unwrap().contains("status"));
-        assert!(serde_json::to_string(&task).unwrap().contains("logged_secs"));
+        assert!(serde_json::to_string(&task)
+            .unwrap()
+            .contains("logged_secs"));
         assert!(serde_json::to_string(&task).unwrap().contains("name"));
-        assert!(serde_json::to_string(&task).unwrap().contains("all_time_pretty"));
+        assert!(serde_json::to_string(&task)
+            .unwrap()
+            .contains("all_time_pretty"));
     }
 }

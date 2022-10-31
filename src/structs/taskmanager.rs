@@ -1,7 +1,7 @@
 use super::task::*;
+use chrono::Local;
+use serde::ser::{SerializeStruct, Serializer};
 use serde::Serialize;
-use chrono::{Local};
-use serde::ser::{Serializer, SerializeStruct};
 use std::io::prelude::*;
 
 const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
@@ -41,15 +41,20 @@ impl TaskManager {
         let data_serialised = serde_json::to_string_pretty(&data).unwrap();
         dbg!(&data);
         let mut file_handle = std::fs::File::create(&self.path).unwrap();
-        file_handle.write_all(data_serialised.as_bytes()).expect("CAN NOT WRITE ALL.");
+        file_handle
+            .write_all(data_serialised.as_bytes())
+            .expect("CAN NOT WRITE ALL.");
     }
 
     pub fn start(&mut self, name: &str) {
         let mut data = self.read();
-        if !data.iter().map(|f| f.name()).collect::<Vec<String>>().contains(&name.to_string()) {
-            data.push(
-                Activity::new(name)
-            );
+        if !data
+            .iter()
+            .map(|f| f.name())
+            .collect::<Vec<String>>()
+            .contains(&name.to_string())
+        {
+            data.push(Activity::new(name));
         }
         for task in data.iter_mut() {
             if task.name() == name {
@@ -63,9 +68,7 @@ impl TaskManager {
 
     pub fn stop(&mut self) {
         let mut data = self.read();
-        data
-            .iter_mut()
-            .for_each(|t| t.stop());
+        data.iter_mut().for_each(|t| t.stop());
         self.write(data);
     }
 
@@ -73,37 +76,34 @@ impl TaskManager {
         let mut result = format!("start time:         {}", self.start_time_pretty.to_owned());
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
         result.push_str(&format!("\nelapsed day:        {:02}h:{:02}m", hh, mm));
-        let total_activity_time: SecType = self.read()
-            .iter()
-            .map(|t| t.secs_since_creation())
-            .sum();
+        let total_activity_time: SecType =
+            self.read().iter().map(|t| t.secs_since_creation()).sum();
         let (hours, minutes) = secs_to_hours_minutes(total_activity_time);
-        result.push_str(
-            &format!("\ntotal acivity time: {:02}h:{:02}m", hours, minutes)
-        );
+        result.push_str(&format!(
+            "\ntotal acivity time: {:02}h:{:02}m",
+            hours, minutes
+        ));
         result.push('\n');
         result.push_str(
-            &self.read()
-            .iter()
-            .map(|t| {
-                if t.is_active() {
-                    format!("> {}", t.time_text())
-                } else {
-                    format!("  {}", t.time_text())
-                }
-            })
-            .collect::<Vec<String>>()
-            .join("\n")
+            &self
+                .read()
+                .iter()
+                .map(|t| {
+                    if t.is_active() {
+                        format!("> {}", t.time_text())
+                    } else {
+                        format!("  {}", t.time_text())
+                    }
+                })
+                .collect::<Vec<String>>()
+                .join("\n"),
         );
         result.push('\n');
         result
     }
 
     fn total_activity_time(&self) -> SecType {
-        self.read()
-            .iter()
-            .map(|t| t.secs_since_creation())
-            .sum()
+        self.read().iter().map(|t| t.secs_since_creation()).sum()
     }
 }
 
@@ -133,15 +133,13 @@ impl Serialize for TaskManager {
         let day_length = &format!("{:02}h:{:02}m", day_len_hh, day_len_mm);
         state.serialize_field("day_length", day_length)?;
 
-        let (time_left_hh, time_left_mm) = secs_to_hours_minutes(DAY_LENGTH_SECS - self.total_activity_time());
+        let (time_left_hh, time_left_mm) =
+            secs_to_hours_minutes(DAY_LENGTH_SECS - self.total_activity_time());
         let time_left = &format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
         state.serialize_field("time_left", time_left)?;
         state.end()
     }
 }
-
-
-
 
 #[cfg(test)]
 mod test {
@@ -150,7 +148,10 @@ mod test {
     #[test]
     fn creating_task_manager() {
         let path = std::path::Path::new("test_creating_task_manager.json").to_path_buf();
-        std::fs::File::create(&path).unwrap().write_all(b"[]").unwrap();
+        std::fs::File::create(&path)
+            .unwrap()
+            .write_all(b"[]")
+            .unwrap();
         let tm = TaskManager::new(path);
         assert_eq!(tm.read(), Vec::new());
     }
@@ -158,7 +159,10 @@ mod test {
     #[test]
     fn add_task() {
         let path = std::path::Path::new("test_add_task.json").to_path_buf();
-        std::fs::File::create(&path).unwrap().write_all(b"[]").unwrap();
+        std::fs::File::create(&path)
+            .unwrap()
+            .write_all(b"[]")
+            .unwrap();
         let mut tm = TaskManager::new(path);
         let task_name = "task";
         tm.start(task_name);
@@ -189,7 +193,10 @@ mod test {
         let task_1 = "alpha";
         let task_2 = "beta";
         let path = std::path::Path::new("test_multiple_tasks.json").to_path_buf();
-        std::fs::File::create(&path).unwrap().write_all(b"[]").unwrap();
+        std::fs::File::create(&path)
+            .unwrap()
+            .write_all(b"[]")
+            .unwrap();
         let mut tm = TaskManager::new(path);
         tm.start(task_1);
         pause();
@@ -229,19 +236,28 @@ mod test {
     #[test]
     fn no_duplicate_task_names() {
         let path = std::path::Path::new("test_no_duplicate_task_names.json").to_path_buf();
-        std::fs::File::create(&path).unwrap().write_all(b"[]").unwrap();
+        std::fs::File::create(&path)
+            .unwrap()
+            .write_all(b"[]")
+            .unwrap();
         let mut tm = TaskManager::new(path);
         tm.start("a");
         tm.start("a");
         tm.start("a");
         tm.start("a");
-        assert_eq!(tm.read().iter().map(|f| f.name()).collect::<Vec<String>>(), vec!["a"]);
+        assert_eq!(
+            tm.read().iter().map(|f| f.name()).collect::<Vec<String>>(),
+            vec!["a"]
+        );
     }
 
     #[test]
     fn taskmanager_json_has_all_fields() {
         let path = std::path::Path::new("test_taskmanager_json_has_all_fields.json").to_path_buf();
-        std::fs::File::create(&path).unwrap().write_all(b"[]").unwrap();
+        std::fs::File::create(&path)
+            .unwrap()
+            .write_all(b"[]")
+            .unwrap();
         let tm = TaskManager::new(path);
         let tm_json = serde_json::to_string(&tm).unwrap();
         assert!(tm_json.contains(&"tasks"));
