@@ -37,7 +37,7 @@ impl Config {
                     .short('d')
                     .long("dbfile")
                     .help("File based database path.")
-                    // .required(true)
+                    .default_value("timetracker.json")
             )
             .get_matches();
         let url = matches
@@ -47,12 +47,10 @@ impl Config {
         let port = *matches
             .get_one::<u16>("port")
             .unwrap();
-        // let dbfile = matches.get_one::<String>("dbfile").unwrap().to_string();
-        let dbfile = "storage.json";
+        let dbfile = matches.get_one::<String>("dbfile").unwrap().to_string();
         let mut dbpath = std::path::PathBuf::new();
         dbpath.push(dbfile);
-        let file_handle = std::fs::File::create(&dbpath).unwrap().write_all(b"[]");
-        // file_handle.
+        std::fs::File::create(&dbpath).unwrap().write_all(b"[]").unwrap();
         Config {
             url,
             port,

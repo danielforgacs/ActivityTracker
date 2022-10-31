@@ -69,14 +69,6 @@ impl TaskManager {
         self.write(data);
     }
 
-    fn task_names(&self) -> Vec<String> {
-        self.read().iter().map(|f| f.name()).collect::<Vec<String>>()
-    }
-
-    fn task_exists(&self, name: &str) -> bool {
-        self.task_names().contains(&name.to_string())
-    }
-
     pub fn times(&self) -> String {
         let mut result = format!("start time:         {}", self.start_time_pretty.to_owned());
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
@@ -243,14 +235,14 @@ mod test {
         tm.start("a");
         tm.start("a");
         tm.start("a");
-        assert_eq!(tm.task_names(), vec!["a"]);
+        assert_eq!(tm.read().iter().map(|f| f.name()).collect::<Vec<String>>(), vec!["a"]);
     }
 
     #[test]
     fn taskmanager_json_has_all_fields() {
         let path = std::path::Path::new("test_taskmanager_json_has_all_fields.json").to_path_buf();
         std::fs::File::create(&path).unwrap().write_all(b"[]").unwrap();
-        let mut tm = TaskManager::new(path);
+        let tm = TaskManager::new(path);
         let tm_json = serde_json::to_string(&tm).unwrap();
         assert!(tm_json.contains(&"tasks"));
         assert!(tm_json.contains(&"start_time_pretty"));
