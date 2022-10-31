@@ -29,14 +29,14 @@
                     <td>start time</td>
                     <td id="start_time"></td>
                 </tr>
-                <tr>
+                <!-- <tr>
                     <td>elapsed day</td>
                     <td id="elapsed_day"></td>
                 </tr>
                 <tr>
                     <td>time diff</td>
                     <td id="time_diff"></td>
-                </tr>
+                </tr> -->
                 <tr>
                     <td>day length</td>
                     <td id="day_length"></td>
@@ -73,10 +73,10 @@
     const stoppedStatus = 'Idle'
 
     let start_time_tag = document.getElementById('start_time')
-    let elapsed_day_tag = document.getElementById('elapsed_day')
+    // let elapsed_day_tag = document.getElementById('elapsed_day')
     let day_length_tag = document.getElementById('day_length')
     let total_activity_time_tag = document.getElementById('total_activity_time')
-    let time_diff_tag = document.getElementById('time_diff')
+    // let time_diff_tag = document.getElementById('time_diff')
     let time_left_tag = document.getElementById('time_left')
     let activities_div = document.getElementById('activities')
 
@@ -101,9 +101,9 @@
 
     function set_header_values(data) {
         start_time_tag.innerHTML = data.start_time_pretty
-        elapsed_day_tag.innerHTML = data.elapsed_day
+        // elapsed_day_tag.innerHTML = data.elapsed_day
         total_activity_time_tag.innerHTML = data.total_activity_time
-        time_diff_tag.innerHTML = data.time_difference
+        // time_diff_tag.innerHTML = data.time_difference
         day_length_tag.innerHTML = data.day_length
         time_left_tag.innerHTML = `<strong>${data.time_left}</strong>`
     }
