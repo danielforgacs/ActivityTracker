@@ -1,17 +1,17 @@
+use chrono::Local;
+use serde::ser::SerializeStruct;
+use serde::{Deserialize, Serialize};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use serde::{Serialize};
-use serde::ser::{SerializeStruct};
-use chrono::{Local};
 
 pub type SecType = u64;
 
-#[derive(Clone, Copy, PartialEq, Debug, Serialize)]
+#[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
 pub enum Status {
     ActiveSince(SecType),
     Idle,
 }
 
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, PartialEq, Clone, Deserialize)]
 pub struct Activity {
     /// timestamp for when the activity is created
     added_at: String,
@@ -31,7 +31,7 @@ impl Status {
     /// If the task has been idle, the elapsed time is 0.
     /// Active tasks elapsed time is the diff from
     /// since the task is active to the queries system time.
-    fn to_elapsed_secs(&self) -> SecType {
+    fn as_elapsed_secs(&self) -> SecType {
         match self {
             Status::ActiveSince(time0) => elapsed_since(*time0),
             Status::Idle => 0,
@@ -44,8 +44,8 @@ impl Serialize for Activity {
     /// Those fields are calculated on demand from stored
     /// values, like pretty prints.
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: serde::Serializer
+    where
+        S: serde::Serializer,
     {
         // This value seems to be unused in serde.
         let number_of_fields = 255;
@@ -82,18 +82,18 @@ impl Activity {
         // If this is not added and an active task is
         // activated again the start time stamp will change,
         // but the logged time remains the same!
-        self.logged_secs += self.status.to_elapsed_secs();
+        self.logged_secs += self.status.as_elapsed_secs();
         self.status = Status::ActiveSince(sys_now_secs());
     }
 
     pub fn stop(&mut self) {
-        self.logged_secs += self.status.to_elapsed_secs();
+        self.logged_secs += self.status.as_elapsed_secs();
         self.status = Status::Idle;
     }
 
     /// all logged secs plus tha latest active time secs if any.
     pub fn secs_since_creation(&self) -> SecType {
-        self.logged_secs + self.status.to_elapsed_secs()
+        self.logged_secs + self.status.as_elapsed_secs()
     }
 
     pub fn time_text(&self) -> String {
@@ -113,7 +113,10 @@ pub fn secs_to_hours_minutes(secs: SecType) -> (u8, u8) {
 }
 
 pub fn sys_now_secs() -> SecType {
-    SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs()
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs()
 }
 
 pub fn elapsed_secs(t_start: SecType, t_end: SecType) -> SecType {
@@ -124,14 +127,11 @@ pub fn elapsed_since(t_start: SecType) -> SecType {
     elapsed_secs(t_start, sys_now_secs())
 }
 
-
-
-
 #[cfg(test)]
 mod test {
     use super::*;
-    use std::thread::sleep;
     use serde_json;
+    use std::thread::sleep;
 
     #[test]
     fn task_timing_test() {
@@ -224,8 +224,12 @@ mod test {
         let task = Activity::new("task");
         assert!(serde_json::to_string(&task).unwrap().contains("added_at"));
         assert!(serde_json::to_string(&task).unwrap().contains("status"));
-        assert!(serde_json::to_string(&task).unwrap().contains("logged_secs"));
+        assert!(serde_json::to_string(&task)
+            .unwrap()
+            .contains("logged_secs"));
         assert!(serde_json::to_string(&task).unwrap().contains("name"));
-        assert!(serde_json::to_string(&task).unwrap().contains("all_time_pretty"));
+        assert!(serde_json::to_string(&task)
+            .unwrap()
+            .contains("all_time_pretty"));
     }
 }

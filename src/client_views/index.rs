@@ -1,5 +1,5 @@
-use actix_web::{get, HttpResponse, HttpRequest};
-use actix_files::{NamedFile};
+use actix_files::NamedFile;
+use actix_web::{get, HttpRequest, HttpResponse};
 
 #[get("/")]
 async fn index_view(req: HttpRequest) -> HttpResponse {
@@ -9,8 +9,10 @@ async fn index_view(req: HttpRequest) -> HttpResponse {
     let index_path_ref = index_path.clone();
     match NamedFile::open(index_path) {
         Ok(named_file) => named_file.into_response(&req),
-        Err(error) => HttpResponse::Ok().body(
-            format!("Error with index.html: {}. Expected path: {}.", error.to_string(), index_path_ref)
-        ),
+        Err(error) => HttpResponse::Ok().body(format!(
+            "Error with index.html: {}. Expected path: {}.",
+            error,
+            index_path_ref
+        )),
     }
 }
