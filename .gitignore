@@ -1,5 +1,5 @@
 storage.json
-activitytracker_db.json
+activitytracker_db*.json
 test_*.json
 
 /target
