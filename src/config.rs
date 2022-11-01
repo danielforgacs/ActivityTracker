@@ -1,4 +1,5 @@
 use std::io::prelude::*;
+use chrono::prelude::*;
 
 pub const ADDRESS: &str = "127.0.0.1";
 pub const PORT: &str = "8000";
@@ -36,12 +37,16 @@ impl Config {
                     .short('d')
                     .long("dbfile")
                     .help("File based database path.")
-                    .default_value("activitytracker_db.json"),
             ])
             .get_matches();
         let url = matches.get_one::<String>("url").unwrap().to_owned();
         let port = *matches.get_one::<u16>("port").unwrap();
-        let dbfile = matches.get_one::<String>("dbfile").unwrap().to_string();
+        let dbfile = match matches.get_one::<String>("dbfile") {
+            Some(dbfile) => dbfile.to_string(),
+            Option::None => {
+                format!("activitytracker_db_{}.json", Utc::now().date_naive())
+            }
+        };
         let mut dbpath = std::path::PathBuf::new();
         dbpath.push(dbfile);
         std::fs::File::create(&dbpath)
