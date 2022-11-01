@@ -8,7 +8,7 @@ use actix_web::{App, HttpServer};
 use api_views::views::*;
 use client_views::index::*;
 use std::sync::Mutex;
-use structs::taskmanager::TaskManager;
+use structs::activitymanager::TaskManager;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
