@@ -1,2 +1,2 @@
-mod task;
+mod activity;
 pub mod taskmanager;
