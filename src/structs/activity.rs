@@ -57,6 +57,19 @@ impl From<Activity> for ActivitySerial {
     }
 }
 
+impl From<ActivitySerial> for Activity {
+    fn from(activity_serial: ActivitySerial) -> Self {
+        Self {
+            added_at: activity_serial.added_at,
+            started_at: activity_serial.started_at,
+            active_days: activity_serial.active_days,
+            status: activity_serial.status,
+            logged_secs: activity_serial.logged_secs,
+            name: activity_serial.name,
+        }
+    }
+}
+
 impl Status {
     /// calculates elapsed time for queries.
     /// If the task has been idle, the elapsed time is 0.
