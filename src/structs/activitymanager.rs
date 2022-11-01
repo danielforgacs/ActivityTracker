@@ -13,7 +13,6 @@ const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
 #[derive(Debug, PartialEq, Clone)]
 pub struct TaskManager {
     path: std::path::PathBuf,
-    // tasks: Vec<Activity>,
     /// pretty system time timestamp for when the taskmanager started
     start_time_pretty: String,
     start_time: SecType,
@@ -22,7 +21,6 @@ pub struct TaskManager {
 impl TaskManager {
     pub fn new(path: std::path::PathBuf) -> Self {
         Self {
-            // tasks: Vec::new(),
             start_time_pretty: format!("{}", Local::now()),
             start_time: sys_now_secs(),
             path,
