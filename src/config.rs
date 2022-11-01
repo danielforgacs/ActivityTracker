@@ -18,15 +18,13 @@ impl Config {
                 env!("CARGO_MANIFEST_DIR"),
                 "/README.md"
             )))
-            .arg(
+            .args([
                 clap::Arg::new("url")
                     .short('u')
                     .long("url")
                     .value_name("URL")
                     .default_value(ADDRESS)
                     .help("Set the url to serve."),
-            )
-            .arg(
                 clap::Arg::new("port")
                     .short('p')
                     .long("port")
@@ -34,14 +32,12 @@ impl Config {
                     .value_parser(clap::value_parser!(u16).range(3000..))
                     .default_value(PORT)
                     .help("Set the localhost port to serve."),
-            )
-            .arg(
                 clap::Arg::new("dbfile")
                     .short('d')
                     .long("dbfile")
                     .help("File based database path.")
                     .default_value("timetracker.json"),
-            )
+            ])
             .get_matches();
         let url = matches.get_one::<String>("url").unwrap().to_owned();
         let port = *matches.get_one::<u16>("port").unwrap();
