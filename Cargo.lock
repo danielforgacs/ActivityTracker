@@ -3,6 +3,18 @@
 version = 3
 
 [[package]]
+name = "activitytracker"
+version = "2022.10.31"
+dependencies = [
+ "actix-files",
+ "actix-web",
+ "chrono",
+ "clap",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "actix-codec"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1199,18 +1211,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "65bb801831d812c562ae7d2bfb531f26e66e4e1f6b17307ba4149c5064710e5b"
 dependencies = [
  "time-core",
-]
-
-[[package]]
-name = "timetracker"
-version = "2022.10.31"
-dependencies = [
- "actix-files",
- "actix-web",
- "chrono",
- "clap",
- "serde",
- "serde_json",
 ]
 
 [[package]]

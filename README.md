@@ -1,4 +1,4 @@
-## Manual Task Time Tracker
+## Activity Tracker
 
 Web app to track time spent on activities.
 
