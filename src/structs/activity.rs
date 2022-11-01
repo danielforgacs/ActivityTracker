@@ -30,6 +30,33 @@ pub struct Activity {
     name: String,
 }
 
+#[derive(Debug, PartialEq, Clone, Deserialize)]
+pub struct ActivitySerial {
+    added_at: String,
+    started_at: Vec<String>,
+    active_days: Vec<String>,
+    status: Status,
+    logged_secs: SecType,
+    name: String,
+    logged_pretty: String,
+}
+
+impl From<Activity> for ActivitySerial {
+    fn from(activity: Activity) -> Self {
+        let (hours, mins) = secs_to_hours_minutes(activity.secs_since_creation());
+        let logged_pretty = format!("{:02}h:{:02}m", hours, mins);
+        Self {
+            added_at: activity.added_at,
+            started_at: activity.started_at,
+            active_days: activity.active_days,
+            status: activity.status,
+            logged_secs: activity.logged_secs,
+            name: activity.name,
+            logged_pretty,
+        }
+    }
+}
+
 impl Status {
     /// calculates elapsed time for queries.
     /// If the task has been idle, the elapsed time is 0.
@@ -245,5 +272,32 @@ mod test {
         assert!(serde_json::to_string(&task)
             .unwrap()
             .contains("all_time_pretty"));
+    }
+
+    #[test]
+    fn test_activityserial_from_activity() {
+        let mut activity = Activity::new("test-act01");
+        activity.stop();
+        activity.logged_secs = 120;
+        let activity_serial = ActivitySerial::from(activity);
+        assert_eq!(activity_serial.logged_pretty, "00h:02m");
+    }
+
+    #[test]
+    fn test_activityserial_from_activity_02() {
+        let mut activity = Activity::new("test-act01");
+        activity.stop();
+        activity.logged_secs = 60 * 60;
+        let activity_serial: ActivitySerial = activity.into();
+        assert_eq!(activity_serial.logged_pretty, "01h:00m");
+    }
+
+    #[test]
+    fn test_activityserial_from_activity_03() {
+        let mut activity = Activity::new("test-act01");
+        activity.stop();
+        activity.logged_secs = (60 * 60 * 2) + (60 * 5) + 30;
+        let activity_serial = ActivitySerial::from(activity);
+        assert_eq!(activity_serial.logged_pretty, "02h:05m");
     }
 }
