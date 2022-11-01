@@ -44,7 +44,8 @@ impl Config {
         let dbfile = match matches.get_one::<String>("dbfile") {
             Some(dbfile) => dbfile.to_string(),
             Option::None => {
-                format!("activitytracker_db_{}.json", Utc::now().date_naive())
+                // format!("activitytracker_db_{}.json", Utc::now().date_naive())
+                "activitytracker_db.json".to_string()
             }
         };
         let mut dbpath = std::path::PathBuf::new();
