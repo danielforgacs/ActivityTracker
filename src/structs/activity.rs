@@ -30,7 +30,7 @@ pub struct Activity {
     name: String,
 }
 
-#[derive(Debug, PartialEq, Clone, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
 pub struct ActivitySerial {
     added_at: String,
     started_at: Vec<String>,
