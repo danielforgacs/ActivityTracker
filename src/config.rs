@@ -12,7 +12,7 @@ pub struct Config {
 
 impl Config {
     fn new() -> Self {
-        let matches = clap::Command::new("timetracker")
+        let matches = clap::Command::new("activitytracker")
             .version(env!("CARGO_PKG_VERSION"))
             .about(include_str!(concat!(
                 env!("CARGO_MANIFEST_DIR"),
@@ -36,7 +36,7 @@ impl Config {
                     .short('d')
                     .long("dbfile")
                     .help("File based database path.")
-                    .default_value("timetracker.json"),
+                    .default_value("activitytracker_db.json"),
             ])
             .get_matches();
         let url = matches.get_one::<String>("url").unwrap().to_owned();
