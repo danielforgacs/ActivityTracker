@@ -1,4 +1,5 @@
 use chrono::Local;
+use chrono::prelude::*;
 use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -17,6 +18,7 @@ pub struct Activity {
     added_at: String,
     // All timestamps when this activity got activated.
     started_at: Vec<String>,
+    active_days: Vec<String>,
     /// timespamp for when the activitiy was last activated.
     /// This can be either TaskStatus::Idle when the task is stopped
     /// or TaskStatus::StartedAt when it's running.
@@ -54,6 +56,7 @@ impl Serialize for Activity {
         let mut state = serializer.serialize_struct("Task", number_of_fields)?;
         state.serialize_field("added_at", &self.added_at)?;
         state.serialize_field("started_at", &self.started_at)?;
+        state.serialize_field("active_days", &self.active_days)?;
         state.serialize_field("status", &self.status)?;
         state.serialize_field("logged_secs", &self.logged_secs)?;
         state.serialize_field("name", &self.name)?;
@@ -69,6 +72,8 @@ impl Activity {
         Self {
             added_at: format!("{}", Local::now()),
             started_at: vec![format!("{}", Local::now())],
+            // Days on which the activity was active
+            active_days: vec![Utc::now().date_naive().to_string()],
             status: Status::ActiveSince(sys_now_secs()),
             logged_secs: 0,
             name: name.to_string(),
@@ -88,6 +93,10 @@ impl Activity {
         // but the logged time remains the same!
         self.logged_secs += self.status.as_elapsed_secs();
         self.status = Status::ActiveSince(sys_now_secs());
+        let date = Utc::now().date_naive().to_string();
+        if !self.active_days.contains(&date) {
+            self.active_days.push(date);
+        }
         self.started_at.push(format!("{}", Local::now()));
     }
 
