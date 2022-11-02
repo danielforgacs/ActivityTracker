@@ -30,7 +30,6 @@ impl TaskManager {
     }
 
     fn read(&self) -> Vec<Activity> {
-        dbg!(&self.path);
         let mut file_handle = std::fs::File::open(&self.path).unwrap();
         let mut buf = String::new();
         file_handle.read_to_string(&mut buf).unwrap();
