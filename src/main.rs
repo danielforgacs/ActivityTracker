@@ -39,7 +39,6 @@ async fn main() -> std::io::Result<()> {
             return Ok(());
         }
     };
-    dbg!(&config);
     println!("web: http://{}:{}/", config.url, config.port);
     println!("api: http://{}:{}/api/times", config.url, config.port);
 

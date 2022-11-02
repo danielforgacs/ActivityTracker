@@ -101,6 +101,5 @@ pub fn get_congig() -> Result<Config, String> {
         config.dbpath(std::path::Path::new(path).to_path_buf());
     }
     let config = config.finish()?;
-    dbg!(&config);
     Ok(config)
 }
