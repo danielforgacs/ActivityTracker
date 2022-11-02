@@ -1,5 +1,4 @@
 use std::io::prelude::*;
-use chrono::prelude::*;
 
 pub const ADDRESS: &str = "127.0.0.1";
 pub const PORT: &str = "8000";
@@ -44,7 +43,6 @@ impl Config {
         let dbfile = match matches.get_one::<String>("dbfile") {
             Some(dbfile) => dbfile.to_string(),
             Option::None => {
-                // format!("activitytracker_db_{}.json", Utc::now().date_naive())
                 "activitytracker_db.json".to_string()
             }
         };
