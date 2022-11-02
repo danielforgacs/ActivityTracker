@@ -3,6 +3,7 @@ mod client_views;
 mod config;
 mod structs;
 mod prelude {
+    pub use std::fs::File;
     pub use std::io::prelude::*;
     pub use std::sync::Mutex;
     pub use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -31,7 +32,14 @@ use prelude::*;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let config = config::get_congig();
+    let config = match config::get_congig() {
+        Ok(config) => config,
+        Err(msg) => {
+            println!("{}", msg);
+            return Ok(());
+        }
+    };
+    dbg!(&config);
     println!("web: http://{}:{}/", config.url, config.port);
     println!("api: http://{}:{}/api/times", config.url, config.port);
 
