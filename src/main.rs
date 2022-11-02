@@ -4,6 +4,7 @@ mod config;
 mod structs;
 mod prelude {
     pub use std::fs::File;
+    pub use std::path;
     pub use std::io::prelude::*;
     pub use std::sync::Mutex;
     pub use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -23,8 +24,6 @@ mod prelude {
     pub use super::structs::activity::*;
     pub use super::structs::activitymanager::TaskManager;
 
-    pub const ADDRESS: &str = "127.0.0.1";
-    pub const PORT: &str = "8000";
     pub const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
     pub type SecType = u64;
 }

@@ -4,25 +4,22 @@ use crate::prelude::*;
 pub struct Config {
     pub url: String,
     pub port: u16,
-    pub dbpath: std::path::PathBuf,
+    pub dbpath: path::PathBuf,
 }
 
 #[derive(Debug)]
 struct ConfigBuilder {
     url: String,
     port: u16,
-    dbpath: std::path::PathBuf,
+    dbpath: path::PathBuf,
 }
 
 impl ConfigBuilder {
     fn new() -> Self {
-        let mut path = std::path::PathBuf::new();
-        path.push("activitytracker_db.json");
-
         ConfigBuilder {
-            url: ADDRESS.to_string(),
-            port: 8000,
-            dbpath: path,
+            url: "".to_string(),
+            port: 0,
+            dbpath: path::Path::new("activitytracker_db.json").to_path_buf(),
         }
     }
 
@@ -47,7 +44,7 @@ impl ConfigBuilder {
         self
     }
 
-    fn dbpath(&mut self, path: std::path::PathBuf) -> &mut Self {
+    fn dbpath(&mut self, path: path::PathBuf) -> &mut Self {
         self.dbpath = path;
         self
     }
@@ -57,7 +54,7 @@ impl Config {
     fn new(
         url: String,
         port: u16,
-        dbpath: std::path::PathBuf,
+        dbpath: path::PathBuf,
     ) -> Self {
         Self { url, port, dbpath }
     }
@@ -74,15 +71,13 @@ pub fn get_congig() -> Result<Config, String> {
             clap::Arg::new("url")
                 .short('u')
                 .long("url")
-                .value_name("URL")
-                .default_value(ADDRESS)
+                .default_value("127.0.0.1")
                 .help("Set the url to serve."),
             clap::Arg::new("port")
                 .short('p')
                 .long("port")
-                .value_name("PORT")
                 .value_parser(clap::value_parser!(u16).range(3000..))
-                .default_value(PORT)
+                .default_value("8000")
                 .help("Set the localhost port to serve."),
             clap::Arg::new("dbfile")
                 .short('d')
@@ -98,7 +93,7 @@ pub fn get_congig() -> Result<Config, String> {
         config.port(*port);
     }
     if let Some(path) = matches.get_one::<String>("dbfile") {
-        config.dbpath(std::path::Path::new(path).to_path_buf());
+        config.dbpath(path::Path::new(path).to_path_buf());
     }
     let config = config.finish()?;
     Ok(config)
