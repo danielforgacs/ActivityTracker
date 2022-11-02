@@ -145,16 +145,14 @@
             update_activity_btn(task_button, task)
             set_button_status(task_button, task)
         }
-        for (activity_div of activities_div.childNodes) {
+        loop1: for (activity_div of activities_div.childNodes) {
             let found = false
             for (name of task_names.reverse()) {
                 if (activity_div.id == name) {
-                    found = true
+                    continue loop1
                 }
             }
-            if (!found) {
-                activities_div.removeChild(activity_div)
-            }
+            activities_div.removeChild(activity_div)
         }
     }
 
