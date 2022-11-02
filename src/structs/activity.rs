@@ -1,12 +1,12 @@
 use crate::prelude::*;
 
-#[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug, Serialize, Deserialize)]
 pub enum Status {
     ActiveSince(SecType),
     Idle,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Activity {
     /// timestamp for when the activity is created
     added_at: String,
@@ -24,7 +24,7 @@ pub struct Activity {
     name: String,
 }
 
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Deserialize, Serialize)]
 pub struct ActivitySerial {
     added_at: String,
     started_at: Vec<String>,

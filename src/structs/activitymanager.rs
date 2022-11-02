@@ -4,7 +4,7 @@ use crate::prelude::*;
 /// It manages a vec of tasks.
 /// Only one task can be active at a time.
 /// Running tasks are exclusive, starting a task will stop all other tasks.
-#[derive(Debug, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone)]
 pub struct TaskManager {
     path: std::path::PathBuf,
     /// pretty system time timestamp for when the taskmanager started
@@ -34,7 +34,7 @@ impl TaskManager {
         let mut buf = String::new();
         file_handle.read_to_string(&mut buf).unwrap();
         let activity_serial: Vec<ActivitySerial> = serde_json::from_str(buf.as_str()).unwrap();
-        let data: Vec<Activity> = activity_serial.into_iter().map(|a| Activity::from(a)).collect();
+        let data: Vec<Activity> = activity_serial.into_iter().map(Activity::from).collect();
         data
     }
 
@@ -42,12 +42,12 @@ impl TaskManager {
         self
             .read()
             .into_iter()
-            .map(|a| ActivitySerial::from(a))
+            .map(ActivitySerial::from)
             .collect::<Vec<ActivitySerial>>()
     }
 
     fn write(&self, data: Vec<Activity>) {
-        let activity_serials: Vec<ActivitySerial> = data.into_iter().map(|a| ActivitySerial::from(a)).collect();
+        let activity_serials: Vec<ActivitySerial> = data.into_iter().map(ActivitySerial::from).collect();
         let data_serialised = serde_json::to_string_pretty(&activity_serials).unwrap();
         let mut file_handle = std::fs::File::create(&self.path).unwrap();
         file_handle
