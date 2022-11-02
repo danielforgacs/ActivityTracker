@@ -36,6 +36,14 @@ impl TaskManager {
         data
     }
 
+    fn read_as_serialised(&self) -> Vec<ActivitySerial> {
+        let mut file_handle = std::fs::File::open(&self.path).unwrap();
+        let mut buf = String::new();
+        file_handle.read_to_string(&mut buf).unwrap();
+        let activity_serial: Vec<ActivitySerial> = serde_json::from_str(buf.as_str()).unwrap();
+        activity_serial
+    }
+
     fn write(&self, data: Vec<Activity>) {
         let activity_serials: Vec<ActivitySerial> = data.into_iter().map(|a| ActivitySerial::from(a)).collect();
         let data_serialised = serde_json::to_string_pretty(&activity_serials).unwrap();
@@ -115,7 +123,7 @@ impl Serialize for TaskManager {
         let (tdelta_hh, tdelta_mm) = secs_to_hours_minutes(time_diff);
         let time_diff_pretty = &format!("{:02}h:{:02}m", tdelta_hh, tdelta_mm);
 
-        state.serialize_field("tasks", &self.read())?;
+        state.serialize_field("tasks", &self.read_as_serialised())?;
         state.serialize_field("start_time_pretty", &self.start_time_pretty)?;
         state.serialize_field("elapsed_day", &elapsed_day)?;
         state.serialize_field("total_activity_time", &total_time)?;

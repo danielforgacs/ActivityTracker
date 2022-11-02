@@ -12,7 +12,7 @@ pub enum Status {
     Idle,
 }
 
-#[derive(Debug, PartialEq, Clone, Deserialize)]
+#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Activity {
     /// timestamp for when the activity is created
     added_at: String,
@@ -83,29 +83,29 @@ impl Status {
     }
 }
 
-impl Serialize for Activity {
-    /// The custom serialiser adds fields that are not worth storing.
-    /// Those fields are calculated on demand from stored
-    /// values, like pretty prints.
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: serde::Serializer,
-    {
-        // This value seems to be unused in serde.
-        let number_of_fields = 255;
-        let mut state = serializer.serialize_struct("Task", number_of_fields)?;
-        state.serialize_field("added_at", &self.added_at)?;
-        state.serialize_field("started_at", &self.started_at)?;
-        state.serialize_field("active_days", &self.active_days)?;
-        state.serialize_field("status", &self.status)?;
-        state.serialize_field("logged_secs", &self.logged_secs)?;
-        state.serialize_field("name", &self.name)?;
-        let (hours, mins) = secs_to_hours_minutes(self.secs_since_creation());
-        let all_time_pretty = format!("{}h:{:02}m", hours, mins);
-        state.serialize_field("all_time_pretty", &all_time_pretty)?;
-        state.end()
-    }
-}
+// impl Serialize for Activity {
+//     /// The custom serialiser adds fields that are not worth storing.
+//     /// Those fields are calculated on demand from stored
+//     /// values, like pretty prints.
+//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+//     where
+//         S: serde::Serializer,
+//     {
+//         // This value seems to be unused in serde.
+//         let number_of_fields = 255;
+//         let mut state = serializer.serialize_struct("Task", number_of_fields)?;
+//         state.serialize_field("added_at", &self.added_at)?;
+//         state.serialize_field("started_at", &self.started_at)?;
+//         state.serialize_field("active_days", &self.active_days)?;
+//         state.serialize_field("status", &self.status)?;
+//         state.serialize_field("logged_secs", &self.logged_secs)?;
+//         state.serialize_field("name", &self.name)?;
+//         let (hours, mins) = secs_to_hours_minutes(self.secs_since_creation());
+//         let all_time_pretty = format!("{}h:{:02}m", hours, mins);
+//         state.serialize_field("all_time_pretty", &all_time_pretty)?;
+//         state.end()
+//     }
+// }
 
 impl Activity {
     pub fn new(name: &str) -> Self {

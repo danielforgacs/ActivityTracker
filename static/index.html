@@ -110,7 +110,7 @@
 
 
     function update_activity_btn(button, task) {
-        let new_text = `${task.name} - ${task.all_time_pretty}`
+        let new_text = `${task.name} - ${task.logged_pretty}`
         if (button.innerHTML != new_text) {
             button.innerHTML = new_text
         }
