@@ -65,7 +65,7 @@ pub fn get_congig() -> Result<Config, String> {
         .version(env!("CARGO_PKG_VERSION"))
         .about(include_str!(concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/README.md"
+            "/about.txt"
         )))
         .args([
             clap::Arg::new("url")
