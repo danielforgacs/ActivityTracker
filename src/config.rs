@@ -43,10 +43,12 @@ impl Config {
         };
         let mut dbpath = std::path::PathBuf::new();
         dbpath.push(dbfile);
-        std::fs::File::create(&dbpath)
-            .unwrap()
-            .write_all(b"[]")
-            .unwrap();
+        if !dbpath.is_file() {
+            std::fs::File::create(&dbpath)
+                .unwrap()
+                .write_all(b"[]")
+                .unwrap();
+        }
         Config { url, port, dbpath }
     }
 }
