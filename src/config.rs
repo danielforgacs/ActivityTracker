@@ -30,7 +30,8 @@ impl ConfigBuilder {
                 return Err("Could not write initial database.".to_string());
             }
         }
-        let canon_path = self.dbpath
+        let canon_path = self
+            .dbpath
             .clone()
             .canonicalize()
             .map_err(|err| format!("Error getting canonicised path: {}", err))?;
@@ -42,7 +43,7 @@ impl ConfigBuilder {
         self
     }
 
-    fn port(&mut self, port: u16) -> &mut Self{
+    fn port(&mut self, port: u16) -> &mut Self {
         self.port = port;
         self
     }
@@ -54,11 +55,7 @@ impl ConfigBuilder {
 }
 
 impl Config {
-    fn new(
-        url: String,
-        port: u16,
-        dbpath: path::PathBuf,
-    ) -> Self {
+    fn new(url: String, port: u16, dbpath: path::PathBuf) -> Self {
         Self { url, port, dbpath }
     }
 }

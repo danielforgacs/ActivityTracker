@@ -4,8 +4,8 @@ mod config;
 mod structs;
 mod prelude {
     pub use std::fs::File;
-    pub use std::path;
     pub use std::io::prelude::*;
+    pub use std::path;
     pub use std::sync::Mutex;
     pub use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
