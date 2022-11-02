@@ -1,8 +1,4 @@
-use chrono::prelude::*;
-use serde::{Deserialize, Serialize};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
-
-pub type SecType = u64;
+use crate::prelude::*;
 
 #[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
 pub enum Status {

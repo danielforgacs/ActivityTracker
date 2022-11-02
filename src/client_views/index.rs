@@ -1,5 +1,4 @@
-use actix_files::NamedFile;
-use actix_web::{get, HttpRequest, HttpResponse};
+use crate::prelude::*;
 
 #[get("/")]
 async fn index_view(req: HttpRequest) -> HttpResponse {

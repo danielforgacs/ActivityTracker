@@ -1,7 +1,4 @@
-use std::io::prelude::*;
-
-pub const ADDRESS: &str = "127.0.0.1";
-pub const PORT: &str = "8000";
+use crate::prelude::*;
 
 #[derive(Debug)]
 pub struct Config {

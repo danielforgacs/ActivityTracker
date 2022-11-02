@@ -1,10 +1,4 @@
-use super::activity::*;
-use chrono::prelude::*;
-use serde::ser::{SerializeStruct, Serializer};
-use serde::{Serialize, Deserialize};
-use std::io::prelude::*;
-
-const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
+use crate::prelude::*;
 
 /// The task manager is the only struct one exposed.
 /// It manages a vec of tasks.
