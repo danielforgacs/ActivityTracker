@@ -1,7 +1,7 @@
 use super::activity::*;
 use chrono::prelude::*;
 use serde::ser::{SerializeStruct, Serializer};
-use serde::Serialize;
+use serde::{Serialize, Deserialize};
 use std::io::prelude::*;
 
 const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
@@ -16,6 +16,13 @@ pub struct TaskManager {
     /// pretty system time timestamp for when the taskmanager started
     start_time_pretty: String,
     start_time: SecType,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct ActivityManagerSerial {
+    date: String,
+    activities: Vec<Activity>,
+    start_time_pretty: String,
 }
 
 impl TaskManager {
@@ -38,11 +45,11 @@ impl TaskManager {
     }
 
     fn read_as_serialised(&self) -> Vec<ActivitySerial> {
-        let mut file_handle = std::fs::File::open(&self.path).unwrap();
-        let mut buf = String::new();
-        file_handle.read_to_string(&mut buf).unwrap();
-        let activity_serial: Vec<ActivitySerial> = serde_json::from_str(buf.as_str()).unwrap();
-        activity_serial
+        self
+            .read()
+            .into_iter()
+            .map(|a| ActivitySerial::from(a))
+            .collect::<Vec<ActivitySerial>>()
     }
 
     fn write(&self, data: Vec<Activity>) {
