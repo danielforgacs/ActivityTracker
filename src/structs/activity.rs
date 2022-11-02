@@ -160,7 +160,6 @@ pub fn elapsed_since(t_start: SecType) -> SecType {
 #[cfg(test)]
 mod test {
     use super::*;
-    use serde_json;
     use std::thread::sleep;
 
     #[test]
@@ -247,20 +246,6 @@ mod test {
         assert_eq!(secs_to_hours_minutes(secs), (3, 0));
         let secs: SecType = 60 * 60 * 3 + 60;
         assert_eq!(secs_to_hours_minutes(secs), (3, 1));
-    }
-
-    #[test]
-    fn custom_task_serializer() {
-        let task = Activity::new("task");
-        assert!(serde_json::to_string(&task).unwrap().contains("added_at"));
-        assert!(serde_json::to_string(&task).unwrap().contains("status"));
-        assert!(serde_json::to_string(&task)
-            .unwrap()
-            .contains("logged_secs"));
-        assert!(serde_json::to_string(&task).unwrap().contains("name"));
-        assert!(serde_json::to_string(&task)
-            .unwrap()
-            .contains("all_time_pretty"));
     }
 
     #[test]
