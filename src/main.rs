@@ -38,10 +38,10 @@ async fn main() -> std::io::Result<()> {
             return Ok(());
         }
     };
-    println!("web: http://{}:{}/", config.url, config.port);
-    println!("api: http://{}:{}/api/times", config.url, config.port);
+    println!("web: http://{}:{}/", config.get_url(), config.get_port());
+    println!("api: http://{}:{}/api/times", config.get_url(), config.get_port());
 
-    let data = Data::new(Mutex::new(TaskManager::new(config.dbpath)));
+    let data = Data::new(Mutex::new(TaskManager::new(config.get_dbpath().clone())));
 
     HttpServer::new(move || {
         App::new()
@@ -55,7 +55,7 @@ async fn main() -> std::io::Result<()> {
                     .service(pretty),
             )
     })
-    .bind((config.url, config.port))?
+    .bind((config.get_url().clone(), config.get_port().clone()))?
     .workers(4)
     .run()
     .await

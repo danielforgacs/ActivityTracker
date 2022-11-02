@@ -2,9 +2,9 @@ use crate::prelude::*;
 
 #[derive(Debug)]
 pub struct Config {
-    pub url: String,
-    pub port: u16,
-    pub dbpath: path::PathBuf,
+    url: String,
+    port: u16,
+    dbpath: path::PathBuf,
 }
 
 #[derive(Debug)]
@@ -13,6 +13,25 @@ struct ConfigBuilder {
     port: u16,
     dbpath: path::PathBuf,
 }
+
+impl Config {
+    fn new(url: String, port: u16, dbpath: path::PathBuf) -> Self {
+        Self { url, port, dbpath }
+    }
+
+    pub fn get_url(&self) -> &String {
+        &self.url
+    }
+
+    pub fn get_port(&self) -> &u16 {
+        &self.port
+    }
+
+    pub fn get_dbpath(&self) -> &path::PathBuf {
+        &self.dbpath
+    }
+}
+
 
 impl ConfigBuilder {
     fn new() -> Self {
@@ -51,12 +70,6 @@ impl ConfigBuilder {
     fn dbpath(&mut self, path: path::PathBuf) -> &mut Self {
         self.dbpath = path;
         self
-    }
-}
-
-impl Config {
-    fn new(url: String, port: u16, dbpath: path::PathBuf) -> Self {
-        Self { url, port, dbpath }
     }
 }
 
