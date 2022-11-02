@@ -109,9 +109,10 @@ impl Status {
 
 impl Activity {
     pub fn new(name: &str) -> Self {
+        let now = Utc::now();
         Self {
-            added_at: format!("{}", Local::now()),
-            started_at: vec![format!("{}", Local::now())],
+            added_at: format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S")),
+            started_at: vec![format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S"))],
             // Days on which the activity was active
             active_days: vec![Utc::now().date_naive().to_string()],
             status: Status::ActiveSince(sys_now_secs()),
@@ -137,7 +138,8 @@ impl Activity {
         if !self.active_days.contains(&date) {
             self.active_days.push(date);
         }
-        self.started_at.push(format!("{}", Local::now()));
+        let now = Utc::now();
+        self.started_at.push(format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S")));
     }
 
     pub fn stop(&mut self) {

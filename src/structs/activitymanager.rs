@@ -1,5 +1,6 @@
 use super::activity::*;
 use chrono::Local;
+use chrono::prelude::*;
 use serde::ser::{SerializeStruct, Serializer};
 use serde::Serialize;
 use std::io::prelude::*;
@@ -20,8 +21,9 @@ pub struct TaskManager {
 
 impl TaskManager {
     pub fn new(path: std::path::PathBuf) -> Self {
+        let now = Utc::now();
         Self {
-            start_time_pretty: format!("{}", Local::now()),
+            start_time_pretty: format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S")),
             start_time: sys_now_secs(),
             path,
         }
