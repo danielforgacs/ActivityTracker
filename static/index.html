@@ -29,14 +29,6 @@
                     <td>start time</td>
                     <td id="start_time"></td>
                 </tr>
-                <!-- <tr>
-                    <td>elapsed day</td>
-                    <td id="elapsed_day"></td>
-                </tr>
-                <tr>
-                    <td>time diff</td>
-                    <td id="time_diff"></td>
-                </tr> -->
                 <tr>
                     <td>day length</td>
                     <td id="day_length"></td>
@@ -73,10 +65,8 @@
     const stoppedStatus = 'Idle'
 
     let start_time_tag = document.getElementById('start_time')
-    // let elapsed_day_tag = document.getElementById('elapsed_day')
     let day_length_tag = document.getElementById('day_length')
     let total_activity_time_tag = document.getElementById('total_activity_time')
-    // let time_diff_tag = document.getElementById('time_diff')
     let time_left_tag = document.getElementById('time_left')
     let activities_div = document.getElementById('activities')
 
@@ -101,9 +91,7 @@
 
     function set_header_values(data) {
         start_time_tag.innerHTML = data.start_time_pretty
-        // elapsed_day_tag.innerHTML = data.elapsed_day
         total_activity_time_tag.innerHTML = data.total_activity_time
-        // time_diff_tag.innerHTML = data.time_difference
         day_length_tag.innerHTML = data.day_length
         time_left_tag.innerHTML = `<strong>${data.time_left}</strong>`
     }
@@ -137,22 +125,34 @@
             </button>
         </form>
         `
-        let activity_form = document.createElement('div')
-        activity_form.innerHTML = acivity_btn_template
-        activities_div.appendChild(activity_form)
+        let activity_form_div = document.createElement('div')
+        activity_form_div.innerHTML = acivity_btn_template
+        activity_form_div.id = task.name
+        activities_div.appendChild(activity_form_div)
         let task_button = document.getElementById(activityBtnIDprefix+task.name)
         return task_button
     }
 
 
     function manage_activity_buttons(data) {
+        let task_names = []
         for (task of data.tasks) {
+            task_names.push(task.name)
             let task_button = document.getElementById(activityBtnIDprefix+task.name)
             if (task_button === null) {
                 task_button = mk_activity_button(task)
             }
             update_activity_btn(task_button, task)
             set_button_status(task_button, task)
+        }
+        loop1: for (activity_div of activities_div.childNodes) {
+            let found = false
+            for (name of task_names.reverse()) {
+                if (activity_div.id == name) {
+                    continue loop1
+                }
+            }
+            activities_div.removeChild(activity_div)
         }
     }
 
