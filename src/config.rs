@@ -32,16 +32,14 @@ impl Config {
                 clap::Arg::new("dbfile")
                     .short('d')
                     .long("dbfile")
-                    .help("File based database path.")
+                    .help("File based database path."),
             ])
             .get_matches();
         let url = matches.get_one::<String>("url").unwrap().to_owned();
         let port = *matches.get_one::<u16>("port").unwrap();
         let dbfile = match matches.get_one::<String>("dbfile") {
             Some(dbfile) => dbfile.to_string(),
-            Option::None => {
-                "activitytracker_db.json".to_string()
-            }
+            Option::None => "activitytracker_db.json".to_string(),
         };
         let mut dbpath = std::path::PathBuf::new();
         dbpath.push(dbfile);

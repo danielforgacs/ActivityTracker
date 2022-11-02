@@ -5,23 +5,22 @@ mod structs;
 mod prelude {
     pub use std::io::prelude::*;
     pub use std::sync::Mutex;
-    pub use std::time::{UNIX_EPOCH, SystemTime, Duration};
+    pub use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
+    pub use actix_files::NamedFile;
     pub use actix_web::web::{self, Data};
+    pub use actix_web::web::{Json, Path};
+    pub use actix_web::{get, HttpRequest, HttpResponse};
+    pub use actix_web::{post, Responder, Result};
     pub use actix_web::{App, HttpServer};
     pub use chrono::prelude::*;
     pub use serde::ser::{SerializeStruct, Serializer};
-    pub use serde::{Serialize, Deserialize};
-    pub use actix_files::NamedFile;
-    pub use actix_web::{get, HttpRequest, HttpResponse};
-    pub use actix_web::web::{Json, Path};
-    pub use actix_web::{post, Responder, Result};
+    pub use serde::{Deserialize, Serialize};
 
-
-    pub use super::structs::activitymanager::TaskManager;
-    pub use super::structs::activity::*;
     pub use super::api_views::views::*;
     pub use super::client_views::index::*;
+    pub use super::structs::activity::*;
+    pub use super::structs::activitymanager::TaskManager;
 
     pub const ADDRESS: &str = "127.0.0.1";
     pub const PORT: &str = "8000";
@@ -29,7 +28,6 @@ mod prelude {
     pub type SecType = u64;
 }
 use prelude::*;
-
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {

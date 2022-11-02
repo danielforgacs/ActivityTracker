@@ -82,7 +82,11 @@ impl Activity {
         let now = Utc::now();
         Self {
             added_at: format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S")),
-            started_at: vec![format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S"))],
+            started_at: vec![format!(
+                "{} {}",
+                now.date_naive(),
+                now.time().format("%H:%M:%S")
+            )],
             // Days on which the activity was active
             active_days: vec![Utc::now().date_naive().to_string()],
             status: Status::ActiveSince(sys_now_secs()),
@@ -109,7 +113,11 @@ impl Activity {
             self.active_days.push(date);
         }
         let now = Utc::now();
-        self.started_at.push(format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S")));
+        self.started_at.push(format!(
+            "{} {}",
+            now.date_naive(),
+            now.time().format("%H:%M:%S")
+        ));
     }
 
     pub fn stop(&mut self) {

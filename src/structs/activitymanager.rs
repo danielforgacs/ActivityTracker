@@ -39,15 +39,15 @@ impl TaskManager {
     }
 
     fn read_as_serialised(&self) -> Vec<ActivitySerial> {
-        self
-            .read()
+        self.read()
             .into_iter()
             .map(ActivitySerial::from)
             .collect::<Vec<ActivitySerial>>()
     }
 
     fn write(&self, data: Vec<Activity>) {
-        let activity_serials: Vec<ActivitySerial> = data.into_iter().map(ActivitySerial::from).collect();
+        let activity_serials: Vec<ActivitySerial> =
+            data.into_iter().map(ActivitySerial::from).collect();
         let data_serialised = serde_json::to_string_pretty(&activity_serials).unwrap();
         let mut file_handle = std::fs::File::create(&self.path).unwrap();
         file_handle
