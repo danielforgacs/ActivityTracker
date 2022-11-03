@@ -63,8 +63,10 @@ impl TaskManager {
         let mut result = format!("start time:         {}", self.start_time_pretty.to_owned());
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
         result.push_str(&format!("\nelapsed day:        {:02}h:{:02}m", hh, mm));
-        let total_activity_time: SecType =
-            db_io::read(&self.path).iter().map(|t| t.secs_since_creation()).sum();
+        let total_activity_time: SecType = db_io::read(&self.path)
+            .iter()
+            .map(|t| t.secs_since_creation())
+            .sum();
         let (hours, minutes) = secs_to_hours_minutes(total_activity_time);
         result.push_str(&format!(
             "\ntotal acivity time: {:02}h:{:02}m",
@@ -89,7 +91,10 @@ impl TaskManager {
     }
 
     fn total_activity_time(&self) -> SecType {
-        db_io::read(&self.path).iter().map(|t| t.secs_since_creation()).sum()
+        db_io::read(&self.path)
+            .iter()
+            .map(|t| t.secs_since_creation())
+            .sum()
     }
 
     pub fn times(&self) -> ActivityManagerSerial {
@@ -230,7 +235,10 @@ mod test {
         tm.start_activity("a");
         tm.start_activity("a");
         assert_eq!(
-            db_io::read(&path).iter().map(|f| f.name()).collect::<Vec<String>>(),
+            db_io::read(&path)
+                .iter()
+                .map(|f| f.name())
+                .collect::<Vec<String>>(),
             vec!["a"]
         );
     }

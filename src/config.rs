@@ -32,7 +32,6 @@ impl Config {
     }
 }
 
-
 impl ConfigBuilder {
     fn new() -> Self {
         ConfigBuilder {
