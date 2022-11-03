@@ -1,61 +1,112 @@
-use std::io::prelude::*;
-
-pub const ADDRESS: &str = "127.0.0.1";
-pub const PORT: &str = "8000";
+use crate::prelude::*;
 
 #[derive(Debug)]
 pub struct Config {
-    pub url: String,
-    pub port: u16,
-    pub dbpath: std::path::PathBuf,
+    url: String,
+    port: u16,
+    dbpath: path::PathBuf,
+}
+
+#[derive(Debug)]
+struct ConfigBuilder {
+    url: String,
+    port: u16,
+    dbpath: path::PathBuf,
 }
 
 impl Config {
-    fn new() -> Self {
-        let matches = clap::Command::new("activitytracker")
-            .version(env!("CARGO_PKG_VERSION"))
-            .about(include_str!(concat!(
-                env!("CARGO_MANIFEST_DIR"),
-                "/README.md"
-            )))
-            .args([
-                clap::Arg::new("url")
-                    .short('u')
-                    .long("url")
-                    .value_name("URL")
-                    .default_value(ADDRESS)
-                    .help("Set the url to serve."),
-                clap::Arg::new("port")
-                    .short('p')
-                    .long("port")
-                    .value_name("PORT")
-                    .value_parser(clap::value_parser!(u16).range(3000..))
-                    .default_value(PORT)
-                    .help("Set the localhost port to serve."),
-                clap::Arg::new("dbfile")
-                    .short('d')
-                    .long("dbfile")
-                    .help("File based database path.")
-            ])
-            .get_matches();
-        let url = matches.get_one::<String>("url").unwrap().to_owned();
-        let port = *matches.get_one::<u16>("port").unwrap();
-        let dbfile = match matches.get_one::<String>("dbfile") {
-            Some(dbfile) => dbfile.to_string(),
-            Option::None => {
-                "activitytracker_db.json".to_string()
-            }
-        };
-        let mut dbpath = std::path::PathBuf::new();
-        dbpath.push(dbfile);
-        std::fs::File::create(&dbpath)
-            .unwrap()
-            .write_all(b"[]")
-            .unwrap();
-        Config { url, port, dbpath }
+    fn new(url: String, port: u16, dbpath: path::PathBuf) -> Self {
+        Self { url, port, dbpath }
+    }
+
+    pub fn get_url(&self) -> &String {
+        &self.url
+    }
+
+    pub fn get_port(&self) -> &u16 {
+        &self.port
+    }
+
+    pub fn get_dbpath(&self) -> &path::PathBuf {
+        &self.dbpath
     }
 }
 
-pub fn get_congig() -> Config {
-    Config::new()
+impl ConfigBuilder {
+    fn new() -> Self {
+        ConfigBuilder {
+            url: "".to_string(),
+            port: 0,
+            dbpath: path::Path::new("activitytracker_db.json").to_path_buf(),
+        }
+    }
+
+    fn finish(&self) -> Result<Config, String> {
+        if !self.dbpath.is_file() {
+            let byte_count = File::create(&self.dbpath).unwrap().write(b"[]").unwrap();
+            if byte_count != b"[]".len() {
+                return Err("Could not write initial database.".to_string());
+            }
+        }
+        let canon_path = self
+            .dbpath
+            .clone()
+            .canonicalize()
+            .map_err(|err| format!("Error getting canonicised path: {}", err))?;
+        Ok(Config::new(self.url.clone(), self.port, canon_path))
+    }
+
+    fn url(&mut self, url: String) -> &mut Self {
+        self.url = url;
+        self
+    }
+
+    fn port(&mut self, port: u16) -> &mut Self {
+        self.port = port;
+        self
+    }
+
+    fn dbpath(&mut self, path: path::PathBuf) -> &mut Self {
+        self.dbpath = path;
+        self
+    }
+}
+
+pub fn get_congig() -> Result<Config, String> {
+    let matches = clap::Command::new("activitytracker")
+        .version(env!("CARGO_PKG_VERSION"))
+        .about(include_str!(concat!(
+            env!("CARGO_MANIFEST_DIR"),
+            "/about.txt"
+        )))
+        .args([
+            clap::Arg::new("url")
+                .short('u')
+                .long("url")
+                .default_value("127.0.0.1")
+                .help("Set the url to serve."),
+            clap::Arg::new("port")
+                .short('p')
+                .long("port")
+                .value_parser(clap::value_parser!(u16).range(3000..))
+                .default_value("8000")
+                .help("Set the localhost port to serve."),
+            clap::Arg::new("dbfile")
+                .short('d')
+                .long("dbfile")
+                .help("File based database path."),
+        ])
+        .get_matches();
+    let mut config = ConfigBuilder::new();
+    if let Some(url) = matches.get_one::<String>("url") {
+        config.url(url.clone());
+    }
+    if let Some(port) = matches.get_one::<u16>("port") {
+        config.port(*port);
+    }
+    if let Some(path) = matches.get_one::<String>("dbfile") {
+        config.dbpath(path::Path::new(path).to_path_buf());
+    }
+    let config = config.finish()?;
+    Ok(config)
 }

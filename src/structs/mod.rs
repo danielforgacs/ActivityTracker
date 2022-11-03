@@ -1,2 +1,2 @@
-mod activity;
+pub mod activity;
 pub mod activitymanager;

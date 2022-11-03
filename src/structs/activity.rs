@@ -1,16 +1,12 @@
-use chrono::prelude::*;
-use serde::{Deserialize, Serialize};
-use std::time::{Duration, SystemTime, UNIX_EPOCH};
+use crate::prelude::*;
 
-pub type SecType = u64;
-
-#[derive(Clone, Copy, PartialEq, Debug, Serialize, Deserialize)]
+#[derive(Clone, Copy, Eq, PartialEq, Debug, Serialize, Deserialize)]
 pub enum Status {
     ActiveSince(SecType),
     Idle,
 }
 
-#[derive(Debug, PartialEq, Clone, Serialize, Deserialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Serialize, Deserialize)]
 pub struct Activity {
     /// timestamp for when the activity is created
     added_at: String,
@@ -28,7 +24,7 @@ pub struct Activity {
     name: String,
 }
 
-#[derive(Debug, PartialEq, Clone, Deserialize, Serialize)]
+#[derive(Debug, Eq, PartialEq, Clone, Deserialize, Serialize)]
 pub struct ActivitySerial {
     added_at: String,
     started_at: Vec<String>,
@@ -86,7 +82,11 @@ impl Activity {
         let now = Utc::now();
         Self {
             added_at: format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S")),
-            started_at: vec![format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S"))],
+            started_at: vec![format!(
+                "{} {}",
+                now.date_naive(),
+                now.time().format("%H:%M:%S")
+            )],
             // Days on which the activity was active
             active_days: vec![Utc::now().date_naive().to_string()],
             status: Status::ActiveSince(sys_now_secs()),
@@ -113,7 +113,11 @@ impl Activity {
             self.active_days.push(date);
         }
         let now = Utc::now();
-        self.started_at.push(format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S")));
+        self.started_at.push(format!(
+            "{} {}",
+            now.date_naive(),
+            now.time().format("%H:%M:%S")
+        ));
     }
 
     pub fn stop(&mut self) {
