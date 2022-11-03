@@ -2,6 +2,7 @@ mod api_views;
 mod client_views;
 mod config;
 mod structs;
+mod storage;
 mod prelude {
     pub use std::fs::File;
     pub use std::io::prelude::*;
@@ -23,6 +24,7 @@ mod prelude {
     pub use super::client_views::index::*;
     pub use super::structs::activity::*;
     pub use super::structs::activitymanager::TaskManager;
+    pub use super::storage::db_io;
 
     pub const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
     pub type SecType = u64;

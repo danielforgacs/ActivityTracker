@@ -29,34 +29,8 @@ impl TaskManager {
         }
     }
 
-    fn read(&self) -> Vec<Activity> {
-        let mut file_handle = std::fs::File::open(&self.path).unwrap();
-        let mut buf = String::new();
-        file_handle.read_to_string(&mut buf).unwrap();
-        let activity_serial: Vec<ActivitySerial> = serde_json::from_str(buf.as_str()).unwrap();
-        let data: Vec<Activity> = activity_serial.into_iter().map(Activity::from).collect();
-        data
-    }
-
-    fn read_as_serialised(&self) -> Vec<ActivitySerial> {
-        self.read()
-            .into_iter()
-            .map(ActivitySerial::from)
-            .collect::<Vec<ActivitySerial>>()
-    }
-
-    fn write(&self, data: Vec<Activity>) {
-        let activity_serials: Vec<ActivitySerial> =
-            data.into_iter().map(ActivitySerial::from).collect();
-        let data_serialised = serde_json::to_string_pretty(&activity_serials).unwrap();
-        let mut file_handle = std::fs::File::create(&self.path).unwrap();
-        file_handle
-            .write_all(data_serialised.as_bytes())
-            .expect("CAN NOT WRITE ALL.");
-    }
-
     pub fn start(&mut self, name: &str) {
-        let mut data = self.read();
+        let mut data = db_io::read(&self.path);
         if !data.iter().any(|x| x.name() == *name) {
             data.push(Activity::new(name));
         }
@@ -67,13 +41,13 @@ impl TaskManager {
                 task.stop();
             }
         }
-        self.write(data);
+        db_io::write(&self.path, data);
     }
 
     pub fn stop(&mut self) {
-        let mut data = self.read();
+        let mut data = db_io::read(&self.path);
         data.iter_mut().for_each(|t| t.stop());
-        self.write(data);
+        db_io::write(&self.path, data);
     }
 
     pub fn times(&self) -> String {
@@ -81,7 +55,7 @@ impl TaskManager {
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
         result.push_str(&format!("\nelapsed day:        {:02}h:{:02}m", hh, mm));
         let total_activity_time: SecType =
-            self.read().iter().map(|t| t.secs_since_creation()).sum();
+            db_io::read(&self.path).iter().map(|t| t.secs_since_creation()).sum();
         let (hours, minutes) = secs_to_hours_minutes(total_activity_time);
         result.push_str(&format!(
             "\ntotal acivity time: {:02}h:{:02}m",
@@ -89,8 +63,7 @@ impl TaskManager {
         ));
         result.push('\n');
         result.push_str(
-            &self
-                .read()
+            &db_io::read(&self.path)
                 .iter()
                 .map(|t| {
                     if t.is_active() {
@@ -107,7 +80,7 @@ impl TaskManager {
     }
 
     fn total_activity_time(&self) -> SecType {
-        self.read().iter().map(|t| t.secs_since_creation()).sum()
+        db_io::read(&self.path).iter().map(|t| t.secs_since_creation()).sum()
     }
 }
 
@@ -125,7 +98,7 @@ impl Serialize for TaskManager {
         let (tdelta_hh, tdelta_mm) = secs_to_hours_minutes(time_diff);
         let time_diff_pretty = &format!("{:02}h:{:02}m", tdelta_hh, tdelta_mm);
 
-        state.serialize_field("tasks", &self.read_as_serialised())?;
+        state.serialize_field("tasks", &db_io::read_as_serialised(&self.path))?;
         state.serialize_field("start_time_pretty", &self.start_time_pretty)?;
         state.serialize_field("elapsed_day", &elapsed_day)?;
         state.serialize_field("total_activity_time", &total_time)?;
@@ -156,8 +129,7 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let tm = TaskManager::new(path);
-        assert_eq!(tm.read(), Vec::new());
+        assert_eq!(db_io::read(&path), Vec::new());
     }
 
     #[test]
@@ -167,29 +139,29 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let mut tm = TaskManager::new(path);
+        let mut tm = TaskManager::new(path.clone());
         let task_name = "task";
         tm.start(task_name);
-        assert_eq!(tm.read().len(), 1);
-        assert_eq!(tm.read()[0].name(), task_name);
-        assert_eq!(tm.read()[0].secs_since_creation(), 0);
+        assert_eq!(db_io::read(&path).len(), 1);
+        assert_eq!(db_io::read(&path)[0].name(), task_name);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 0);
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.read()[0].secs_since_creation(), 1);
-        assert_eq!(tm.read()[0].secs_since_creation(), 1);
-        assert_eq!(tm.read()[0].secs_since_creation(), 1);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.read()[0].secs_since_creation(), 2);
-        assert_eq!(tm.read()[0].secs_since_creation(), 2);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 2);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 2);
         tm.stop();
-        assert_eq!(tm.read()[0].secs_since_creation(), 2);
-        assert_eq!(tm.read()[0].secs_since_creation(), 2);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 2);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.read()[0].secs_since_creation(), 2);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 2);
         tm.start(task_name);
-        assert_eq!(tm.read()[0].secs_since_creation(), 2);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));
-        assert_eq!(tm.read()[0].secs_since_creation(), 3);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 3);
     }
 
     #[test]
@@ -201,35 +173,35 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let mut tm = TaskManager::new(path);
+        let mut tm = TaskManager::new(path.clone());
         tm.start(task_1);
         pause();
-        assert_eq!(tm.read()[0].secs_since_creation(), 1);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
         tm.start(task_2);
         pause();
-        assert_eq!(tm.read()[0].secs_since_creation(), 1);
-        assert_eq!(tm.read()[1].secs_since_creation(), 1);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
+        assert_eq!(db_io::read(&path)[1].secs_since_creation(), 1);
         pause();
-        assert_eq!(tm.read()[0].secs_since_creation(), 1);
-        assert_eq!(tm.read()[1].secs_since_creation(), 2);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
+        assert_eq!(db_io::read(&path)[1].secs_since_creation(), 2);
         pause();
-        assert_eq!(tm.read()[0].secs_since_creation(), 1);
-        assert_eq!(tm.read()[1].secs_since_creation(), 3);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
+        assert_eq!(db_io::read(&path)[1].secs_since_creation(), 3);
         tm.start(task_2);
-        assert_eq!(tm.read()[0].secs_since_creation(), 1);
-        assert_eq!(tm.read()[1].secs_since_creation(), 3);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
+        assert_eq!(db_io::read(&path)[1].secs_since_creation(), 3);
         pause();
-        assert_eq!(tm.read()[0].secs_since_creation(), 1);
-        assert_eq!(tm.read()[1].secs_since_creation(), 4);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
+        assert_eq!(db_io::read(&path)[1].secs_since_creation(), 4);
         tm.start(task_1);
-        assert_eq!(tm.read()[0].secs_since_creation(), 1);
-        assert_eq!(tm.read()[1].secs_since_creation(), 4);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
+        assert_eq!(db_io::read(&path)[1].secs_since_creation(), 4);
         pause();
-        assert_eq!(tm.read()[0].secs_since_creation(), 2);
-        assert_eq!(tm.read()[1].secs_since_creation(), 4);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 2);
+        assert_eq!(db_io::read(&path)[1].secs_since_creation(), 4);
         pause();
-        assert_eq!(tm.read()[0].secs_since_creation(), 3);
-        assert_eq!(tm.read()[1].secs_since_creation(), 4);
+        assert_eq!(db_io::read(&path)[0].secs_since_creation(), 3);
+        assert_eq!(db_io::read(&path)[1].secs_since_creation(), 4);
     }
 
     fn pause() {
@@ -244,13 +216,13 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let mut tm = TaskManager::new(path);
+        let mut tm = TaskManager::new(path.clone());
         tm.start("a");
         tm.start("a");
         tm.start("a");
         tm.start("a");
         assert_eq!(
-            tm.read().iter().map(|f| f.name()).collect::<Vec<String>>(),
+            db_io::read(&path).iter().map(|f| f.name()).collect::<Vec<String>>(),
             vec!["a"]
         );
     }
