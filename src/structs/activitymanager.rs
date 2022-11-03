@@ -13,21 +13,19 @@ pub struct TaskManager {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct ActivityManagerSerial {
+pub struct ActivityManagerSerial {
     date: String,
     activities: Vec<Activity>,
     start_time_pretty: String,
-/*
-    tasks
-    start_time_pretty
-    elapsed_day
-    total_activity_time
-    time_difference
-    start_time
-    display
-    day_length
-    time_left
-     */
+
+    tasks: Vec<ActivitySerial>,
+    elapsed_day: String,
+    total_activity_time: String,
+    time_difference: String,
+    start_time: SecType,
+    display: String,
+    day_length: String,
+    time_left: String,
 }
 
 impl TaskManager {
@@ -93,41 +91,92 @@ impl TaskManager {
     fn total_activity_time(&self) -> SecType {
         db_io::read(&self.path).iter().map(|t| t.secs_since_creation()).sum()
     }
-}
 
-impl Serialize for TaskManager {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
+    pub fn times(&self) -> ActivityManagerSerial {
         let (hours, mins) = secs_to_hours_minutes(self.total_activity_time());
         let total_time = format!("{:02}h:{:02}m", hours, mins);
-        let mut state = serializer.serialize_struct("Taskmanager", 3)?;
+        // let mut state = serializer.serialize_struct("Taskmanager", 3)?;
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
-        let elapsed_day = &format!("{:02}h:{:02}m", hh, mm);
+        let elapsed_day = format!("{:02}h:{:02}m", hh, mm);
         let time_diff = elapsed_since(self.start_time).saturating_sub(self.total_activity_time());
         let (tdelta_hh, tdelta_mm) = secs_to_hours_minutes(time_diff);
-        let time_diff_pretty = &format!("{:02}h:{:02}m", tdelta_hh, tdelta_mm);
+        let time_diff_pretty = format!("{:02}h:{:02}m", tdelta_hh, tdelta_mm);
 
-        state.serialize_field("tasks", &db_io::read_as_serialised(&self.path))?;
-        state.serialize_field("start_time_pretty", &self.start_time_pretty)?;
-        state.serialize_field("elapsed_day", &elapsed_day)?;
-        state.serialize_field("total_activity_time", &total_time)?;
-        state.serialize_field("time_difference", &time_diff_pretty)?;
-        state.serialize_field("start_time:", &self.start_time)?;
-        state.serialize_field("display:", &self.pretty())?;
+        // state.serialize_field("tasks", &db_io::read_as_serialised(&self.path))?;
+        // let tasks = &db_io::read_as_serialised(&self.path);
+        // state.serialize_field("start_time_pretty", &self.start_time_pretty)?;
+        // let start_time_pretty = self.start_time_pretty;
+        // state.serialize_field("elapsed_day", &elapsed_day)?;
+        // let elapsed_day = &elapsed_day;
+        // state.serialize_field("total_activity_time", &total_time)?;
+        let total_activity_time = total_time;
+        // state.serialize_field("time_difference", &time_diff_pretty)?;
+        let time_difference = time_diff_pretty;
+        // state.serialize_field("start_time:", &self.start_time)?;
+        let start_time = self.start_time;
+        // state.serialize_field("display:", &self.pretty())?;
+        let display = self.pretty();
 
         let (day_len_hh, day_len_mm) = secs_to_hours_minutes(DAY_LENGTH_SECS);
-        let day_length = &format!("{:02}h:{:02}m", day_len_hh, day_len_mm);
-        state.serialize_field("day_length", day_length)?;
+        let day_length = format!("{:02}h:{:02}m", day_len_hh, day_len_mm);
+        // state.serialize_field("day_length", day_length)?;
+        // let day_length = day_length;
 
         let (time_left_hh, time_left_mm) =
             secs_to_hours_minutes(DAY_LENGTH_SECS - self.total_activity_time());
-        let time_left = &format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
-        state.serialize_field("time_left", time_left)?;
-        state.end()
+        let time_left = format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
+        // state.serialize_field("time_left", time_left)?;
+        let time_left = time_left;
+        // state.end()
+        ActivityManagerSerial {
+            date: Utc::now().date_naive().to_string(),
+            activities: db_io::read(&self.path),
+            start_time_pretty: format!("start time:         {}", self.start_time_pretty.to_owned()),
+            tasks: db_io::read_as_serialised(&self.path),
+            elapsed_day,
+            total_activity_time,
+            time_difference,
+            start_time,
+            display,
+            day_length,
+            time_left,
+        }
     }
 }
+
+// impl Serialize for TaskManager {
+//     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+//     where
+//         S: Serializer,
+//     {
+//         let (hours, mins) = secs_to_hours_minutes(self.total_activity_time());
+//         let total_time = format!("{:02}h:{:02}m", hours, mins);
+//         let mut state = serializer.serialize_struct("Taskmanager", 3)?;
+//         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
+//         let elapsed_day = &format!("{:02}h:{:02}m", hh, mm);
+//         let time_diff = elapsed_since(self.start_time).saturating_sub(self.total_activity_time());
+//         let (tdelta_hh, tdelta_mm) = secs_to_hours_minutes(time_diff);
+//         let time_diff_pretty = &format!("{:02}h:{:02}m", tdelta_hh, tdelta_mm);
+
+//         state.serialize_field("tasks", &db_io::read_as_serialised(&self.path))?;
+//         state.serialize_field("start_time_pretty", &self.start_time_pretty)?;
+//         state.serialize_field("elapsed_day", &elapsed_day)?;
+//         state.serialize_field("total_activity_time", &total_time)?;
+//         state.serialize_field("time_difference", &time_diff_pretty)?;
+//         state.serialize_field("start_time:", &self.start_time)?;
+//         state.serialize_field("display:", &self.pretty())?;
+
+//         let (day_len_hh, day_len_mm) = secs_to_hours_minutes(DAY_LENGTH_SECS);
+//         let day_length = &format!("{:02}h:{:02}m", day_len_hh, day_len_mm);
+//         state.serialize_field("day_length", day_length)?;
+
+//         let (time_left_hh, time_left_mm) =
+//             secs_to_hours_minutes(DAY_LENGTH_SECS - self.total_activity_time());
+//         let time_left = &format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
+//         state.serialize_field("time_left", time_left)?;
+//         state.end()
+//     }
+// }
 
 #[cfg(test)]
 mod test {
@@ -246,7 +295,8 @@ mod test {
             .write_all(b"[]")
             .unwrap();
         let tm = TaskManager::new(path);
-        let tm_json = serde_json::to_string(&tm).unwrap();
+        // let tm_json = serde_json::to_string(&tm).unwrap();
+        let tm_json = serde_json::to_string(&tm.times()).unwrap();
         assert!(tm_json.contains(&"tasks"));
         assert!(tm_json.contains(&"start_time_pretty"));
         assert!(tm_json.contains(&"elapsed_day"));
