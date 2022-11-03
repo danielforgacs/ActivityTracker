@@ -27,5 +27,5 @@ pub async fn times(req: HttpRequest) -> Result<impl Responder> {
 pub async fn pretty(req: HttpRequest) -> String {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let tm = data.lock().unwrap();
-    tm.times()
+    tm.pretty()
 }

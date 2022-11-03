@@ -17,6 +17,17 @@ struct ActivityManagerSerial {
     date: String,
     activities: Vec<Activity>,
     start_time_pretty: String,
+/*
+    tasks
+    start_time_pretty
+    elapsed_day
+    total_activity_time
+    time_difference
+    start_time
+    display
+    day_length
+    time_left
+     */
 }
 
 impl TaskManager {
@@ -50,7 +61,7 @@ impl TaskManager {
         db_io::write(&self.path, data);
     }
 
-    pub fn times(&self) -> String {
+    pub fn pretty(&self) -> String {
         let mut result = format!("start time:         {}", self.start_time_pretty.to_owned());
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
         result.push_str(&format!("\nelapsed day:        {:02}h:{:02}m", hh, mm));
@@ -104,7 +115,7 @@ impl Serialize for TaskManager {
         state.serialize_field("total_activity_time", &total_time)?;
         state.serialize_field("time_difference", &time_diff_pretty)?;
         state.serialize_field("start_time:", &self.start_time)?;
-        state.serialize_field("display:", &self.times())?;
+        state.serialize_field("display:", &self.pretty())?;
 
         let (day_len_hh, day_len_mm) = secs_to_hours_minutes(DAY_LENGTH_SECS);
         let day_length = &format!("{:02}h:{:02}m", day_len_hh, day_len_mm);
