@@ -57,7 +57,7 @@ async fn main() -> std::io::Result<()> {
                     .service(pretty),
             )
     })
-    .bind((config.get_url().clone(), config.get_port().clone()))?
+    .bind((config.get_url().clone(), *config.get_port()))?
     .workers(4)
     .run()
     .await
