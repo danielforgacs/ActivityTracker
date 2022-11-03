@@ -38,7 +38,7 @@ impl TaskManager {
         }
     }
 
-    pub fn start(&mut self, name: &str) {
+    pub fn start_activity(&mut self, name: &str) {
         let mut data = db_io::read(&self.path);
         if !data.iter().any(|x| x.name() == *name) {
             data.push(Activity::new(name));
@@ -149,7 +149,7 @@ mod test {
             .unwrap();
         let mut tm = TaskManager::new(path.clone());
         let task_name = "task";
-        tm.start(task_name);
+        tm.start_activity(task_name);
         assert_eq!(db_io::read(&path).len(), 1);
         assert_eq!(db_io::read(&path)[0].name(), task_name);
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 0);
@@ -166,7 +166,7 @@ mod test {
         std::thread::sleep(std::time::Duration::from_secs(1));
         std::thread::sleep(std::time::Duration::from_secs(1));
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 2);
-        tm.start(task_name);
+        tm.start_activity(task_name);
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 3);
@@ -182,10 +182,10 @@ mod test {
             .write_all(b"[]")
             .unwrap();
         let mut tm = TaskManager::new(path.clone());
-        tm.start(task_1);
+        tm.start_activity(task_1);
         pause();
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
-        tm.start(task_2);
+        tm.start_activity(task_2);
         pause();
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
         assert_eq!(db_io::read(&path)[1].secs_since_creation(), 1);
@@ -195,13 +195,13 @@ mod test {
         pause();
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
         assert_eq!(db_io::read(&path)[1].secs_since_creation(), 3);
-        tm.start(task_2);
+        tm.start_activity(task_2);
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
         assert_eq!(db_io::read(&path)[1].secs_since_creation(), 3);
         pause();
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
         assert_eq!(db_io::read(&path)[1].secs_since_creation(), 4);
-        tm.start(task_1);
+        tm.start_activity(task_1);
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
         assert_eq!(db_io::read(&path)[1].secs_since_creation(), 4);
         pause();
@@ -225,10 +225,10 @@ mod test {
             .write_all(b"[]")
             .unwrap();
         let mut tm = TaskManager::new(path.clone());
-        tm.start("a");
-        tm.start("a");
-        tm.start("a");
-        tm.start("a");
+        tm.start_activity("a");
+        tm.start_activity("a");
+        tm.start_activity("a");
+        tm.start_activity("a");
         assert_eq!(
             db_io::read(&path).iter().map(|f| f.name()).collect::<Vec<String>>(),
             vec!["a"]
