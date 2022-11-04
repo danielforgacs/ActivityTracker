@@ -20,7 +20,7 @@ pub async fn stop(req: HttpRequest) -> impl Responder {
 pub async fn times(req: HttpRequest) -> Result<impl Responder> {
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let tm = data.lock().unwrap().clone();
-    Ok(Json(tm.times()))
+    Ok(Json(tm.today_times()))
 }
 
 #[get("pretty")]

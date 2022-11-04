@@ -97,7 +97,7 @@ impl TaskManager {
             .sum()
     }
 
-    pub fn times(&self) -> ActivityManagerSerial {
+    pub fn today_times(&self) -> ActivityManagerSerial {
         let (hours, mins) = secs_to_hours_minutes(self.total_activity_time());
         let total_time = format!("{:02}h:{:02}m", hours, mins);
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
@@ -251,7 +251,7 @@ mod test {
             .write_all(b"[]")
             .unwrap();
         let tm = TaskManager::new(path);
-        let tm_json = serde_json::to_string(&tm.times()).unwrap();
+        let tm_json = serde_json::to_string(&tm.today_times()).unwrap();
         assert!(tm_json.contains(&"tasks"));
         assert!(tm_json.contains(&"start_time_pretty"));
         assert!(tm_json.contains(&"elapsed_day"));
