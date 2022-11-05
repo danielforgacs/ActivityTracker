@@ -6,6 +6,6 @@ pub fn app_config(cfg: &mut ServiceConfig) {
             .route("start/{name}", web::post().to(start))
             .route("stop", web::post().to(stop))
             .route("times", web::get().to(times))
-            .route("pretty", web::get().to(pretty))
+            .route("pretty", web::get().to(pretty)),
     );
 }
