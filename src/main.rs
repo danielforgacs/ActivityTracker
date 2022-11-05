@@ -42,6 +42,8 @@ async fn main() -> std::io::Result<()> {
             return Ok(());
         }
     };
+    env_logger::init();
+    log::info!("Got the config.");
     println!("web: http://{}:{}/", config.get_url(), config.get_port());
     println!(
         "api: http://{}:{}/api/times",
