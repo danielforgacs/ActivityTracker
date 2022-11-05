@@ -4,32 +4,29 @@ mod config;
 mod storage;
 mod structs;
 mod prelude {
+    pub use super::{
+        api_views::{api_views_config, views::*},
+        client_views::{client_views_config::app_config, index},
+        storage::db_io,
+        structs::{activity::*, activitymanager::TaskManager},
+    };
+    pub use actix_files::NamedFile;
+    pub use actix_web::{
+        get, post,
+        web::{self, Data, Json, Path, ServiceConfig},
+        App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
+    };
+    pub use chrono::prelude::*;
+    pub use serde::{
+        ser::{SerializeStruct, Serializer},
+        Deserialize, Serialize,
+    };
     pub use std::{
         fs::File,
         io::prelude::*,
         path,
         sync::Mutex,
         time::{Duration, SystemTime, UNIX_EPOCH},
-    };
-    pub use actix_files::NamedFile;
-    pub use chrono::prelude::*;
-    pub use actix_web::{
-        get, post,
-        web::{self, Data, Json, Path, ServiceConfig},
-        App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
-    };
-    pub use serde::{
-        ser::{SerializeStruct, Serializer},
-        Deserialize, Serialize,
-    };
-    pub use super:: {
-        api_views::app_config,
-        api_views::views::*,
-        client_views::app_config::app_config,
-        client_views::index,
-        storage::db_io,
-        structs::activity::*,
-        structs::activitymanager::TaskManager,
     };
     pub const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
     pub type SecType = u64;
@@ -57,7 +54,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
-            .configure(app_config::app_config)
+            .configure(api_views_config::app_config)
             .configure(app_config)
     })
     .bind((config.get_url().clone(), *config.get_port()))?
