@@ -9,7 +9,7 @@ pub async fn start(req: HttpRequest, form: web::Json<StartJson>) -> HttpResponse
     let name = form.into_inner().name;
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
-    tm.start_activity(&name.as_str());
+    tm.start_activity(name.as_str());
     HttpResponse::Ok().body(format!("activated task: {} Ok.", name))
 }
 
