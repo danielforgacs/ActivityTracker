@@ -60,7 +60,6 @@
     const url_taskman = 'api/times'
     const url_startActivity = 'api/start'
     const url_stopActivity = 'api/stop'
-
     const activityBtnIDprefix = 'activity-btn-'
     const stoppedStatus = 'Idle'
 
@@ -69,7 +68,6 @@
     let total_activity_time_tag = document.getElementById('total_activity_time')
     let time_left_tag = document.getElementById('time_left')
     let activities_div = document.getElementById('activities')
-
 
     function toggle_activity(event) {
         let is_active = event.submitter.classList.contains('active')
@@ -89,7 +87,6 @@
         }
     }
 
-
     function set_header_values(data) {
         start_time_tag.innerHTML = data.start_time_pretty
         total_activity_time_tag.innerHTML = data.total_activity_time
@@ -97,14 +94,12 @@
         time_left_tag.innerHTML = `<strong>${data.time_left}</strong>`
     }
 
-
     function update_activity_btn(button, task) {
         let new_text = `${task.name} - ${task.logged_pretty}`
         if (button.innerHTML != new_text) {
             button.innerHTML = new_text
         }
     }
-
 
     function set_button_status(button, task) {
         let active_task = task.status != stoppedStatus
@@ -117,7 +112,6 @@
             }
         }
     }
-
 
     function mk_activity_button(task) {
         let acivity_btn_template = `
@@ -133,7 +127,6 @@
         let task_button = document.getElementById(activityBtnIDprefix+task.name)
         return task_button
     }
-
 
     function manage_activity_buttons(data) {
         let task_names = []
@@ -157,12 +150,10 @@
         }
     }
 
-
     function body_builder(data) {
         set_header_values(data)
         manage_activity_buttons(data)
     }
-
 
     setInterval(() => {
         fetch(url_taskman)
