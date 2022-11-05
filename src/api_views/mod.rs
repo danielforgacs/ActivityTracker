@@ -1,2 +1,2 @@
-pub mod views;
 pub mod app_config;
+pub mod views;

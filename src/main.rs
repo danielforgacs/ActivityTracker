@@ -22,8 +22,8 @@ mod prelude {
 
     pub use super::api_views::app_config;
     pub use super::api_views::views::*;
-    pub use super::client_views::index;
     pub use super::client_views::app_config::app_config;
+    pub use super::client_views::index;
     pub use super::storage::db_io;
     pub use super::structs::activity::*;
     pub use super::structs::activitymanager::TaskManager;
