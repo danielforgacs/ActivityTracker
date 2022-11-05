@@ -44,7 +44,7 @@
             </table>
         </div>
         <div>
-            <form id="create_form" onSubmit="event.preventDefault(); create_activity(event)">
+            <form id="create_form" onSubmit="event.preventDefault(); toggle_activity(event)">
                 <input type="text" name="new_name" id="new_name">
                 <input type="submit" value="create / activate">
             </form>
@@ -60,7 +60,6 @@
     const url_taskman = 'api/times'
     const url_startActivity = 'api/start'
     const url_stopActivity = 'api/stop'
-
     const activityBtnIDprefix = 'activity-btn-'
     const stoppedStatus = 'Idle'
 
@@ -70,24 +69,23 @@
     let time_left_tag = document.getElementById('time_left')
     let activities_div = document.getElementById('activities')
 
-
-    function create_activity(event) {
-        let name = event.target[0].value
-        fetch(`${url_startActivity}/${name}`, {method: "POST"})
-        event.target[0].value = ''
-    }
-
-
     function toggle_activity(event) {
         let is_active = event.submitter.classList.contains('active')
         let name = event.submitter.getAttribute('activity_name')
         if (is_active) {
-            fetch(url_stopActivity, {method: "POST"})
+            fetch(url_stopActivity, {method: "POST", name: name})
         } else {
-            fetch(`${url_startActivity}/${name}`, {method: "POST"})
+            if (event.target.id == 'create_form') {
+                name = event.target[0].value
+                event.target[0].value = ''
+            }
+            fetch(`${url_startActivity}`, {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name: name}),
+            })
         }
     }
-
 
     function set_header_values(data) {
         start_time_tag.innerHTML = data.start_time_pretty
@@ -96,14 +94,12 @@
         time_left_tag.innerHTML = `<strong>${data.time_left}</strong>`
     }
 
-
     function update_activity_btn(button, task) {
         let new_text = `${task.name} - ${task.logged_pretty}`
         if (button.innerHTML != new_text) {
             button.innerHTML = new_text
         }
     }
-
 
     function set_button_status(button, task) {
         let active_task = task.status != stoppedStatus
@@ -116,7 +112,6 @@
             }
         }
     }
-
 
     function mk_activity_button(task) {
         let acivity_btn_template = `
@@ -132,7 +127,6 @@
         let task_button = document.getElementById(activityBtnIDprefix+task.name)
         return task_button
     }
-
 
     function manage_activity_buttons(data) {
         let task_names = []
@@ -156,12 +150,10 @@
         }
     }
 
-
     function body_builder(data) {
         set_header_values(data)
         manage_activity_buttons(data)
     }
-
 
     setInterval(() => {
         fetch(url_taskman)
