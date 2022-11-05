@@ -44,7 +44,7 @@
             </table>
         </div>
         <div>
-            <form id="create_form" onSubmit="event.preventDefault(); create_activity(event)">
+            <form id="create_form" onSubmit="event.preventDefault(); toggle_activity(event)">
                 <input type="text" name="new_name" id="new_name">
                 <input type="submit" value="create / activate">
             </form>
@@ -71,19 +71,16 @@
     let activities_div = document.getElementById('activities')
 
 
-    function create_activity(event) {
-        let name = event.target[0].value
-        fetch(`${url_startActivity}/${name}`, {method: "POST", name: name})
-        event.target[0].value = ''
-    }
-
-
     function toggle_activity(event) {
         let is_active = event.submitter.classList.contains('active')
         let name = event.submitter.getAttribute('activity_name')
         if (is_active) {
             fetch(url_stopActivity, {method: "POST", name: name})
         } else {
+            if (event.target.id == 'create_form') {
+                name = event.target[0].value
+                event.target[0].value = ''
+            }
             fetch(`${url_startActivity}/${name}`, {method: "POST", name: name})
         }
     }
