@@ -1,9 +1,15 @@
 use crate::prelude::*;
 
-pub async fn start(name: Path<String>, req: HttpRequest) -> HttpResponse {
+#[derive(Deserialize)]
+pub struct StartJson {
+    name: String,
+}
+
+pub async fn start(req: HttpRequest, form: web::Json<StartJson>) -> HttpResponse {
+    let name = form.into_inner().name;
     let data = req.app_data::<Data<Mutex<TaskManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
-    tm.start_activity(&name);
+    tm.start_activity(&name.as_str());
     HttpResponse::Ok().body(format!("activated task: {} Ok.", name))
 }
 

@@ -81,7 +81,11 @@
                 name = event.target[0].value
                 event.target[0].value = ''
             }
-            fetch(`${url_startActivity}/${name}`, {method: "POST", name: name})
+            fetch(`${url_startActivity}`, {
+                method: "POST",
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name: name}),
+            })
         }
     }
 
