@@ -97,7 +97,7 @@ impl TaskManager {
             .sum()
     }
 
-    pub fn times(&self) -> ActivityManagerSerial {
+    pub fn today_times(&self) -> ActivityManagerSerial {
         let (hours, mins) = secs_to_hours_minutes(self.total_activity_time());
         let total_time = format!("{:02}h:{:02}m", hours, mins);
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
@@ -115,11 +115,16 @@ impl TaskManager {
             secs_to_hours_minutes(DAY_LENGTH_SECS - self.total_activity_time());
         let time_left = format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
         let time_left = time_left;
+        let date = Utc::now().date_naive().to_string();
+        let activities = db_io::read_as_serialised(&self.path)
+            .into_iter()
+            .filter(|x| x.get_active_dates().contains(&date))
+            .collect();
         ActivityManagerSerial {
-            date: Utc::now().date_naive().to_string(),
+            date,
             activities: db_io::read(&self.path),
             start_time_pretty: format!("start time:         {}", self.start_time_pretty.to_owned()),
-            tasks: db_io::read_as_serialised(&self.path),
+            tasks: activities,
             elapsed_day,
             total_activity_time,
             time_difference,
@@ -251,7 +256,7 @@ mod test {
             .write_all(b"[]")
             .unwrap();
         let tm = TaskManager::new(path);
-        let tm_json = serde_json::to_string(&tm.times()).unwrap();
+        let tm_json = serde_json::to_string(&tm.today_times()).unwrap();
         assert!(tm_json.contains(&"tasks"));
         assert!(tm_json.contains(&"start_time_pretty"));
         assert!(tm_json.contains(&"elapsed_day"));

@@ -11,7 +11,7 @@ mod prelude {
     pub use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
     pub use actix_files::NamedFile;
-    pub use actix_web::web::{self, Data};
+    pub use actix_web::web::{self, Data, ServiceConfig};
     pub use actix_web::web::{Json, Path};
     pub use actix_web::{get, HttpRequest, HttpResponse};
     pub use actix_web::{post, Responder, Result};
@@ -20,8 +20,10 @@ mod prelude {
     pub use serde::ser::{SerializeStruct, Serializer};
     pub use serde::{Deserialize, Serialize};
 
+    pub use super::api_views::app_config;
     pub use super::api_views::views::*;
-    pub use super::client_views::index::*;
+    pub use super::client_views::index;
+    pub use super::client_views::app_config::app_config;
     pub use super::storage::db_io;
     pub use super::structs::activity::*;
     pub use super::structs::activitymanager::TaskManager;
@@ -52,14 +54,8 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
-            .service(index_view)
-            .service(
-                web::scope("/api")
-                    .service(start)
-                    .service(stop)
-                    .service(times)
-                    .service(pretty),
-            )
+            .configure(app_config::app_config)
+            .configure(app_config)
     })
     .bind((config.get_url().clone(), *config.get_port()))?
     .workers(4)

@@ -1,7 +1,6 @@
 use crate::prelude::*;
 
-#[get("/")]
-async fn index_view(req: HttpRequest) -> HttpResponse {
+pub async fn index_view(req: HttpRequest) -> HttpResponse {
     let exe_path = std::env::current_exe().unwrap();
     let current_dir = exe_path.parent().unwrap();
     let index_path = format!("{}/{}", current_dir.display(), "static/index.html");

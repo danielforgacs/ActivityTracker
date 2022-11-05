@@ -140,6 +140,12 @@ impl Activity {
     }
 }
 
+impl ActivitySerial {
+    pub fn get_active_dates(&self) -> &Vec<String> {
+        &self.active_days
+    }
+}
+
 pub fn secs_to_hours_minutes(secs: SecType) -> (u8, u8) {
     let hours = secs / (60 * 60);
     let minutes = (secs % (60 * 60)) / 60;
