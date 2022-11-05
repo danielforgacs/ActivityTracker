@@ -4,30 +4,33 @@ mod config;
 mod storage;
 mod structs;
 mod prelude {
-    pub use std::fs::File;
-    pub use std::io::prelude::*;
-    pub use std::path;
-    pub use std::sync::Mutex;
-    pub use std::time::{Duration, SystemTime, UNIX_EPOCH};
-
+    pub use std::{
+        fs::File,
+        io::prelude::*,
+        path,
+        sync::Mutex,
+        time::{Duration, SystemTime, UNIX_EPOCH},
+    };
     pub use actix_files::NamedFile;
-    pub use actix_web::web::{self, Data, ServiceConfig};
-    pub use actix_web::web::{Json, Path};
-    pub use actix_web::{get, HttpRequest, HttpResponse};
-    pub use actix_web::{post, Responder, Result};
-    pub use actix_web::{App, HttpServer};
     pub use chrono::prelude::*;
-    pub use serde::ser::{SerializeStruct, Serializer};
-    pub use serde::{Deserialize, Serialize};
-
-    pub use super::api_views::app_config;
-    pub use super::api_views::views::*;
-    pub use super::client_views::app_config::app_config;
-    pub use super::client_views::index;
-    pub use super::storage::db_io;
-    pub use super::structs::activity::*;
-    pub use super::structs::activitymanager::TaskManager;
-
+    pub use actix_web::{
+        get, post,
+        web::{self, Data, Json, Path, ServiceConfig},
+        App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
+    };
+    pub use serde::{
+        ser::{SerializeStruct, Serializer},
+        Deserialize, Serialize,
+    };
+    pub use super:: {
+        api_views::app_config,
+        api_views::views::*,
+        client_views::app_config::app_config,
+        client_views::index,
+        storage::db_io,
+        structs::activity::*,
+        structs::activitymanager::TaskManager,
+    };
     pub const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
     pub type SecType = u64;
 }
