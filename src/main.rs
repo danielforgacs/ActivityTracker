@@ -3,6 +3,7 @@ mod client_views;
 mod config;
 mod storage;
 mod structs;
+mod utils;
 mod prelude {
     pub use super::{
         api_views::{api_views_config, views::*},
@@ -28,6 +29,7 @@ mod prelude {
         sync::Mutex,
         time::{Duration, SystemTime, UNIX_EPOCH},
     };
+    pub use super::utils::*;
     pub const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
     pub type SecType = u64;
 }
