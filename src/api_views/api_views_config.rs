@@ -5,7 +5,7 @@ pub fn app_config(cfg: &mut ServiceConfig) {
         web::scope("/api")
             .route("/start", web::post().to(start))
             .route("/stop", web::post().to(stop))
-            .route("/activities", web::get().to(get_activities_per_date))
+            .route("/activities", web::post().to(get_activities_per_date))
             .route("/pretty", web::get().to(pretty)),
     );
 }

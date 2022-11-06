@@ -5,6 +5,11 @@ pub struct StartJson {
     name: String,
 }
 
+#[derive(Deserialize)]
+pub struct ActivityDate {
+    date: String,
+}
+
 pub async fn start(req: HttpRequest, form: web::Json<StartJson>) -> HttpResponse {
     let name = form.into_inner().name;
     let data = req.app_data::<Data<Mutex<ActivityManager>>>().unwrap();
@@ -20,10 +25,13 @@ pub async fn stop(req: HttpRequest) -> impl Responder {
     "ok"
 }
 
-pub async fn times(req: HttpRequest) -> Result<impl Responder> {
+pub async fn get_activities_per_date(date: web::Json<ActivityDate>, req: HttpRequest) -> HttpResponse {
+    log::info!("get_activities_per_date()");
     let data = req.app_data::<Data<Mutex<ActivityManager>>>().unwrap();
+    let date = date.into_inner().date;
+    dbg!(&date);
     let tm = data.lock().unwrap().clone();
-    Ok(Json(tm.today_times()))
+    HttpResponse::Ok().json(tm.get_activities_by_date(date))
 }
 
 pub async fn pretty(req: HttpRequest) -> String {

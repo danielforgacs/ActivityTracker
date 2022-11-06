@@ -129,7 +129,7 @@
 
     function manage_activity_buttons(data) {
         let task_names = []
-        for (task of data.tasks) {
+        for (task of data.activities) {
             task_names.push(task.name)
             let task_button = document.getElementById(activityBtnIDprefix+task.name)
             if (task_button === null) {
@@ -154,8 +154,17 @@
         manage_activity_buttons(data)
     }
 
+    let year = new Date().getUTCFullYear();
+    let month = new Date().getMonth();
+    let day = new Date().getDate();
+    let date = `${year}-${month}-${day}`
+
     setInterval(() => {
-        fetch('api/times')
+        fetch('api/activities', {
+            method: "POST",
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({date: '2022-11-06'}),
+        })
         .then(response => response.json())
         .then(data => body_builder(data));
     }, 500);
