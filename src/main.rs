@@ -9,7 +9,7 @@ mod prelude {
         api_views::{api_views_config, views::*},
         client_views::{client_views_config::app_config, index},
         storage::db_io,
-        structs::{activity::*, activitymanager::TaskManager},
+        structs::{activity::*, activitymanager::ActivityManager},
     };
     pub use actix_files::NamedFile;
     pub use actix_web::{
@@ -54,7 +54,7 @@ async fn main() -> std::io::Result<()> {
         config.get_port()
     );
 
-    let data = Data::new(Mutex::new(TaskManager::new(config.get_dbpath().clone())));
+    let data = Data::new(Mutex::new(ActivityManager::new(config.get_dbpath().clone())));
 
     HttpServer::new(move || {
         App::new()

@@ -5,7 +5,7 @@ use crate::prelude::*;
 /// Only one task can be active at a time.
 /// Running tasks are exclusive, starting a task will stop all other tasks.
 #[derive(Debug, Eq, PartialEq, Clone)]
-pub struct TaskManager {
+pub struct ActivityManager {
     path: std::path::PathBuf,
     /// pretty system time timestamp for when the taskmanager started
     start_time_pretty: String,
@@ -28,7 +28,7 @@ pub struct ActivityManagerSerial {
     time_left: String,
 }
 
-impl TaskManager {
+impl ActivityManager {
     pub fn new(path: std::path::PathBuf) -> Self {
         let now = Utc::now();
         Self {
@@ -157,7 +157,7 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let mut tm = TaskManager::new(path.clone());
+        let mut tm = ActivityManager::new(path.clone());
         let task_name = "task";
         tm.start_activity(task_name);
         assert_eq!(db_io::read(&path).len(), 1);
@@ -191,7 +191,7 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let mut tm = TaskManager::new(path.clone());
+        let mut tm = ActivityManager::new(path.clone());
         tm.start_activity(task_1);
         pause();
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
@@ -234,7 +234,7 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let mut tm = TaskManager::new(path.clone());
+        let mut tm = ActivityManager::new(path.clone());
         tm.start_activity("a");
         tm.start_activity("a");
         tm.start_activity("a");
@@ -255,7 +255,7 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let tm = TaskManager::new(path);
+        let tm = ActivityManager::new(path);
         let tm_json = serde_json::to_string(&tm.today_times()).unwrap();
         assert!(tm_json.contains(&"tasks"));
         assert!(tm_json.contains(&"start_time_pretty"));
