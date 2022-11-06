@@ -15,10 +15,9 @@ pub struct ActivityManager {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActivityManagerSerial {
     date: String,
-    activities: Vec<Activity>,
     start_time_pretty: String,
 
-    tasks: Vec<ActivitySerial>,
+    activities: Vec<ActivitySerial>,
     elapsed_day: String,
     total_activity_time: String,
     time_difference: String,
@@ -116,15 +115,16 @@ impl ActivityManager {
         let time_left = format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
         let time_left = time_left;
         let date = Utc::now().date_naive().to_string();
+        let start_time_pretty = format!("start time:         {}", self.start_time_pretty.to_owned());
+
         let activities = db_io::read_as_serialised(&self.path)
             .into_iter()
             .filter(|x| x.get_active_dates().contains(&date))
             .collect();
         ActivityManagerSerial {
             date,
-            activities: db_io::read(&self.path),
-            start_time_pretty: format!("start time:         {}", self.start_time_pretty.to_owned()),
-            tasks: activities,
+            start_time_pretty,
+            activities,
             elapsed_day,
             total_activity_time,
             time_difference,
