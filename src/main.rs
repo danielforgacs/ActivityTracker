@@ -3,12 +3,13 @@ mod client_views;
 mod config;
 mod storage;
 mod structs;
+mod utils;
 mod prelude {
     pub use super::{
         api_views::{api_views_config, views::*},
         client_views::{client_views_config::app_config, index},
         storage::db_io,
-        structs::{activity::*, activitymanager::TaskManager},
+        structs::{activity::*, activitymanager::ActivityManager},
     };
     pub use actix_files::NamedFile;
     pub use actix_web::{
@@ -28,6 +29,7 @@ mod prelude {
         sync::Mutex,
         time::{Duration, SystemTime, UNIX_EPOCH},
     };
+    pub use super::utils::*;
     pub const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
     pub type SecType = u64;
 }
@@ -42,14 +44,17 @@ async fn main() -> std::io::Result<()> {
             return Ok(());
         }
     };
-    println!("web: http://{}:{}/", config.get_url(), config.get_port());
+    env_logger::init();
+    log::info!("Got the config.");
     println!(
-        "api: http://{}:{}/api/times",
+        "web: http://{}:{}\napi: http://{}:{}/api/times",
+        config.get_url(),
+        config.get_port(),
         config.get_url(),
         config.get_port()
     );
 
-    let data = Data::new(Mutex::new(TaskManager::new(config.get_dbpath().clone())));
+    let data = Data::new(Mutex::new(ActivityManager::new(config.get_dbpath().clone())));
 
     HttpServer::new(move || {
         App::new()

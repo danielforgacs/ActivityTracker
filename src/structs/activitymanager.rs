@@ -5,7 +5,7 @@ use crate::prelude::*;
 /// Only one task can be active at a time.
 /// Running tasks are exclusive, starting a task will stop all other tasks.
 #[derive(Debug, Eq, PartialEq, Clone)]
-pub struct TaskManager {
+pub struct ActivityManager {
     path: std::path::PathBuf,
     /// pretty system time timestamp for when the taskmanager started
     start_time_pretty: String,
@@ -15,10 +15,9 @@ pub struct TaskManager {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ActivityManagerSerial {
     date: String,
-    activities: Vec<Activity>,
     start_time_pretty: String,
 
-    tasks: Vec<ActivitySerial>,
+    activities: Vec<ActivitySerial>,
     elapsed_day: String,
     total_activity_time: String,
     time_difference: String,
@@ -28,7 +27,7 @@ pub struct ActivityManagerSerial {
     time_left: String,
 }
 
-impl TaskManager {
+impl ActivityManager {
     pub fn new(path: std::path::PathBuf) -> Self {
         let now = Utc::now();
         Self {
@@ -97,7 +96,7 @@ impl TaskManager {
             .sum()
     }
 
-    pub fn today_times(&self) -> ActivityManagerSerial {
+    pub fn get_activities_by_date(&self, date: String) -> ActivityManagerSerial {
         let (hours, mins) = secs_to_hours_minutes(self.total_activity_time());
         let total_time = format!("{:02}h:{:02}m", hours, mins);
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
@@ -115,16 +114,16 @@ impl TaskManager {
             secs_to_hours_minutes(DAY_LENGTH_SECS - self.total_activity_time());
         let time_left = format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
         let time_left = time_left;
-        let date = Utc::now().date_naive().to_string();
+        let start_time_pretty = format!("start time:         {}", self.start_time_pretty.to_owned());
+        dbg!(&date);
         let activities = db_io::read_as_serialised(&self.path)
             .into_iter()
             .filter(|x| x.get_active_dates().contains(&date))
             .collect();
         ActivityManagerSerial {
             date,
-            activities: db_io::read(&self.path),
-            start_time_pretty: format!("start time:         {}", self.start_time_pretty.to_owned()),
-            tasks: activities,
+            start_time_pretty,
+            activities,
             elapsed_day,
             total_activity_time,
             time_difference,
@@ -157,7 +156,7 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let mut tm = TaskManager::new(path.clone());
+        let mut tm = ActivityManager::new(path.clone());
         let task_name = "task";
         tm.start_activity(task_name);
         assert_eq!(db_io::read(&path).len(), 1);
@@ -191,7 +190,7 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let mut tm = TaskManager::new(path.clone());
+        let mut tm = ActivityManager::new(path.clone());
         tm.start_activity(task_1);
         pause();
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 1);
@@ -234,7 +233,7 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let mut tm = TaskManager::new(path.clone());
+        let mut tm = ActivityManager::new(path.clone());
         tm.start_activity("a");
         tm.start_activity("a");
         tm.start_activity("a");
@@ -255,8 +254,8 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let tm = TaskManager::new(path);
-        let tm_json = serde_json::to_string(&tm.today_times()).unwrap();
+        let tm = ActivityManager::new(path);
+        let tm_json = serde_json::to_string(&tm.get_activities_by_date()).unwrap();
         assert!(tm_json.contains(&"tasks"));
         assert!(tm_json.contains(&"start_time_pretty"));
         assert!(tm_json.contains(&"elapsed_day"));
