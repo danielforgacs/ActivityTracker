@@ -14,8 +14,8 @@ pub async fn start(req: HttpRequest, form: web::Json<StartJson>) -> HttpResponse
     let name = form.into_inner().name;
     let data = req.app_data::<Data<Mutex<ActivityManager>>>().unwrap();
     let mut tm = data.lock().unwrap();
-    tm.start_activity(name.as_str());
-    HttpResponse::Ok().body(format!("activated task: {} Ok.", name))
+    let activity = tm.start_activity(name.as_str());
+    HttpResponse::Ok().json(activity)
 }
 
 pub async fn stop(req: HttpRequest) -> impl Responder {

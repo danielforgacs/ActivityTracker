@@ -37,10 +37,11 @@ impl ActivityManager {
         }
     }
 
-    pub fn start_activity(&mut self, name: &str) {
+    pub fn start_activity(&mut self, name: &str) -> Activity {
         let mut data = db_io::read(&self.path);
+        let activity = Activity::new(name);
         if !data.iter().any(|x| x.name() == *name) {
-            data.push(Activity::new(name));
+            data.push(activity.clone());
         }
         for task in data.iter_mut() {
             if task.name() == name {
@@ -50,6 +51,7 @@ impl ActivityManager {
             }
         }
         db_io::write(&self.path, data);
+        activity
     }
 
     pub fn stop(&mut self) {

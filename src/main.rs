@@ -87,6 +87,7 @@ mod tests {
         }
         let mut test_db = path::PathBuf::new();
         test_db.push("test_db.json");
+        std::fs::write(&test_db, b"[]").unwrap();
         let data = Data::new(Mutex::new(ActivityManager::new(test_db)));
         let app = test::init_service(
             App::new()
@@ -94,18 +95,37 @@ mod tests {
                 .configure(api_views_config::app_config)
                 .configure(app_config)
         ).await;
-        let payload = format!(r#"{{"date":"{}"}}"#, Utc::now().date_naive());
-        let req = test::TestRequest::post()
-            .uri("/api/activities")
-            .insert_header((header::CONTENT_TYPE, "application/json"))
-            .set_payload(payload)
-            .to_request();
-        let resp = test::call_service(&app, req).await;
-        assert!(resp.status().is_success());
-        let result: Response = test::read_body_json(resp).await;
-        assert_eq!(result, Response {
-            date: Utc::now().date_naive().to_string(),
-            activities: vec![],
-        });
+        {
+            let payload = format!(r#"{{"date":"{}"}}"#, Utc::now().date_naive());
+            let req = test::TestRequest::post()
+                .uri("/api/activities")
+                .insert_header((header::CONTENT_TYPE, "application/json"))
+                .set_payload(payload)
+                .to_request();
+            let resp = test::call_service(&app, req).await;
+            assert!(resp.status().is_success());
+            let result: Response = test::read_body_json(resp).await;
+            assert_eq!(result, Response {
+                date: Utc::now().date_naive().to_string(),
+                activities: vec![],
+            });
+        }
+        {
+            let req = test::TestRequest::post()
+                .uri("/api/start")
+                .insert_header((header::CONTENT_TYPE, "application/json"))
+                .set_payload(r#"{"name":"test_name_01"}"#.as_bytes())
+                .to_request();
+            let resp = test::call_service(&app, req).await;
+            assert!(resp.status().is_success());
+            #[derive(Debug, Deserialize, PartialEq)]
+            struct ResponseActivity {
+                name: String,
+            }
+            let result: ResponseActivity = test::read_body_json(resp).await;
+            assert_eq!(result, ResponseActivity {
+                name: "test_name_01".to_string(),
+            });
+        }
     }
 }
