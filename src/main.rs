@@ -75,7 +75,6 @@ async fn main() -> std::io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use super::structs::activitymanager::ActivityManagerSerial;
     use actix_web::{test, App};
     use actix_web::http::header;
 
@@ -98,6 +97,15 @@ mod tests {
             .to_request();
         let resp = test::call_service(&app, req).await;
         assert!(resp.status().is_success());
-        let _result: ActivityManagerSerial = test::read_body_json(resp).await;
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Response {
+            date: String,
+            activities: Vec<ActivitySerial>,
+        }
+        let result: Response = test::read_body_json(resp).await;
+        assert_eq!(result, Response {
+            date: Utc::now().date_naive().to_string(),
+            activities: vec![],
+        });
     }
 }
