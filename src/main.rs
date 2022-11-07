@@ -98,6 +98,6 @@ mod tests {
             .to_request();
         let resp = test::call_service(&app, req).await;
         assert!(resp.status().is_success());
-        let result: ActivityManagerSerial = test::read_body_json(resp).await;
+        let _result: ActivityManagerSerial = test::read_body_json(resp).await;
     }
 }
