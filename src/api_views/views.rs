@@ -29,7 +29,6 @@ pub async fn get_activities_per_date(date: web::Json<ActivityDate>, req: HttpReq
     log::info!("get_activities_per_date()");
     let data = req.app_data::<Data<Mutex<ActivityManager>>>().unwrap();
     let date = date.into_inner().date;
-    dbg!(&date);
     let tm = data.lock().unwrap().clone();
     HttpResponse::Ok().json(tm.get_activities_by_date(date))
 }

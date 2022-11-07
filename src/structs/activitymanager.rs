@@ -115,7 +115,6 @@ impl ActivityManager {
         let time_left = format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
         let time_left = time_left;
         let start_time_pretty = format!("start time:         {}", self.start_time_pretty.to_owned());
-        dbg!(&date);
         let activities = db_io::read_as_serialised(&self.path)
             .into_iter()
             .filter(|x| x.get_active_dates().contains(&date))
