@@ -38,7 +38,7 @@ use prelude::*;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let config = match config::get_congig() {
+    let config = match config::get_congig(Option::None) {
         Ok(config) => config,
         Err(msg) => {
             println!("{}", msg);
@@ -69,4 +69,24 @@ async fn main() -> std::io::Result<()> {
     .workers(4)
     .run()
     .await
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use actix_web::{http::header::ContentType, test, web, App};
+
+    fn test_create_activity() {
+        let config = config::get_congig(Some("test_db.json")).unwrap();
+        let data = Data::new(Mutex::new(ActivityManager::new(
+            config.get_dbpath().clone(),
+        )));
+        let app = test::init_service(
+            App::new()
+                .app_data(Data::clone(&data))
+                .configure(api_views_config::app_config)
+                .configure(app_config)
+        );
+    }
 }
