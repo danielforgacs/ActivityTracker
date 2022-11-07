@@ -72,7 +72,7 @@ impl ConfigBuilder {
     }
 }
 
-pub fn get_congig(test_path: Option<&str>) -> Result<Config, String> {
+pub fn get_congig() -> Result<Config, String> {
     let matches = clap::Command::new("activitytracker")
         .version(env!("CARGO_PKG_VERSION"))
         .about(include_str!(concat!(
@@ -105,9 +105,6 @@ pub fn get_congig(test_path: Option<&str>) -> Result<Config, String> {
         config.port(*port);
     }
     if let Some(path) = matches.get_one::<String>("dbfile") {
-        config.dbpath(path::Path::new(path).to_path_buf());
-    }
-    if let Some(path) = test_path {
         config.dbpath(path::Path::new(path).to_path_buf());
     }
     let config = config.finish()?;

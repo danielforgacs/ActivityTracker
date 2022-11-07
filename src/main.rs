@@ -38,7 +38,7 @@ use prelude::*;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let config = match config::get_congig(Option::None) {
+    let config = match config::get_congig() {
         Ok(config) => config,
         Err(msg) => {
             println!("{}", msg);
@@ -75,18 +75,29 @@ async fn main() -> std::io::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::{http::header::ContentType, test, web, App};
+    use super::structs::activitymanager::ActivityManagerSerial;
+    use actix_web::{test, App};
+    use actix_web::http::header;
 
-    fn test_create_activity() {
-        let config = config::get_congig(Some("test_db.json")).unwrap();
-        let data = Data::new(Mutex::new(ActivityManager::new(
-            config.get_dbpath().clone(),
-        )));
+    #[actix_web::test]
+    async fn test_create_activity() {
+        let mut test_db = path::PathBuf::new();
+        test_db.push("test_db.json");
+        let data = Data::new(Mutex::new(ActivityManager::new(test_db)));
         let app = test::init_service(
             App::new()
                 .app_data(Data::clone(&data))
                 .configure(api_views_config::app_config)
                 .configure(app_config)
-        );
+        ).await;
+        let payload = format!(r#"{{"date":"{}"}}"#, Utc::now().date_naive());
+        let req = test::TestRequest::post()
+            .uri("/api/activities")
+            .insert_header((header::CONTENT_TYPE, "application/json"))
+            .set_payload(payload)
+            .to_request();
+        let resp = test::call_service(&app, req).await;
+        assert!(resp.status().is_success());
+        let result: ActivityManagerSerial = test::read_body_json(resp).await;
     }
 }
