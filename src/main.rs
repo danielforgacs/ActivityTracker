@@ -80,6 +80,11 @@ mod tests {
 
     #[actix_web::test]
     async fn test_create_activity() {
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Response {
+            date: String,
+            activities: Vec<ActivitySerial>,
+        }
         let mut test_db = path::PathBuf::new();
         test_db.push("test_db.json");
         let data = Data::new(Mutex::new(ActivityManager::new(test_db)));
@@ -97,11 +102,6 @@ mod tests {
             .to_request();
         let resp = test::call_service(&app, req).await;
         assert!(resp.status().is_success());
-        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-        pub struct Response {
-            date: String,
-            activities: Vec<ActivitySerial>,
-        }
         let result: Response = test::read_body_json(resp).await;
         assert_eq!(result, Response {
             date: Utc::now().date_naive().to_string(),
