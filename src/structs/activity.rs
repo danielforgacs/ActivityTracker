@@ -106,10 +106,9 @@ impl Activity {
         // If this is not added and an active task is
         // activated again the start time stamp will change,
         // but the logged time remains the same!
-        *self.logged_secs.entry(
-            Utc::now()
-            .date_naive()
-            .to_string())
+        *self
+            .logged_secs
+            .entry(Utc::now().date_naive().to_string())
             .or_insert(self.status.as_elapsed_secs()) += self.status.as_elapsed_secs();
         self.status = Status::ActiveSince(sys_now_secs());
         let date = Utc::now().date_naive().to_string();
@@ -125,16 +124,19 @@ impl Activity {
     }
 
     pub fn stop(&mut self) {
-        self.logged_secs.entry(Utc::now()
-            .date_naive()
-            .to_string())
+        self.logged_secs
+            .entry(Utc::now().date_naive().to_string())
             .and_modify(|e| *e += self.status.as_elapsed_secs());
         self.status = Status::Idle;
     }
 
     /// all logged secs plus tha latest active time secs if any.
     pub fn secs_since_creation(&self) -> SecType {
-        *self.logged_secs.get(&Utc::now().date_naive().to_string()).unwrap() + self.status.as_elapsed_secs()
+        *self
+            .logged_secs
+            .get(&Utc::now().date_naive().to_string())
+            .unwrap()
+            + self.status.as_elapsed_secs()
     }
 
     pub fn time_text(&self) -> String {

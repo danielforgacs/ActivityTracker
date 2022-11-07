@@ -114,7 +114,8 @@ impl ActivityManager {
             secs_to_hours_minutes(DAY_LENGTH_SECS - self.total_activity_time());
         let time_left = format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
         let time_left = time_left;
-        let start_time_pretty = format!("start time:         {}", self.start_time_pretty.to_owned());
+        let start_time_pretty =
+            format!("start time:         {}", self.start_time_pretty.to_owned());
         let activities = db_io::read_as_serialised(&self.path)
             .into_iter()
             .filter(|x| x.get_active_dates().contains(&date))
