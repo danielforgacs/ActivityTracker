@@ -255,8 +255,10 @@ mod test {
             .write_all(b"[]")
             .unwrap();
         let tm = ActivityManager::new(path);
-        let tm_json = serde_json::to_string(&tm.get_activities_by_date()).unwrap();
-        assert!(tm_json.contains(&"tasks"));
+        let tm_json = serde_json::to_string(&tm.get_activities_by_date(
+            Utc::now().date_naive().to_string()
+        )).unwrap();
+        assert!(tm_json.contains(&"activities"));
         assert!(tm_json.contains(&"start_time_pretty"));
         assert!(tm_json.contains(&"elapsed_day"));
         assert!(tm_json.contains(&"total_activity_time"));
