@@ -20,7 +20,7 @@ pub struct Activity {
     /// when the activity is stopped all the the duration
     /// between the last start and the stopping time
     /// is added here.
-    logged_secs: SecType,
+    logged_secs: HashMap<String, SecType>,
     name: String,
 }
 
@@ -30,7 +30,7 @@ pub struct ActivitySerial {
     started_at: Vec<String>,
     active_days: Vec<String>,
     status: Status,
-    logged_secs: SecType,
+    logged_secs: HashMap<String, SecType>,
     name: String,
     logged_pretty: String,
 }
@@ -88,9 +88,9 @@ impl Activity {
                 now.time().format("%H:%M:%S")
             )],
             // Days on which the activity was active
-            active_days: vec![Utc::now().date_naive().to_string()],
+            active_days: vec![now.date_naive().to_string()],
             status: Status::ActiveSince(sys_now_secs()),
-            logged_secs: 0,
+            logged_secs: HashMap::from([(now.date_naive().to_string(), 0)]),
             name: name.to_string(),
         }
     }
@@ -106,7 +106,10 @@ impl Activity {
         // If this is not added and an active task is
         // activated again the start time stamp will change,
         // but the logged time remains the same!
-        self.logged_secs += self.status.as_elapsed_secs();
+        *self
+            .logged_secs
+            .entry(Utc::now().date_naive().to_string())
+            .or_insert(self.status.as_elapsed_secs()) += self.status.as_elapsed_secs();
         self.status = Status::ActiveSince(sys_now_secs());
         let date = Utc::now().date_naive().to_string();
         if !self.active_days.contains(&date) {
@@ -121,13 +124,19 @@ impl Activity {
     }
 
     pub fn stop(&mut self) {
-        self.logged_secs += self.status.as_elapsed_secs();
+        self.logged_secs
+            .entry(Utc::now().date_naive().to_string())
+            .and_modify(|e| *e += self.status.as_elapsed_secs());
         self.status = Status::Idle;
     }
 
     /// all logged secs plus tha latest active time secs if any.
     pub fn secs_since_creation(&self) -> SecType {
-        self.logged_secs + self.status.as_elapsed_secs()
+        *self
+            .logged_secs
+            .get(&Utc::now().date_naive().to_string())
+            .unwrap()
+            + self.status.as_elapsed_secs()
     }
 
     pub fn time_text(&self) -> String {
@@ -241,7 +250,7 @@ mod test {
     fn test_activityserial_from_activity() {
         let mut activity = Activity::new("test-act01");
         activity.stop();
-        activity.logged_secs = 120;
+        activity.logged_secs.insert(Utc::now().date_naive().to_string(), 120);
         let activity_serial = ActivitySerial::from(activity);
         assert_eq!(activity_serial.logged_pretty, "00h:02m");
     }
@@ -250,7 +259,7 @@ mod test {
     fn test_activityserial_from_activity_02() {
         let mut activity = Activity::new("test-act01");
         activity.stop();
-        activity.logged_secs = 60 * 60;
+        activity.logged_secs.insert(Utc::now().date_naive().to_string(), 60 * 60);
         let activity_serial: ActivitySerial = activity.into();
         assert_eq!(activity_serial.logged_pretty, "01h:00m");
     }
@@ -259,7 +268,7 @@ mod test {
     fn test_activityserial_from_activity_03() {
         let mut activity = Activity::new("test-act01");
         activity.stop();
-        activity.logged_secs = (60 * 60 * 2) + (60 * 5) + 30;
+        activity.logged_secs.insert(Utc::now().date_naive().to_string(), (60 * 60 * 2) + (60 * 5) + 30);
         let activity_serial = ActivitySerial::from(activity);
         assert_eq!(activity_serial.logged_pretty, "02h:05m");
     }

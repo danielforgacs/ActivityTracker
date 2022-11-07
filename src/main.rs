@@ -5,6 +5,7 @@ mod storage;
 mod structs;
 mod utils;
 mod prelude {
+    pub use super::utils::*;
     pub use super::{
         api_views::{api_views_config, views::*},
         client_views::{client_views_config::app_config, index},
@@ -23,13 +24,13 @@ mod prelude {
         Deserialize, Serialize,
     };
     pub use std::{
+        collections::HashMap,
         fs::File,
         io::prelude::*,
         path,
         sync::Mutex,
         time::{Duration, SystemTime, UNIX_EPOCH},
     };
-    pub use super::utils::*;
     pub const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
     pub type SecType = u64;
 }
@@ -54,7 +55,9 @@ async fn main() -> std::io::Result<()> {
         config.get_port()
     );
 
-    let data = Data::new(Mutex::new(ActivityManager::new(config.get_dbpath().clone())));
+    let data = Data::new(Mutex::new(ActivityManager::new(
+        config.get_dbpath().clone(),
+    )));
 
     HttpServer::new(move || {
         App::new()

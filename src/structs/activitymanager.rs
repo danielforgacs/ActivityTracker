@@ -114,8 +114,8 @@ impl ActivityManager {
             secs_to_hours_minutes(DAY_LENGTH_SECS - self.total_activity_time());
         let time_left = format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
         let time_left = time_left;
-        let start_time_pretty = format!("start time:         {}", self.start_time_pretty.to_owned());
-        dbg!(&date);
+        let start_time_pretty =
+            format!("start time:         {}", self.start_time_pretty.to_owned());
         let activities = db_io::read_as_serialised(&self.path)
             .into_iter()
             .filter(|x| x.get_active_dates().contains(&date))
@@ -255,8 +255,10 @@ mod test {
             .write_all(b"[]")
             .unwrap();
         let tm = ActivityManager::new(path);
-        let tm_json = serde_json::to_string(&tm.get_activities_by_date()).unwrap();
-        assert!(tm_json.contains(&"tasks"));
+        let tm_json = serde_json::to_string(&tm.get_activities_by_date(
+            Utc::now().date_naive().to_string()
+        )).unwrap();
+        assert!(tm_json.contains(&"activities"));
         assert!(tm_json.contains(&"start_time_pretty"));
         assert!(tm_json.contains(&"elapsed_day"));
         assert!(tm_json.contains(&"total_activity_time"));
