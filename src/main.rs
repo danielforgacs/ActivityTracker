@@ -88,7 +88,7 @@ mod tests {
         let mut test_db = path::PathBuf::new();
         test_db.push("test_db.json");
         std::fs::write(&test_db, b"[]").unwrap();
-        let data = Data::new(Mutex::new(ActivityManager::new(test_db)));
+        let data = Data::new(Mutex::new(ActivityManager::new(test_db.clone())));
         let app = test::init_service(
             App::new()
                 .app_data(Data::clone(&data))
@@ -127,5 +127,6 @@ mod tests {
                 name: "test_name_01".to_string(),
             });
         }
+        std::fs::remove_file(test_db).unwrap();
     }
 }
