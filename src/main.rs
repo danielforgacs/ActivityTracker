@@ -12,7 +12,7 @@ mod prelude {
         storage::db_io,
         structs::{activity::*, activitymanager::ActivityManager},
     };
-    pub use actix_files::NamedFile;
+    pub use actix_files::{self, NamedFile};
     pub use actix_web::{
         get, post,
         web::{self, Data, Json, Path, ServiceConfig},
@@ -62,6 +62,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
+            .service(actix_files::Files::new("/static", "static").show_files_listing())
             .configure(api_views_config::app_config)
             .configure(app_config)
     })
