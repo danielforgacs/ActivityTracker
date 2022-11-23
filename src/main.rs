@@ -12,7 +12,7 @@ mod prelude {
         storage::db_io,
         structs::{activity::*, activitymanager::ActivityManager},
     };
-    pub use actix_files::NamedFile;
+    pub use actix_files::{self, NamedFile};
     pub use actix_web::{
         get, post,
         web::{self, Data, Json, Path, ServiceConfig},
@@ -62,6 +62,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
+            .service(actix_files::Files::new("/static", "static").show_files_listing())
             .configure(api_views_config::app_config)
             .configure(app_config)
     })
@@ -69,4 +70,64 @@ async fn main() -> std::io::Result<()> {
     .workers(4)
     .run()
     .await
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use actix_web::{test, App};
+    use actix_web::http::header;
+
+    #[actix_web::test]
+    async fn test_create_activity() {
+        #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+        pub struct Response {
+            date: String,
+            activities: Vec<ActivitySerial>,
+        }
+        let mut test_db = path::PathBuf::new();
+        test_db.push("test_db.json");
+        std::fs::write(&test_db, b"[]").unwrap();
+        let data = Data::new(Mutex::new(ActivityManager::new(test_db.clone())));
+        let app = test::init_service(
+            App::new()
+                .app_data(Data::clone(&data))
+                .configure(api_views_config::app_config)
+                .configure(app_config)
+        ).await;
+        {
+            let payload = format!(r#"{{"date":"{}"}}"#, Utc::now().date_naive());
+            let req = test::TestRequest::post()
+                .uri("/api/activities")
+                .insert_header((header::CONTENT_TYPE, "application/json"))
+                .set_payload(payload)
+                .to_request();
+            let resp = test::call_service(&app, req).await;
+            assert!(resp.status().is_success());
+            let result: Response = test::read_body_json(resp).await;
+            assert_eq!(result, Response {
+                date: Utc::now().date_naive().to_string(),
+                activities: vec![],
+            });
+        }
+        {
+            let req = test::TestRequest::post()
+                .uri("/api/start")
+                .insert_header((header::CONTENT_TYPE, "application/json"))
+                .set_payload(r#"{"name":"test_name_01"}"#.as_bytes())
+                .to_request();
+            let resp = test::call_service(&app, req).await;
+            assert!(resp.status().is_success());
+            #[derive(Debug, Deserialize, PartialEq)]
+            struct ResponseActivity {
+                name: String,
+            }
+            let result: ResponseActivity = test::read_body_json(resp).await;
+            assert_eq!(result, ResponseActivity {
+                name: "test_name_01".to_string(),
+            });
+        }
+        std::fs::remove_file(test_db).unwrap();
+    }
 }

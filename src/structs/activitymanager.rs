@@ -37,10 +37,11 @@ impl ActivityManager {
         }
     }
 
-    pub fn start_activity(&mut self, name: &str) {
+    pub fn start_activity(&mut self, name: &str) -> Activity {
         let mut data = db_io::read(&self.path);
+        let activity = Activity::new(name);
         if !data.iter().any(|x| x.name() == *name) {
-            data.push(Activity::new(name));
+            data.push(activity.clone());
         }
         for task in data.iter_mut() {
             if task.name() == name {
@@ -50,6 +51,7 @@ impl ActivityManager {
             }
         }
         db_io::write(&self.path, data);
+        activity
     }
 
     pub fn stop(&mut self) {
@@ -147,6 +149,7 @@ mod test {
             .write_all(b"[]")
             .unwrap();
         assert_eq!(db_io::read(&path), Vec::new());
+        std::fs::remove_file(path).unwrap();
     }
 
     #[test]
@@ -179,6 +182,7 @@ mod test {
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 2);
         std::thread::sleep(std::time::Duration::from_secs(1));
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 3);
+        std::fs::remove_file(path).unwrap();
     }
 
     #[test]
@@ -219,6 +223,7 @@ mod test {
         pause();
         assert_eq!(db_io::read(&path)[0].secs_since_creation(), 3);
         assert_eq!(db_io::read(&path)[1].secs_since_creation(), 4);
+        std::fs::remove_file(path).unwrap();
     }
 
     fn pause() {
@@ -245,6 +250,7 @@ mod test {
                 .collect::<Vec<String>>(),
             vec!["a"]
         );
+        std::fs::remove_file(path).unwrap();
     }
 
     #[test]
@@ -254,7 +260,7 @@ mod test {
             .unwrap()
             .write_all(b"[]")
             .unwrap();
-        let tm = ActivityManager::new(path);
+        let tm = ActivityManager::new(path.clone());
         let tm_json = serde_json::to_string(&tm.get_activities_by_date(
             Utc::now().date_naive().to_string()
         )).unwrap();
@@ -265,5 +271,6 @@ mod test {
         assert!(tm_json.contains(&"time_difference"));
         assert!(tm_json.contains(&"start_time"));
         assert!(tm_json.contains(&"display"));
+        std::fs::remove_file(path).unwrap();
     }
 }
