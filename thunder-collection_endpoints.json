@@ -1,1 +1,28 @@
-{"client":"Thunder Client","collectionName":"endpoints","dateExported":"2022-11-09T22:42:25.698Z","version":"1.1","folders":[],"requests":[{"_id":"7f616ccb-10f0-48d0-8cd9-4e2e9c67e527","colId":"99dab932-d386-4e42-82dd-7cbb2a23005b","containerId":"","name":"activities","url":"http://127.0.0.1:8000/api/activities","method":"POST","sortNum":20000,"created":"2022-11-09T22:41:18.410Z","modified":"2022-11-09T22:41:54.916Z","headers":[],"params":[],"body":{"type":"json","raw":"{\n  \"date\": \"2022-11-09\"\n}","form":[]},"tests":[]}]}
+{
+    "client": "Thunder Client",
+    "collectionName": "endpoints",
+    "dateExported": "2022-11-09T22:42:25.698Z",
+    "version": "1.1",
+    "folders": [],
+    "requests": [
+        {
+            "_id": "7f616ccb-10f0-48d0-8cd9-4e2e9c67e527",
+            "colId": "99dab932-d386-4e42-82dd-7cbb2a23005b",
+            "containerId": "",
+            "name": "activities",
+            "url": "http://127.0.0.1:8000/api/activities",
+            "method": "POST",
+            "sortNum": 20000,
+            "created": "2022-11-09T22:41:18.410Z",
+            "modified": "2022-11-09T22:41:54.916Z",
+            "headers": [],
+            "params": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"date\": \"2022-11-09\"\n}",
+                "form": []
+            },
+            "tests": []
+        }
+    ]
+}
