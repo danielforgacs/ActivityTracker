@@ -31,6 +31,7 @@ mod prelude {
         sync::Mutex,
         time::{Duration, SystemTime, UNIX_EPOCH},
     };
+    pub use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
     pub const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
     pub type SecType = u64;
 }
@@ -59,6 +60,15 @@ async fn main() -> std::io::Result<()> {
         config.get_dbpath().clone(),
     )));
 
+    log::info!("Starting ssl");
+
+    // create certificate:
+    // Add a passphrase or it won't work. The file will be empty.
+    // openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -sha256 -subj "/C=CN/ST=Fujian/L=Xiamen/O=TVlinux/OU=Org/CN=muro.lxd"
+    let mut ssl_builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
+    ssl_builder.set_private_key_file("key.pem", SslFiletype::PEM).unwrap();
+    ssl_builder.set_certificate_chain_file("cert.pem").unwrap();
+
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
@@ -66,7 +76,7 @@ async fn main() -> std::io::Result<()> {
             .configure(api_views_config::app_config)
             .configure(app_config)
     })
-    .bind((config.get_url().clone(), *config.get_port()))?
+    .bind_openssl(format!("{}:{}", config.get_url().clone(), *config.get_port()), ssl_builder)?
     .workers(4)
     .run()
     .await
