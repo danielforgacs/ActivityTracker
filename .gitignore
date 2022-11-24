@@ -1,5 +1,6 @@
 storage.json
 activitytracker_db*.json
 test_*.json
+*.pem
 
 /target
