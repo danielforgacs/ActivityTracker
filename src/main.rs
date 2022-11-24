@@ -69,6 +69,8 @@ async fn main() -> std::io::Result<()> {
     ssl_builder.set_private_key_file("key.pem", SslFiletype::PEM).unwrap();
     ssl_builder.set_certificate_chain_file("cert.pem").unwrap();
 
+    log::info!("Starting the server");
+
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
