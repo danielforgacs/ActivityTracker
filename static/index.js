@@ -112,4 +112,4 @@ setInterval(() => {
     })
     .then(response => response.json())
     .then(data => body_builder(data));
-}, 500);
+}, 750);
