@@ -50,13 +50,14 @@ async fn main() -> std::io::Result<()> {
     // create certificate:
     // Add a passphrase or it won't work. The file will be empty.
     // openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -sha256 -subj "/C=CN/ST=Fujian/L=Xiamen/O=TVlinux/OU=Org/CN=muro.lxd"
-    let mut ssl_builder = match SslAcceptor::mozilla_intermediate(SslMethod::tls()) {
-        Ok(builder) => builder,
-        Err(_) => {
-            println!("Can not create SSL BUilder.");
-            return Ok(());
-        }
-    };
+    let mut ssl_builder =
+        match SslAcceptor::mozilla_intermediate(SslMethod::tls()) {
+            Ok(builder) => builder,
+            Err(_) => {
+                println!("Can not create SSL BUilder.");
+                return Ok(());
+            }
+        };
     match ssl_builder.set_private_key_file("key.pem", SslFiletype::PEM) {
         Ok(()) => {}
         Err(_) => {
@@ -87,7 +88,10 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
-            .service(actix_files::Files::new("/static", "static").show_files_listing())
+            .service(
+                actix_files::Files::new("/static", "static")
+                    .show_files_listing(),
+            )
             .configure(api_views_config::app_config)
             .configure(app_config)
     })
@@ -122,7 +126,8 @@ mod tests {
         )
         .await;
         {
-            let payload = format!(r#"{{"date":"{}"}}"#, Utc::now().date_naive());
+            let payload =
+                format!(r#"{{"date":"{}"}}"#, Utc::now().date_naive());
             let req = test::TestRequest::post()
                 .uri("/api/activities")
                 .insert_header((header::CONTENT_TYPE, "application/json"))

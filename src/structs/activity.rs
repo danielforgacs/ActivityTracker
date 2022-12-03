@@ -37,7 +37,8 @@ pub struct ActivitySerial {
 
 impl From<Activity> for ActivitySerial {
     fn from(activity: Activity) -> Self {
-        let (hours, mins) = secs_to_hours_minutes(activity.secs_since_creation());
+        let (hours, mins) =
+            secs_to_hours_minutes(activity.secs_since_creation());
         let logged_pretty = format!("{:02}h:{:02}m", hours, mins);
         Self {
             added_at: activity.added_at,
@@ -81,7 +82,11 @@ impl Activity {
     pub fn new(name: &str) -> Self {
         let now = Utc::now();
         Self {
-            added_at: format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S")),
+            added_at: format!(
+                "{} {}",
+                now.date_naive(),
+                now.time().format("%H:%M:%S")
+            ),
             started_at: vec![format!(
                 "{} {}",
                 now.date_naive(),
@@ -109,7 +114,8 @@ impl Activity {
         *self
             .logged_secs
             .entry(Utc::now().date_naive().to_string())
-            .or_insert(self.status.as_elapsed_secs()) += self.status.as_elapsed_secs();
+            .or_insert(self.status.as_elapsed_secs()) +=
+            self.status.as_elapsed_secs();
         self.status = Status::ActiveSince(sys_now_secs());
         let date = Utc::now().date_naive().to_string();
         if !self.active_days.contains(&date) {

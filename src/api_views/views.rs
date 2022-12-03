@@ -10,7 +10,10 @@ pub struct ActivityDate {
     date: String,
 }
 
-pub async fn start(req: HttpRequest, form: web::Json<StartJson>) -> HttpResponse {
+pub async fn start(
+    req: HttpRequest,
+    form: web::Json<StartJson>,
+) -> HttpResponse {
     let name = form.into_inner().name;
     let data = req.app_data::<Data<Mutex<ActivityManager>>>().unwrap();
     let mut tm = data.lock().unwrap();

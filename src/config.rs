@@ -39,16 +39,15 @@ impl ConfigBuilder {
 
     fn finish(&self) -> Result<Config, String> {
         if !self.dbpath.is_file() {
-            let byte_count = File::create(&self.dbpath).unwrap().write(b"[]").unwrap();
+            let byte_count =
+                File::create(&self.dbpath).unwrap().write(b"[]").unwrap();
             if byte_count != b"[]".len() {
                 return Err("Could not write initial database.".to_string());
             }
         }
-        let canon_path = self
-            .dbpath
-            .clone()
-            .canonicalize()
-            .map_err(|err| format!("Error getting canonicised path: {}", err))?;
+        let canon_path = self.dbpath.clone().canonicalize().map_err(|err| {
+            format!("Error getting canonicised path: {}", err)
+        })?;
         Ok(Config::new(self.url.clone(), self.port, canon_path))
     }
 
