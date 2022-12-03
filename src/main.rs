@@ -46,7 +46,32 @@ async fn main() -> std::io::Result<()> {
             return Ok(());
         }
     };
-    env_logger::init();
+
+    // create certificate:
+    // Add a passphrase or it won't work. The file will be empty.
+    // openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -sha256 -subj "/C=CN/ST=Fujian/L=Xiamen/O=TVlinux/OU=Org/CN=muro.lxd"
+    let mut ssl_builder = match SslAcceptor::mozilla_intermediate(SslMethod::tls()) {
+        Ok(builder) => builder,
+        Err(_) => {
+            println!("Can not create SSL BUilder.");
+            return Ok(());
+        }
+    };
+    match ssl_builder.set_private_key_file("key.pem", SslFiletype::PEM) {
+        Ok(()) => {},
+        Err(_) => {
+            println!("Can not set SSL private key file.");
+            return Ok(());
+        }
+    };
+    match ssl_builder.set_certificate_chain_file("cert.pem") {
+        Ok(()) => {},
+        Err(_) => {
+            println!("Can not set SSL certificate chain file.");
+            return Ok(());
+        }
+    };
+
     println!(
         "web: http://{}\napi: http://{}/api/times",
         config.get_url_w_port(),
@@ -59,30 +84,7 @@ async fn main() -> std::io::Result<()> {
                 config.get_dbpath().clone(),
     )));
 
-    // create certificate:
-    // Add a passphrase or it won't work. The file will be empty.
-    // openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -sha256 -subj "/C=CN/ST=Fujian/L=Xiamen/O=TVlinux/OU=Org/CN=muro.lxd"
-    let mut ssl_builder = match SslAcceptor::mozilla_intermediate(SslMethod::tls()) {
-        Ok(builder) => builder,
-        Err(_) => {
-            log::error!("Can not create SSL BUilder.");
-            return Ok(());
-        }
-    };
-    match ssl_builder.set_private_key_file("key.pem", SslFiletype::PEM) {
-        Ok(()) => {},
-        Err(_) => {
-            log::error!("Can not set SSL private key file.");
-            return Ok(());
-        }
-    };
-    match ssl_builder.set_certificate_chain_file("cert.pem") {
-        Ok(()) => {},
-        Err(_) => {
-            log::error!("Can not set SSL certificate chain file.");
-            return Ok(());
-        }
-    };
+    env_logger::init();
 
     HttpServer::new(move || {
         App::new()
