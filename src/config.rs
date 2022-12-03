@@ -19,16 +19,8 @@ impl Config {
         Self { url, port, dbpath }
     }
 
-    pub fn get_url(&self) -> &String {
-        &self.url
-    }
-
-    pub fn get_port(&self) -> &u16 {
-        &self.port
-    }
-
     pub fn get_url_w_port(&self) -> String {
-        format!("{}:{}", self.get_url(), self.get_port())
+        format!("{}:{}", self.url, self.port)
     }
 
     pub fn get_dbpath(&self) -> &path::PathBuf {
