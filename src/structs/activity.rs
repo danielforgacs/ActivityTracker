@@ -250,7 +250,9 @@ mod test {
     fn test_activityserial_from_activity() {
         let mut activity = Activity::new("test-act01");
         activity.stop();
-        activity.logged_secs.insert(Utc::now().date_naive().to_string(), 120);
+        activity
+            .logged_secs
+            .insert(Utc::now().date_naive().to_string(), 120);
         let activity_serial = ActivitySerial::from(activity);
         assert_eq!(activity_serial.logged_pretty, "00h:02m");
     }
@@ -259,7 +261,9 @@ mod test {
     fn test_activityserial_from_activity_02() {
         let mut activity = Activity::new("test-act01");
         activity.stop();
-        activity.logged_secs.insert(Utc::now().date_naive().to_string(), 60 * 60);
+        activity
+            .logged_secs
+            .insert(Utc::now().date_naive().to_string(), 60 * 60);
         let activity_serial: ActivitySerial = activity.into();
         assert_eq!(activity_serial.logged_pretty, "01h:00m");
     }
@@ -268,7 +272,10 @@ mod test {
     fn test_activityserial_from_activity_03() {
         let mut activity = Activity::new("test-act01");
         activity.stop();
-        activity.logged_secs.insert(Utc::now().date_naive().to_string(), (60 * 60 * 2) + (60 * 5) + 30);
+        activity.logged_secs.insert(
+            Utc::now().date_naive().to_string(),
+            (60 * 60 * 2) + (60 * 5) + 30,
+        );
         let activity_serial = ActivitySerial::from(activity);
         assert_eq!(activity_serial.logged_pretty, "02h:05m");
     }
