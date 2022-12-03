@@ -48,11 +48,9 @@ async fn main() -> std::io::Result<()> {
     };
     env_logger::init();
     println!(
-        "web: http://{}:{}\napi: http://{}:{}/api/times",
-        config.get_url(),
-        config.get_port(),
-        config.get_url(),
-        config.get_port()
+        "web: http://{}\napi: http://{}/api/times",
+        config.get_url_w_port(),
+        config.get_url_w_port(),
     );
 
     let data = Data::new(
@@ -93,7 +91,7 @@ async fn main() -> std::io::Result<()> {
             .configure(api_views_config::app_config)
             .configure(app_config)
     })
-    .bind_openssl(format!("{}:{}", config.get_url().clone(), *config.get_port()), ssl_builder)?
+    .bind_openssl(config.get_url_w_port(), ssl_builder)?
     .workers(4)
     .run()
     .await

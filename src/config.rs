@@ -27,6 +27,10 @@ impl Config {
         &self.port
     }
 
+    pub fn get_url_w_port(&self) -> String {
+        format!("{}:{}", self.get_url(), self.get_port())
+    }
+
     pub fn get_dbpath(&self) -> &path::PathBuf {
         &self.dbpath
     }
