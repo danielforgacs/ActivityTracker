@@ -47,7 +47,6 @@ async fn main() -> std::io::Result<()> {
         }
     };
     env_logger::init();
-    log::info!("Got the config.");
     println!(
         "web: http://{}:{}\napi: http://{}:{}/api/times",
         config.get_url(),
@@ -56,20 +55,36 @@ async fn main() -> std::io::Result<()> {
         config.get_port()
     );
 
-    let data = Data::new(Mutex::new(ActivityManager::new(
-        config.get_dbpath().clone(),
+    let data = Data::new(
+        Mutex::new(
+            ActivityManager::new(
+                config.get_dbpath().clone(),
     )));
-
-    log::info!("Starting ssl");
 
     // create certificate:
     // Add a passphrase or it won't work. The file will be empty.
     // openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -sha256 -subj "/C=CN/ST=Fujian/L=Xiamen/O=TVlinux/OU=Org/CN=muro.lxd"
-    let mut ssl_builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
-    ssl_builder.set_private_key_file("key.pem", SslFiletype::PEM).unwrap();
-    ssl_builder.set_certificate_chain_file("cert.pem").unwrap();
-
-    log::info!("Starting the server");
+    let mut ssl_builder = match SslAcceptor::mozilla_intermediate(SslMethod::tls()) {
+        Ok(builder) => builder,
+        Err(_) => {
+            log::error!("Can not create SSL BUilder.");
+            return Ok(());
+        }
+    };
+    match ssl_builder.set_private_key_file("key.pem", SslFiletype::PEM) {
+        Ok(()) => {},
+        Err(_) => {
+            log::error!("Can not set SSL private key file.");
+            return Ok(());
+        }
+    };
+    match ssl_builder.set_certificate_chain_file("cert.pem") {
+        Ok(()) => {},
+        Err(_) => {
+            log::error!("Can not set SSL certificate chain file.");
+            return Ok(());
+        }
+    };
 
     HttpServer::new(move || {
         App::new()
