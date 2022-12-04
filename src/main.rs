@@ -19,6 +19,7 @@ mod prelude {
         App, HttpRequest, HttpResponse, HttpServer, Responder, Result,
     };
     pub use chrono::prelude::*;
+    pub use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
     pub use serde::{
         ser::{SerializeStruct, Serializer},
         Deserialize, Serialize,
@@ -31,7 +32,6 @@ mod prelude {
         sync::Mutex,
         time::{Duration, SystemTime, UNIX_EPOCH},
     };
-    pub use openssl::ssl::{SslAcceptor, SslFiletype, SslMethod};
     pub const DAY_LENGTH_SECS: u64 = 7 * 60 * 60 + 30 * 60;
     pub type SecType = u64;
 }
@@ -46,50 +46,66 @@ async fn main() -> std::io::Result<()> {
             return Ok(());
         }
     };
-    env_logger::init();
-    log::info!("Got the config.");
+
+    // create certificate:
+    // Add a passphrase or it won't work. The file will be empty.
+    // openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -sha256 -subj "/C=CN/ST=Fujian/L=Xiamen/O=TVlinux/OU=Org/CN=muro.lxd"
+    let mut ssl_builder =
+        match SslAcceptor::mozilla_intermediate(SslMethod::tls()) {
+            Ok(builder) => builder,
+            Err(_) => {
+                println!("Can not create SSL BUilder.");
+                return Ok(());
+            }
+        };
+    match ssl_builder.set_private_key_file("key.pem", SslFiletype::PEM) {
+        Ok(()) => {}
+        Err(_) => {
+            println!("Can not set SSL private key file.");
+            return Ok(());
+        }
+    };
+    match ssl_builder.set_certificate_chain_file("cert.pem") {
+        Ok(()) => {}
+        Err(_) => {
+            println!("Can not set SSL certificate chain file.");
+            return Ok(());
+        }
+    };
+
     println!(
-        "web: http://{}:{}\napi: http://{}:{}/api/times",
-        config.get_url(),
-        config.get_port(),
-        config.get_url(),
-        config.get_port()
+        "web: http://{}\napi: http://{}/api/times",
+        config.get_url_w_port(),
+        config.get_url_w_port(),
     );
 
     let data = Data::new(Mutex::new(ActivityManager::new(
         config.get_dbpath().clone(),
     )));
 
-    log::info!("Starting ssl");
-
-    // create certificate:
-    // Add a passphrase or it won't work. The file will be empty.
-    // openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -sha256 -subj "/C=CN/ST=Fujian/L=Xiamen/O=TVlinux/OU=Org/CN=muro.lxd"
-    let mut ssl_builder = SslAcceptor::mozilla_intermediate(SslMethod::tls()).unwrap();
-    ssl_builder.set_private_key_file("key.pem", SslFiletype::PEM).unwrap();
-    ssl_builder.set_certificate_chain_file("cert.pem").unwrap();
-
-    log::info!("Starting the server");
+    env_logger::init();
 
     HttpServer::new(move || {
         App::new()
             .app_data(Data::clone(&data))
-            .service(actix_files::Files::new("/static", "static").show_files_listing())
+            .service(
+                actix_files::Files::new("/static", "static")
+                    .show_files_listing(),
+            )
             .configure(api_views_config::app_config)
             .configure(app_config)
     })
-    .bind_openssl(format!("{}:{}", config.get_url().clone(), *config.get_port()), ssl_builder)?
+    .bind_openssl(config.get_url_w_port(), ssl_builder)?
     .workers(4)
     .run()
     .await
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::{test, App};
     use actix_web::http::header;
+    use actix_web::{test, App};
 
     #[actix_web::test]
     async fn test_create_activity() {
@@ -106,10 +122,12 @@ mod tests {
             App::new()
                 .app_data(Data::clone(&data))
                 .configure(api_views_config::app_config)
-                .configure(app_config)
-        ).await;
+                .configure(app_config),
+        )
+        .await;
         {
-            let payload = format!(r#"{{"date":"{}"}}"#, Utc::now().date_naive());
+            let payload =
+                format!(r#"{{"date":"{}"}}"#, Utc::now().date_naive());
             let req = test::TestRequest::post()
                 .uri("/api/activities")
                 .insert_header((header::CONTENT_TYPE, "application/json"))
@@ -118,10 +136,13 @@ mod tests {
             let resp = test::call_service(&app, req).await;
             assert!(resp.status().is_success());
             let result: Response = test::read_body_json(resp).await;
-            assert_eq!(result, Response {
-                date: Utc::now().date_naive().to_string(),
-                activities: vec![],
-            });
+            assert_eq!(
+                result,
+                Response {
+                    date: Utc::now().date_naive().to_string(),
+                    activities: vec![],
+                }
+            );
         }
         {
             let req = test::TestRequest::post()
@@ -136,9 +157,12 @@ mod tests {
                 name: String,
             }
             let result: ResponseActivity = test::read_body_json(resp).await;
-            assert_eq!(result, ResponseActivity {
-                name: "test_name_01".to_string(),
-            });
+            assert_eq!(
+                result,
+                ResponseActivity {
+                    name: "test_name_01".to_string(),
+                }
+            );
         }
         std::fs::remove_file(test_db).unwrap();
     }

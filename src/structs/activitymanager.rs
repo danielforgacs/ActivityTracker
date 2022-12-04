@@ -31,7 +31,11 @@ impl ActivityManager {
     pub fn new(path: std::path::PathBuf) -> Self {
         let now = Utc::now();
         Self {
-            start_time_pretty: format!("{} {}", now.date_naive(), now.time().format("%H:%M:%S")),
+            start_time_pretty: format!(
+                "{} {}",
+                now.date_naive(),
+                now.time().format("%H:%M:%S")
+            ),
             start_time: sys_now_secs(),
             path,
         }
@@ -61,9 +65,13 @@ impl ActivityManager {
     }
 
     pub fn pretty(&self) -> String {
-        let mut result = format!("start time:         {}", self.start_time_pretty.to_owned());
+        let mut result = format!(
+            "start time:         {}",
+            self.start_time_pretty.to_owned()
+        );
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
-        result.push_str(&format!("\nelapsed day:        {:02}h:{:02}m", hh, mm));
+        result
+            .push_str(&format!("\nelapsed day:        {:02}h:{:02}m", hh, mm));
         let total_activity_time: SecType = db_io::read(&self.path)
             .iter()
             .map(|t| t.secs_since_creation())
@@ -98,12 +106,16 @@ impl ActivityManager {
             .sum()
     }
 
-    pub fn get_activities_by_date(&self, date: String) -> ActivityManagerSerial {
+    pub fn get_activities_by_date(
+        &self,
+        date: String,
+    ) -> ActivityManagerSerial {
         let (hours, mins) = secs_to_hours_minutes(self.total_activity_time());
         let total_time = format!("{:02}h:{:02}m", hours, mins);
         let (hh, mm) = &secs_to_hours_minutes(elapsed_since(self.start_time));
         let elapsed_day = format!("{:02}h:{:02}m", hh, mm);
-        let time_diff = elapsed_since(self.start_time).saturating_sub(self.total_activity_time());
+        let time_diff = elapsed_since(self.start_time)
+            .saturating_sub(self.total_activity_time());
         let (tdelta_hh, tdelta_mm) = secs_to_hours_minutes(time_diff);
         let time_diff_pretty = format!("{:02}h:{:02}m", tdelta_hh, tdelta_mm);
         let total_activity_time = total_time;
@@ -116,8 +128,10 @@ impl ActivityManager {
             secs_to_hours_minutes(DAY_LENGTH_SECS - self.total_activity_time());
         let time_left = format!("{:02}h:{:02}m", time_left_hh, time_left_mm);
         let time_left = time_left;
-        let start_time_pretty =
-            format!("start time:         {}", self.start_time_pretty.to_owned());
+        let start_time_pretty = format!(
+            "start time:         {}",
+            self.start_time_pretty.to_owned()
+        );
         let activities = db_io::read_as_serialised(&self.path)
             .into_iter()
             .filter(|x| x.get_active_dates().contains(&date))
@@ -143,7 +157,8 @@ mod test {
 
     #[test]
     fn creating_task_manager() {
-        let path = std::path::Path::new("test_creating_task_manager.json").to_path_buf();
+        let path = std::path::Path::new("test_creating_task_manager.json")
+            .to_path_buf();
         std::fs::File::create(&path)
             .unwrap()
             .write_all(b"[]")
@@ -189,7 +204,8 @@ mod test {
     fn multiple_tasks() {
         let task_1 = "alpha";
         let task_2 = "beta";
-        let path = std::path::Path::new("test_multiple_tasks.json").to_path_buf();
+        let path =
+            std::path::Path::new("test_multiple_tasks.json").to_path_buf();
         std::fs::File::create(&path)
             .unwrap()
             .write_all(b"[]")
@@ -233,7 +249,8 @@ mod test {
 
     #[test]
     fn no_duplicate_task_names() {
-        let path = std::path::Path::new("test_no_duplicate_task_names.json").to_path_buf();
+        let path = std::path::Path::new("test_no_duplicate_task_names.json")
+            .to_path_buf();
         std::fs::File::create(&path)
             .unwrap()
             .write_all(b"[]")
@@ -255,15 +272,18 @@ mod test {
 
     #[test]
     fn taskmanager_json_has_all_fields() {
-        let path = std::path::Path::new("test_taskmanager_json_has_all_fields.json").to_path_buf();
+        let path =
+            std::path::Path::new("test_taskmanager_json_has_all_fields.json")
+                .to_path_buf();
         std::fs::File::create(&path)
             .unwrap()
             .write_all(b"[]")
             .unwrap();
         let tm = ActivityManager::new(path.clone());
-        let tm_json = serde_json::to_string(&tm.get_activities_by_date(
-            Utc::now().date_naive().to_string()
-        )).unwrap();
+        let tm_json = serde_json::to_string(
+            &tm.get_activities_by_date(Utc::now().date_naive().to_string()),
+        )
+        .unwrap();
         assert!(tm_json.contains(&"activities"));
         assert!(tm_json.contains(&"start_time_pretty"));
         assert!(tm_json.contains(&"elapsed_day"));
