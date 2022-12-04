@@ -10,11 +10,20 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  fmt:
 
     runs-on: ubuntu-20.04
 
     steps:
     - uses: actions/checkout@v3
-    - name: Run tests
+    - name: check formatting
+      run: cargo fmt --check
+
+  test:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: run tests
       run: cargo test --verbose
