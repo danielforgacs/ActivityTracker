@@ -11,20 +11,21 @@ env:
 
 jobs:
   fmt:
-
     runs-on: ubuntu-20.04
-
     steps:
     - uses: actions/checkout@v3
     - name: check formatting
       run: cargo fmt --check
-    - name: clippy
-      run: cargo clippy
 
-  test:
-
+  clippy:
     runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: clippy
+      run: cargo clippy -- -D warnings
 
+  tests:
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v3
     - name: run tests
