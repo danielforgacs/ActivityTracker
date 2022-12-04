@@ -107,6 +107,11 @@ mod tests {
     use actix_web::http::header;
     use actix_web::{test, App};
 
+    #[test]
+    async fn bad_test_f_github_actions() {
+        assert!(false);
+    }
+
     #[actix_web::test]
     async fn test_create_activity() {
         #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
