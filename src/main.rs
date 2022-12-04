@@ -47,8 +47,6 @@ async fn main() -> std::io::Result<()> {
         }
     };
 
-    let LKJHLKJH = 1;
-
     // create certificate:
     // Add a passphrase or it won't work. The file will be empty.
     // openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -sha256 -subj "/C=CN/ST=Fujian/L=Xiamen/O=TVlinux/OU=Org/CN=muro.lxd"
