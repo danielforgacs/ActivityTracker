@@ -74,7 +74,7 @@ async fn main() -> std::io::Result<()> {
     };
 
     println!(
-        "web: http://{}\napi: http://{}/api/times",
+        "web: https://{}\napi: https://{}/api/times",
         config.get_url_w_port(),
         config.get_url_w_port(),
     );

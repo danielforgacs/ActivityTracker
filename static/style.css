@@ -1,0 +1,10 @@
+* {
+    border: 2px;
+    padding: 4px;
+    box-sizing: border-box;
+    border: 1px dashed black;
+}
+
+html {
+    max-width: 800px;
+}
